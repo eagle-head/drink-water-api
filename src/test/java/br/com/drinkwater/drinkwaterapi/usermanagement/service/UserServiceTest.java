@@ -1,4 +1,4 @@
-package br.com.drinkwater.drinkwaterapi.usermanagement.serivce;
+package br.com.drinkwater.drinkwaterapi.usermanagement.service;
 
 import static br.com.drinkwater.drinkwaterapi.usermanagement.constants.UserConstants.USER;
 import static br.com.drinkwater.drinkwaterapi.usermanagement.constants.UserConstants.USER_WITH_INVALID_DATA;
@@ -11,7 +11,6 @@ import static org.mockito.Mockito.when;
 
 import br.com.drinkwater.drinkwaterapi.usermanagement.model.User;
 import br.com.drinkwater.drinkwaterapi.usermanagement.repository.UserRepository;
-import br.com.drinkwater.drinkwaterapi.usermanagement.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
