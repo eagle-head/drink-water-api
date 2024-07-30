@@ -37,7 +37,7 @@ public class UserControllerTest {
 
     @Test
     public void createUser_WithValidData_ReturnsCreated() throws Exception {
-        when(this.userService.create(USER)).thenReturn(USER);
+        when(userService.create(USER)).thenReturn(USER);
 
         mockMvc
                 .perform(post("/users")
@@ -79,7 +79,7 @@ public class UserControllerTest {
 
     @Test
     public void createUser_WithExistingUser_ReturnsConflict() throws Exception {
-        when(this.userService.create(any())).thenThrow(EmailAlreadyUsedException.class);
+        when(userService.create(any())).thenThrow(EmailAlreadyUsedException.class);
 
         mockMvc
                 .perform(post("/users")

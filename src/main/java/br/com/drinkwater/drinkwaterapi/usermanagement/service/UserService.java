@@ -17,20 +17,20 @@ public class UserService {
     }
 
     public User create(User user) {
-        boolean emailExists = this.userRepository.existsByEmail(user.getEmail());
+        boolean emailExists = userRepository.existsByEmail(user.getEmail());
         if (emailExists) {
             throw new EmailAlreadyUsedException("The email provided is already in use.");
         }
 
-        return this.userRepository.save(user);
+        return userRepository.save(user);
     }
 
     public Optional<User> findById(Long id) {
-        return this.userRepository.findById(id);
+        return userRepository.findById(id);
     }
 
     public void deleteById(Long id) {
-        this.userRepository.deleteById(id);
+        userRepository.deleteById(id);
     }
 
     public Optional<User> update(Long id, User updatedUser) {

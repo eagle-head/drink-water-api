@@ -19,27 +19,27 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> create(@Valid @RequestBody User user) {
-        User savedUser = this.userService.create(user);
+        User savedUser = userService.create(user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
     @GetMapping("/{requestedId}")
     public ResponseEntity<User> findById(@PathVariable Long requestedId) {
-        return this.userService.findById(requestedId)
+        return userService.findById(requestedId)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{requestedId}")
     public ResponseEntity<Void> delete(@PathVariable Long requestedId) {
-        this.userService.deleteById(requestedId);
+        userService.deleteById(requestedId);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{requestedId}")
     public ResponseEntity<User> update(@PathVariable Long requestedId, @Valid @RequestBody User user) {
-        return this.userService.update(requestedId, user)
+        return userService.update(requestedId, user)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

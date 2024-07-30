@@ -22,7 +22,7 @@ public class UserIT {
 
     @Test
     void createUser_ReturnsCreated() {
-        User sut = this.webClient.post().uri("/users")
+        User sut = webClient.post().uri("/users")
                 .bodyValue(USER)
                 .exchange()
                 .expectStatus()

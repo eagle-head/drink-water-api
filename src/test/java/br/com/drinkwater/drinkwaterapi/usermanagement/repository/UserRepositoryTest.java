@@ -19,9 +19,9 @@ public class UserRepositoryTest {
 
     @Test
     public void createUser_WithValidData_ReturnsUser() {
-        User user = this.userRepository.save(USER);
+        User user = userRepository.save(USER);
 
-        Optional<User> optionalUser = this.userRepository.findById(user.getId());
+        Optional<User> optionalUser = userRepository.findById(user.getId());
         assertThat(optionalUser).isPresent();
 
         User sut = optionalUser.get();
@@ -39,14 +39,14 @@ public class UserRepositoryTest {
 
     @Test
     public void createUser_WithInvalidData_ReturnsUser() {
-        assertThatThrownBy(() -> this.userRepository.save(USER_WITH_EMPTY_EMAIL)).isInstanceOf(RuntimeException.class);
-        assertThatThrownBy(() -> this.userRepository.save(USER_WITH_NULL_EMAIL)).isInstanceOf(RuntimeException.class);
-        assertThatThrownBy(() -> this.userRepository.save(USER_WITH_INVALID_EMAIL)).isInstanceOf(RuntimeException.class);
+        assertThatThrownBy(() -> userRepository.save(USER_WITH_EMPTY_EMAIL)).isInstanceOf(RuntimeException.class);
+        assertThatThrownBy(() -> userRepository.save(USER_WITH_NULL_EMAIL)).isInstanceOf(RuntimeException.class);
+        assertThatThrownBy(() -> userRepository.save(USER_WITH_INVALID_EMAIL)).isInstanceOf(RuntimeException.class);
     }
 
     @Test
     public void createUser_WithExistingEmail_ThrowsException() {
-        this.userRepository.save(USER);
-        assertThatThrownBy(() -> this.userRepository.save(USER_WITH_SAME_EMAIL)).isInstanceOf(RuntimeException.class);
+        userRepository.save(USER);
+        assertThatThrownBy(() -> userRepository.save(USER_WITH_SAME_EMAIL)).isInstanceOf(RuntimeException.class);
     }
 }
