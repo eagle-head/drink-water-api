@@ -1,9 +1,12 @@
 package br.com.drinkwater.drinkwaterapi.usermanagement.service;
 
+import br.com.drinkwater.drinkwaterapi.usermanagement.mapper.UserMapper;
+import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserResponseDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.exception.EmailAlreadyUsedException;
 import br.com.drinkwater.drinkwaterapi.usermanagement.model.User;
 import br.com.drinkwater.drinkwaterapi.usermanagement.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -11,42 +14,43 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper mapper;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, UserMapper mapper) {
         this.userRepository = userRepository;
+        this.mapper = mapper;
     }
 
-    public User create(User user) {
+    @Transactional
+    public UserResponseDTO create(User user) {
         boolean emailExists = userRepository.existsByEmail(user.getEmail());
         if (emailExists) {
             throw new EmailAlreadyUsedException("The email provided is already in use.");
         }
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        return mapper.convertToDTO(savedUser);
     }
 
-    public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
+    @Transactional(readOnly = true)
+    public Optional<UserResponseDTO> findById(Long id) {
+        return userRepository.findById(id)
+                .map(mapper::convertToDTO);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
 
-    public Optional<User> update(Long id, User updatedUser) {
+    @Transactional
+    public Optional<UserResponseDTO> update(Long id, User user) {
         return userRepository.findById(id)
                 .map(existingUser -> {
-                    existingUser.setEmail(updatedUser.getEmail());
-                    existingUser.setPassword(updatedUser.getPassword());
-                    existingUser.setFirstName(updatedUser.getFirstName());
-                    existingUser.setLastName(updatedUser.getLastName());
-                    existingUser.setBirthDate(updatedUser.getBirthDate());
-                    existingUser.setBiologicalSex(updatedUser.getBiologicalSex());
-                    existingUser.setWeight(updatedUser.getWeight());
-                    existingUser.setWeightUnit(updatedUser.getWeightUnit());
-                    existingUser.setHeight(updatedUser.getHeight());
-                    existingUser.setHeightUnit(updatedUser.getHeightUnit());
-                    return userRepository.save(existingUser);
+                    user.setId(existingUser.getId());
+                    User updatedUser = userRepository.save(user);
+                    return mapper.convertToDTO(updatedUser);
                 });
     }
 }

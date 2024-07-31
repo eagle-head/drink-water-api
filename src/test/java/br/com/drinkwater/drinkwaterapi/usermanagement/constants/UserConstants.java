@@ -1,5 +1,6 @@
 package br.com.drinkwater.drinkwaterapi.usermanagement.constants;
 
+import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserResponseDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.model.User;
 import br.com.drinkwater.drinkwaterapi.usermanagement.model.BiologicalSex;
 import br.com.drinkwater.drinkwaterapi.usermanagement.model.WeightUnit;
@@ -15,8 +16,24 @@ public final class UserConstants {
     public static final User USER_WITH_NULL_EMAIL = createUserWithNullEmail();
     public static final User USER_WITH_INVALID_EMAIL = createUserWithInvalidEmail();
     public static final User USER_WITH_INVALID_DATA = createUserWithInvalidData();
+    public static final UserResponseDTO USER_RESPONSE_DTO = createUserResponseDTO();
 
     private UserConstants() {
+    }
+
+    private static UserResponseDTO createUserResponseDTO() {
+        return new UserResponseDTO(
+                1L,
+                "user@example.com",
+                "First",
+                "Last",
+                OffsetDateTime.parse("1989-12-31T00:00:00Z"),
+                BiologicalSex.MALE,
+                70.0,
+                WeightUnit.KG,
+                175.0,
+                HeightUnit.CM
+        );
     }
 
     private static User createUser() {

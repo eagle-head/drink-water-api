@@ -3,6 +3,7 @@ package br.com.drinkwater.drinkwaterapi.e2e.user;
 import static org.assertj.core.api.Assertions.assertThat;
 import static br.com.drinkwater.drinkwaterapi.usermanagement.constants.UserConstants.USER;
 
+import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserResponseDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,26 +23,25 @@ public class UserIT {
 
     @Test
     void createUser_ReturnsCreated() {
-        User sut = webClient.post().uri("/users")
+        UserResponseDTO sut = webClient.post().uri("/users")
                 .bodyValue(USER)
                 .exchange()
                 .expectStatus()
                 .isCreated()
-                .expectBody(User.class)
+                .expectBody(UserResponseDTO.class)
                 .returnResult()
                 .getResponseBody();
 
         assertThat(sut).isNotNull();
-        assertThat(sut.getId()).isNotNull();
-        assertThat(sut.getEmail()).isEqualTo(USER.getEmail());
-        assertThat(sut.getPassword()).isEqualTo(USER.getPassword());
-        assertThat(sut.getFirstName()).isEqualTo(USER.getFirstName());
-        assertThat(sut.getLastName()).isEqualTo(USER.getLastName());
-        assertThat(sut.getBirthDate()).isEqualTo(USER.getBirthDate());
-        assertThat(sut.getBiologicalSex()).isEqualTo(USER.getBiologicalSex());
-        assertThat(sut.getWeight()).isEqualTo(USER.getWeight());
-        assertThat(sut.getWeightUnit()).isEqualTo(USER.getWeightUnit());
-        assertThat(sut.getHeight()).isEqualTo(USER.getHeight());
-        assertThat(sut.getHeightUnit()).isEqualTo(USER.getHeightUnit());
+        assertThat(sut.id()).isNotNull();
+        assertThat(sut.email()).isEqualTo(USER.getEmail());
+        assertThat(sut.firstName()).isEqualTo(USER.getFirstName());
+        assertThat(sut.lastName()).isEqualTo(USER.getLastName());
+        assertThat(sut.birthDate()).isEqualTo(USER.getBirthDate());
+        assertThat(sut.biologicalSex()).isEqualTo(USER.getBiologicalSex());
+        assertThat(sut.weight()).isEqualTo(USER.getWeight());
+        assertThat(sut.weightUnit()).isEqualTo(USER.getWeightUnit());
+        assertThat(sut.height()).isEqualTo(USER.getHeight());
+        assertThat(sut.heightUnit()).isEqualTo(USER.getHeightUnit());
     }
 }

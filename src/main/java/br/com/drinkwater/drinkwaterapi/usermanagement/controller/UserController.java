@@ -1,5 +1,6 @@
 package br.com.drinkwater.drinkwaterapi.usermanagement.controller;
 
+import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserResponseDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.model.User;
 import br.com.drinkwater.drinkwaterapi.usermanagement.service.UserService;
 import jakarta.validation.Valid;
@@ -18,14 +19,14 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> create(@Valid @RequestBody User user) {
-        User savedUser = userService.create(user);
+    public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody User user) {
+        UserResponseDTO savedUser = userService.create(user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
     @GetMapping("/{requestedId}")
-    public ResponseEntity<User> findById(@PathVariable Long requestedId) {
+    public ResponseEntity<UserResponseDTO> findById(@PathVariable Long requestedId) {
         return userService.findById(requestedId)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -38,7 +39,7 @@ public class UserController {
     }
 
     @PutMapping("/{requestedId}")
-    public ResponseEntity<User> update(@PathVariable Long requestedId, @Valid @RequestBody User user) {
+    public ResponseEntity<UserResponseDTO> update(@PathVariable Long requestedId, @Valid @RequestBody User user) {
         return userService.update(requestedId, user)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());

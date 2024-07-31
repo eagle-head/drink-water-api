@@ -37,25 +37,23 @@ public class UserControllerTest {
 
     @Test
     public void createUser_WithValidData_ReturnsCreated() throws Exception {
-        when(userService.create(USER)).thenReturn(USER);
+        when(userService.create(USER)).thenReturn(USER_RESPONSE_DTO);
 
         mockMvc
                 .perform(post("/users")
                         .content(objectMapper.writeValueAsString(USER))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.email").value(USER.getEmail()))
-                .andExpect(jsonPath("$.password").value(USER.getPassword()))
-                .andExpect(jsonPath("$.firstName").value(USER.getFirstName()))
-                .andExpect(jsonPath("$.lastName").value(USER.getLastName()))
-                .andExpect(jsonPath("$.birthDate").value(USER.getBirthDate()
+                .andExpect(jsonPath("$.email").value(USER_RESPONSE_DTO.email()))
+                .andExpect(jsonPath("$.firstName").value(USER_RESPONSE_DTO.firstName()))
+                .andExpect(jsonPath("$.lastName").value(USER_RESPONSE_DTO.lastName()))
+                .andExpect(jsonPath("$.birthDate").value(USER_RESPONSE_DTO.birthDate()
                         .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX"))))
-                .andExpect(jsonPath("$.biologicalSex").value(USER.getBiologicalSex().toString()))
-                .andExpect(jsonPath("$.weight").value(USER.getWeight()))
-                .andExpect(jsonPath("$.weightUnit").value(USER.getWeightUnit().toString()))
-                .andExpect(jsonPath("$.height").value(USER.getHeight()))
-                .andExpect(jsonPath("$.heightUnit").value(USER.getHeightUnit().toString()));
-
+                .andExpect(jsonPath("$.biologicalSex").value(USER_RESPONSE_DTO.biologicalSex().toString()))
+                .andExpect(jsonPath("$.weight").value(USER_RESPONSE_DTO.weight()))
+                .andExpect(jsonPath("$.weightUnit").value(USER_RESPONSE_DTO.weightUnit().toString()))
+                .andExpect(jsonPath("$.height").value(USER_RESPONSE_DTO.height()))
+                .andExpect(jsonPath("$.heightUnit").value(USER_RESPONSE_DTO.heightUnit().toString()));
     }
 
     @ParameterizedTest
