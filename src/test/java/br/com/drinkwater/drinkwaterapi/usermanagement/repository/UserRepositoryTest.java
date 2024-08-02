@@ -11,7 +11,13 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.Optional;
 
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.validation.annotation.Validated;
+
 @DataJpaTest
+@ComponentScan(basePackages = "br.com.drinkwater.drinkwaterapi",
+        includeFilters = @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Validated.class))
 public class UserRepositoryTest {
 
     @Autowired
@@ -38,15 +44,9 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void createUser_WithInvalidData_ReturnsUser() {
-        assertThatThrownBy(() -> userRepository.save(USER_WITH_EMPTY_EMAIL)).isInstanceOf(RuntimeException.class);
-        assertThatThrownBy(() -> userRepository.save(USER_WITH_NULL_EMAIL)).isInstanceOf(RuntimeException.class);
-        assertThatThrownBy(() -> userRepository.save(USER_WITH_INVALID_EMAIL)).isInstanceOf(RuntimeException.class);
-    }
-
-    @Test
     public void createUser_WithExistingEmail_ThrowsException() {
         userRepository.save(USER);
-        assertThatThrownBy(() -> userRepository.save(USER_WITH_SAME_EMAIL)).isInstanceOf(RuntimeException.class);
+        assertThatThrownBy(() -> userRepository.save(USER_WITH_SAME_EMAIL))
+                .isInstanceOf(RuntimeException.class);
     }
 }

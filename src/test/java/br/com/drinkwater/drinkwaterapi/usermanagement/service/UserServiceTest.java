@@ -4,13 +4,14 @@ import static br.com.drinkwater.drinkwaterapi.usermanagement.constants.UserConst
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
+import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserCreateDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.mapper.UserMapper;
 import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserResponseDTO;
-import br.com.drinkwater.drinkwaterapi.usermanagement.model.User;
 import br.com.drinkwater.drinkwaterapi.usermanagement.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,17 +36,20 @@ public class UserServiceTest {
     @Test
     public void createUser_WithValidData_ReturnsUserResponseDTO() {
         when(userRepository.save(USER)).thenReturn(USER);
+        when(mapper.convertToEntity(USER_CREATE_DTO)).thenReturn(USER);
         when(mapper.convertToDTO(USER)).thenReturn(USER_RESPONSE_DTO);
 
-        UserResponseDTO sut = userService.create(USER);
+        UserResponseDTO sut = userService.create(USER_CREATE_DTO);
         assertThat(sut).isEqualTo(USER_RESPONSE_DTO);
     }
 
     @Test
     public void createUser_WithInvalidData_ReturnsUser() {
+        when(userRepository.existsByEmail(USER_CREATE_DTO.getEmail())).thenReturn(false);
         when(userRepository.save(USER_WITH_INVALID_DATA)).thenThrow(RuntimeException.class);
+        when(mapper.convertToEntity(any(UserCreateDTO.class))).thenReturn(USER_WITH_INVALID_DATA);
 
-        assertThatThrownBy(() -> userService.create(USER_WITH_INVALID_DATA)).isInstanceOf(RuntimeException.class);
+        assertThatThrownBy(() -> userService.create(USER_CREATE_DTO)).isInstanceOf(RuntimeException.class);
     }
 
     @Test

@@ -7,8 +7,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserCreateDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.exception.EmailAlreadyUsedException;
-import br.com.drinkwater.drinkwaterapi.usermanagement.model.User;
 import br.com.drinkwater.drinkwaterapi.usermanagement.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ public class UserControllerTest {
 
     @Test
     public void createUser_WithValidData_ReturnsCreated() throws Exception {
-        when(userService.create(USER)).thenReturn(USER_RESPONSE_DTO);
+        when(userService.create(USER_CREATE_DTO)).thenReturn(USER_RESPONSE_DTO);
 
         mockMvc
                 .perform(post("/users")
@@ -57,21 +57,21 @@ public class UserControllerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideInvalidUsers")
-    public void createUser_WithInvalidData_ReturnsUnprocessableEntity(User invalidUser) throws Exception {
+    @MethodSource("provideInvalidUserCreateDTOs")
+    public void createUser_WithInvalidData_ReturnsUnprocessableEntity(UserCreateDTO invalidUserCreateDTO) throws Exception {
         mockMvc
                 .perform(post("/users")
-                        .content(objectMapper.writeValueAsString(invalidUser))
+                        .content(objectMapper.writeValueAsString(invalidUserCreateDTO))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnprocessableEntity());
     }
 
-    private static Stream<User> provideInvalidUsers() {
+    private static Stream<UserCreateDTO> provideInvalidUserCreateDTOs() {
         return Stream.of(
-                USER_WITH_EMPTY_EMAIL,
-                USER_WITH_NULL_EMAIL,
-                USER_WITH_INVALID_EMAIL,
-                USER_WITH_INVALID_DATA
+                USER_CREATE_DTO_WITH_EMPTY_EMAIL,
+                USER_CREATE_DTO_WITH_NULL_EMAIL,
+                USER_CREATE_DTO_WITH_INVALID_EMAIL,
+                USER_CREATE_DTO_WITH_INVALID_DATA
         );
     }
 

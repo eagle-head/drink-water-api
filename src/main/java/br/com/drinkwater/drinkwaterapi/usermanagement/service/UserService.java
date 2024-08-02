@@ -1,5 +1,6 @@
 package br.com.drinkwater.drinkwaterapi.usermanagement.service;
 
+import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserCreateDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.mapper.UserMapper;
 import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserResponseDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.exception.EmailAlreadyUsedException;
@@ -22,13 +23,14 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDTO create(User user) {
-        boolean emailExists = userRepository.existsByEmail(user.getEmail());
+    public UserResponseDTO create(UserCreateDTO userCreateDTO) {
+        boolean emailExists = userRepository.existsByEmail(userCreateDTO.getEmail());
         if (emailExists) {
             throw new EmailAlreadyUsedException("The email provided is already in use.");
         }
 
-        User savedUser = userRepository.save(user);
+        User newUser = mapper.convertToEntity(userCreateDTO);
+        User savedUser = userRepository.save(newUser);
 
         return mapper.convertToDTO(savedUser);
     }

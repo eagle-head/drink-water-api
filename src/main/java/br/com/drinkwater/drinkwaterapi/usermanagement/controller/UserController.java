@@ -1,5 +1,6 @@
 package br.com.drinkwater.drinkwaterapi.usermanagement.controller;
 
+import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserCreateDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserResponseDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.model.User;
 import br.com.drinkwater.drinkwaterapi.usermanagement.service.UserService;
@@ -19,8 +20,8 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody User user) {
-        UserResponseDTO savedUser = userService.create(user);
+    public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserCreateDTO userCreateDTO) {
+        UserResponseDTO savedUser = userService.create(userCreateDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
