@@ -63,7 +63,9 @@ public class UserControllerTest {
                 .perform(post("/users")
                         .content(objectMapper.writeValueAsString(invalidUserCreateDTO))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.constraints").isArray())
+                .andExpect(jsonPath("$.constraints[0].userMessage").isNotEmpty());
     }
 
     private static Stream<UserCreateDTO> provideInvalidUserCreateDTOs() {

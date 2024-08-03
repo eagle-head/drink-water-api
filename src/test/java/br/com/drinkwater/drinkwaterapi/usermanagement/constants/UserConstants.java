@@ -40,47 +40,20 @@ public final class UserConstants {
     }
 
     private static UserCreateDTO createUserCreateDTOWithEmptyEmail() {
-        UserCreateDTO userCreateDTO = new UserCreateDTO();
+        UserCreateDTO userCreateDTO = createUserCreateDTO();
         userCreateDTO.setEmail("");
-        userCreateDTO.setPassword("password");
-        userCreateDTO.setFirstName("First");
-        userCreateDTO.setLastName("Last");
-        userCreateDTO.setBirthDate(OffsetDateTime.parse("1989-12-31T00:00:00Z"));
-        userCreateDTO.setBiologicalSex(BiologicalSex.MALE);
-        userCreateDTO.setWeight(70.0);
-        userCreateDTO.setWeightUnit(WeightUnit.KG);
-        userCreateDTO.setHeight(175.0);
-        userCreateDTO.setHeightUnit(HeightUnit.CM);
         return userCreateDTO;
     }
 
     private static UserCreateDTO createUserCreateDTOWithNullEmail() {
-        UserCreateDTO userCreateDTO = new UserCreateDTO();
+        UserCreateDTO userCreateDTO = createUserCreateDTO();
         userCreateDTO.setEmail(null);
-        userCreateDTO.setPassword("password");
-        userCreateDTO.setFirstName("First");
-        userCreateDTO.setLastName("Last");
-        userCreateDTO.setBirthDate(OffsetDateTime.parse("1989-12-31T00:00:00Z"));
-        userCreateDTO.setBiologicalSex(BiologicalSex.MALE);
-        userCreateDTO.setWeight(70.0);
-        userCreateDTO.setWeightUnit(WeightUnit.KG);
-        userCreateDTO.setHeight(175.0);
-        userCreateDTO.setHeightUnit(HeightUnit.CM);
         return userCreateDTO;
     }
 
     private static UserCreateDTO createUserCreateDTOWithInvalidEmail() {
-        UserCreateDTO userCreateDTO = new UserCreateDTO();
+        UserCreateDTO userCreateDTO = createUserCreateDTO();
         userCreateDTO.setEmail("invalid-email");
-        userCreateDTO.setPassword("password");
-        userCreateDTO.setFirstName("First");
-        userCreateDTO.setLastName("Last");
-        userCreateDTO.setBirthDate(OffsetDateTime.parse("1989-12-31T00:00:00Z"));
-        userCreateDTO.setBiologicalSex(BiologicalSex.MALE);
-        userCreateDTO.setWeight(70.0);
-        userCreateDTO.setWeightUnit(WeightUnit.KG);
-        userCreateDTO.setHeight(175.0);
-        userCreateDTO.setHeightUnit(HeightUnit.CM);
         return userCreateDTO;
     }
 
