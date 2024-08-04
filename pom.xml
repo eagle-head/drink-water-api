@@ -194,6 +194,7 @@
                 <configuration>
                     <excludes>
                         <exclude>br/com/drinkwater/drinkwaterapi/DrinkWaterApiApplication.class</exclude>
+                        <exclude>br/com/drinkwater/drinkwaterapi/**/mapper/*Impl.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

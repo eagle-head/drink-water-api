@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserCreateDTO;
+import br.com.drinkwater.drinkwaterapi.usermanagement.exception.EmailAlreadyUsedException;
 import br.com.drinkwater.drinkwaterapi.usermanagement.mapper.UserMapper;
 import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserResponseDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.repository.UserRepository;
@@ -50,6 +51,15 @@ public class UserServiceTest {
         when(mapper.convertToEntity(any(UserCreateDTO.class))).thenReturn(USER_WITH_INVALID_DATA);
 
         assertThatThrownBy(() -> userService.create(USER_CREATE_DTO)).isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    public void createUser_WithExistingEmail_ThrowsEmailAlreadyUsedException() {
+        when(userRepository.existsByEmail(USER_CREATE_DTO.getEmail())).thenReturn(true);
+
+        assertThatThrownBy(() -> userService.create(USER_CREATE_DTO))
+                .isInstanceOf(EmailAlreadyUsedException.class)
+                .hasMessage("The email provided is already in use.");
     }
 
     @Test

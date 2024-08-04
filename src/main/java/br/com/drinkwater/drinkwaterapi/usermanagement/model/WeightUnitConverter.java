@@ -1,6 +1,5 @@
 package br.com.drinkwater.drinkwaterapi.usermanagement.model;
 
-
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
