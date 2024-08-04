@@ -46,7 +46,7 @@ public class UserServiceTest {
 
     @Test
     public void createUser_WithInvalidData_ReturnsUser() {
-        when(userRepository.existsByEmail(USER_CREATE_DTO.getEmail())).thenReturn(false);
+        when(userRepository.existsByEmail(USER_CREATE_DTO.email())).thenReturn(false);
         when(userRepository.save(USER_WITH_INVALID_DATA)).thenThrow(RuntimeException.class);
         when(mapper.convertToEntity(any(UserCreateDTO.class))).thenReturn(USER_WITH_INVALID_DATA);
 
@@ -55,7 +55,7 @@ public class UserServiceTest {
 
     @Test
     public void createUser_WithExistingEmail_ThrowsEmailAlreadyUsedException() {
-        when(userRepository.existsByEmail(USER_CREATE_DTO.getEmail())).thenReturn(true);
+        when(userRepository.existsByEmail(USER_CREATE_DTO.email())).thenReturn(true);
 
         assertThatThrownBy(() -> userService.create(USER_CREATE_DTO))
                 .isInstanceOf(EmailAlreadyUsedException.class)

@@ -24,7 +24,7 @@ public class UserService {
 
     @Transactional
     public UserResponseDTO create(UserCreateDTO userCreateDTO) {
-        boolean emailExists = userRepository.existsByEmail(userCreateDTO.getEmail());
+        boolean emailExists = userRepository.existsByEmail(userCreateDTO.email());
         if (emailExists) {
             throw new EmailAlreadyUsedException("The email provided is already in use.");
         }

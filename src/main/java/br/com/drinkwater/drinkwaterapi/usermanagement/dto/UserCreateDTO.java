@@ -4,43 +4,40 @@ import br.com.drinkwater.drinkwaterapi.usermanagement.model.BiologicalSex;
 import br.com.drinkwater.drinkwaterapi.usermanagement.model.HeightUnit;
 import br.com.drinkwater.drinkwaterapi.usermanagement.model.WeightUnit;
 import jakarta.validation.constraints.*;
-import lombok.Data;
 
 import java.time.OffsetDateTime;
 
-@Data
-public class UserCreateDTO {
+public record UserCreateDTO(
+        @Email
+        @NotBlank
+        String email,
 
-    @Email
-    @NotBlank
-    private String email;
+        @NotBlank
+        @Size(min = 6, max = 20)
+        String password,
 
-    @NotBlank
-    @Size(min = 6, max = 20)
-    private String password;
+        @NotBlank
+        String firstName,
 
-    @NotBlank
-    private String firstName;
+        @NotBlank
+        String lastName,
 
-    @NotBlank
-    private String lastName;
+        @NotNull
+        @Past
+        OffsetDateTime birthDate,
 
-    @NotNull
-    @Past
-    private OffsetDateTime birthDate;
+        @NotNull
+        BiologicalSex biologicalSex,
 
-    @NotNull
-    private BiologicalSex biologicalSex;
+        @Min(45)
+        double weight,
 
-    @Min(45)
-    private double weight;
+        @NotNull
+        WeightUnit weightUnit,
 
-    @NotNull
-    private WeightUnit weightUnit;
+        @Min(100)
+        double height,
 
-    @Min(100)
-    private double height;
-
-    @NotNull
-    private HeightUnit heightUnit;
-}
+        @NotNull
+        HeightUnit heightUnit
+) {}

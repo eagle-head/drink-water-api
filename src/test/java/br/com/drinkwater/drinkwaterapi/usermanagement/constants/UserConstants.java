@@ -25,51 +25,78 @@ public final class UserConstants {
     }
 
     private static UserCreateDTO createUserCreateDTO() {
-        UserCreateDTO userCreateDTO = new UserCreateDTO();
-        userCreateDTO.setEmail("user@example.com");
-        userCreateDTO.setPassword("password");
-        userCreateDTO.setFirstName("First");
-        userCreateDTO.setLastName("Last");
-        userCreateDTO.setBirthDate(OffsetDateTime.parse("1989-12-31T00:00:00Z"));
-        userCreateDTO.setBiologicalSex(BiologicalSex.MALE);
-        userCreateDTO.setWeight(70.0);
-        userCreateDTO.setWeightUnit(WeightUnit.KG);
-        userCreateDTO.setHeight(175.0);
-        userCreateDTO.setHeightUnit(HeightUnit.CM);
-        return userCreateDTO;
+        return new UserCreateDTO(
+                "user@example.com",
+                "password",
+                "First",
+                "Last",
+                OffsetDateTime.parse("1989-12-31T00:00:00Z"),
+                BiologicalSex.MALE,
+                70.0,
+                WeightUnit.KG,
+                175.0,
+                HeightUnit.CM
+        );
     }
 
     private static UserCreateDTO createUserCreateDTOWithEmptyEmail() {
-        UserCreateDTO userCreateDTO = createUserCreateDTO();
-        userCreateDTO.setEmail("");
-        return userCreateDTO;
+        return new UserCreateDTO(
+                "",
+                "password",
+                "First",
+                "Last",
+                OffsetDateTime.parse("1989-12-31T00:00:00Z"),
+                BiologicalSex.MALE,
+                70.0,
+                WeightUnit.KG,
+                175.0,
+                HeightUnit.CM
+        );
     }
 
     private static UserCreateDTO createUserCreateDTOWithNullEmail() {
-        UserCreateDTO userCreateDTO = createUserCreateDTO();
-        userCreateDTO.setEmail(null);
-        return userCreateDTO;
+        return new UserCreateDTO(
+                null,
+                "password",
+                "First",
+                "Last",
+                OffsetDateTime.parse("1989-12-31T00:00:00Z"),
+                BiologicalSex.MALE,
+                70.0,
+                WeightUnit.KG,
+                175.0,
+                HeightUnit.CM
+        );
     }
 
     private static UserCreateDTO createUserCreateDTOWithInvalidEmail() {
-        UserCreateDTO userCreateDTO = createUserCreateDTO();
-        userCreateDTO.setEmail("invalid-email");
-        return userCreateDTO;
+        return new UserCreateDTO(
+                "invalid-email",
+                "password",
+                "First",
+                "Last",
+                OffsetDateTime.parse("1989-12-31T00:00:00Z"),
+                BiologicalSex.MALE,
+                70.0,
+                WeightUnit.KG,
+                175.0,
+                HeightUnit.CM
+        );
     }
 
     private static UserCreateDTO createUserCreateDTOWithInvalidData() {
-        UserCreateDTO userCreateDTO = new UserCreateDTO();
-        userCreateDTO.setEmail("");
-        userCreateDTO.setPassword("");
-        userCreateDTO.setFirstName("");
-        userCreateDTO.setLastName("");
-        userCreateDTO.setBirthDate(null);
-        userCreateDTO.setBiologicalSex(null);
-        userCreateDTO.setWeight(0.0);
-        userCreateDTO.setWeightUnit(null);
-        userCreateDTO.setHeight(0.0);
-        userCreateDTO.setHeightUnit(null);
-        return userCreateDTO;
+        return new UserCreateDTO(
+                "",
+                "",
+                "",
+                "",
+                null,
+                null,
+                0.0,
+                null,
+                0.0,
+                null
+        );
     }
 
     private static UserResponseDTO createUserResponseDTO() {

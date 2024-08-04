@@ -35,15 +35,15 @@ public class UserIT {
 
         assertThat(sut).isNotNull();
         assertThat(sut.id()).isNotNull();
-        assertThat(sut.email()).isEqualTo(USER_CREATE_DTO.getEmail());
-        assertThat(sut.firstName()).isEqualTo(USER_CREATE_DTO.getFirstName());
-        assertThat(sut.lastName()).isEqualTo(USER_CREATE_DTO.getLastName());
-        assertThat(sut.birthDate()).isEqualTo(USER_CREATE_DTO.getBirthDate());
-        assertThat(sut.biologicalSex()).isEqualTo(USER_CREATE_DTO.getBiologicalSex());
-        assertThat(sut.weight()).isEqualTo(USER_CREATE_DTO.getWeight());
-        assertThat(sut.weightUnit()).isEqualTo(USER_CREATE_DTO.getWeightUnit());
-        assertThat(sut.height()).isEqualTo(USER_CREATE_DTO.getHeight());
-        assertThat(sut.heightUnit()).isEqualTo(USER_CREATE_DTO.getHeightUnit());
+        assertThat(sut.email()).isEqualTo(USER_CREATE_DTO.email());
+        assertThat(sut.firstName()).isEqualTo(USER_CREATE_DTO.firstName());
+        assertThat(sut.lastName()).isEqualTo(USER_CREATE_DTO.lastName());
+        assertThat(sut.birthDate()).isEqualTo(USER_CREATE_DTO.birthDate());
+        assertThat(sut.biologicalSex()).isEqualTo(USER_CREATE_DTO.biologicalSex());
+        assertThat(sut.weight()).isEqualTo(USER_CREATE_DTO.weight());
+        assertThat(sut.weightUnit()).isEqualTo(USER_CREATE_DTO.weightUnit());
+        assertThat(sut.height()).isEqualTo(USER_CREATE_DTO.height());
+        assertThat(sut.heightUnit()).isEqualTo(USER_CREATE_DTO.heightUnit());
     }
 
     @Test
