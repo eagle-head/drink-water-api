@@ -9,7 +9,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserCreateDTO;
+import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserUpdateDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.exception.EmailAlreadyUsedException;
+import br.com.drinkwater.drinkwaterapi.usermanagement.model.BiologicalSex;
+import br.com.drinkwater.drinkwaterapi.usermanagement.model.HeightUnit;
+import br.com.drinkwater.drinkwaterapi.usermanagement.model.WeightUnit;
 import br.com.drinkwater.drinkwaterapi.usermanagement.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -21,6 +25,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -146,5 +151,70 @@ public class UserControllerTest {
                 .perform(delete("/users/{requestedId}", "invalid")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void updateUser_WithValidData_ReturnsOk() throws Exception {
+        when(userService.update(anyLong(), any(UserUpdateDTO.class))).thenReturn(Optional.of(USER_RESPONSE_DTO));
+
+        mockMvc
+                .perform(put("/users/{requestedId}", 1L)
+                        .content(objectMapper.writeValueAsString(USER_UPDATE_DTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value(USER_RESPONSE_DTO.email()))
+                .andExpect(jsonPath("$.firstName").value(USER_RESPONSE_DTO.firstName()))
+                .andExpect(jsonPath("$.lastName").value(USER_RESPONSE_DTO.lastName()))
+                .andExpect(jsonPath("$.birthDate").value(USER_RESPONSE_DTO.birthDate()
+                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX"))))
+                .andExpect(jsonPath("$.biologicalSex").value(USER_RESPONSE_DTO.biologicalSex().toString()))
+                .andExpect(jsonPath("$.weight").value(USER_RESPONSE_DTO.weight()))
+                .andExpect(jsonPath("$.weightUnit").value(USER_RESPONSE_DTO.weightUnit().toString()))
+                .andExpect(jsonPath("$.height").value(USER_RESPONSE_DTO.height()))
+                .andExpect(jsonPath("$.heightUnit").value(USER_RESPONSE_DTO.heightUnit().toString()));
+    }
+
+    @Test
+    public void updateUser_WithNonExistingId_ReturnsNotFound() throws Exception {
+        when(userService.update(anyLong(), any(UserUpdateDTO.class))).thenReturn(Optional.empty());
+
+        mockMvc
+                .perform(put("/users/{requestedId}", 1L)
+                        .content(objectMapper.writeValueAsString(USER_UPDATE_DTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void updateUser_WithInvalidData_ReturnsUnprocessableEntity() throws Exception {
+        UserUpdateDTO invalidUserUpdateDTO = new UserUpdateDTO(
+                "invalid-email",
+                "password",
+                "First",
+                "Last",
+                OffsetDateTime.parse("1989-12-31T00:00:00Z"),
+                BiologicalSex.MALE,
+                70.0,
+                WeightUnit.KG,
+                175.0,
+                HeightUnit.CM
+        );
+
+        mockMvc
+                .perform(put("/users/{requestedId}", 1L)
+                        .content(objectMapper.writeValueAsString(invalidUserUpdateDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    public void updateUser_WithExistingEmail_ThrowsEmailAlreadyUsedException() throws Exception {
+        when(userService.update(anyLong(), any(UserUpdateDTO.class))).thenThrow(EmailAlreadyUsedException.class);
+
+        mockMvc
+                .perform(put("/users/{requestedId}", 1L)
+                        .content(objectMapper.writeValueAsString(USER_UPDATE_DTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
     }
 }

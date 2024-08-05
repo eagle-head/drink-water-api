@@ -2,7 +2,7 @@ package br.com.drinkwater.drinkwaterapi.usermanagement.controller;
 
 import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserCreateDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserResponseDTO;
-import br.com.drinkwater.drinkwaterapi.usermanagement.model.User;
+import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserUpdateDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -46,8 +46,9 @@ public class UserController {
     }
 
     @PutMapping("/{requestedId}")
-    public ResponseEntity<UserResponseDTO> update(@PathVariable Long requestedId, @Valid @RequestBody User user) {
-        return userService.update(requestedId, user)
+    public ResponseEntity<UserResponseDTO> update(@PathVariable Long requestedId,
+                                                  @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
+        return userService.update(requestedId, userUpdateDTO)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

@@ -95,19 +95,30 @@ public class UserServiceTest {
     @Test
     public void updateUser_WithValidData_ReturnsUpdatedUserResponseDTO() {
         when(userRepository.findById(USER.getId())).thenReturn(Optional.of(USER));
-        when(userRepository.save(USER)).thenReturn(USER);
-        when(mapper.convertToDTO(USER)).thenReturn(USER_RESPONSE_DTO);
+        when(mapper.convertToEntity(USER_UPDATE_DTO)).thenReturn(UPDATED_USER);
+        when(userRepository.save(UPDATED_USER)).thenReturn(UPDATED_USER);
+        when(mapper.convertToDTO(UPDATED_USER)).thenReturn(USER_RESPONSE_DTO);
 
-        Optional<UserResponseDTO> sut = userService.update(USER.getId(), USER);
+        Optional<UserResponseDTO> sut = userService.update(USER.getId(), USER_UPDATE_DTO);
         assertThat(sut).isNotEmpty();
         assertThat(sut.get()).isEqualTo(USER_RESPONSE_DTO);
+    }
+
+    @Test
+    public void updateUser_WithExistingEmail_ThrowsEmailAlreadyUsedException() {
+        when(userRepository.findById(USER.getId())).thenReturn(Optional.of(USER));
+        when(userRepository.existsByEmail(USER_UPDATE_DTO.email())).thenReturn(true);
+
+        assertThatThrownBy(() -> userService.update(USER.getId(), USER_UPDATE_DTO))
+                .isInstanceOf(EmailAlreadyUsedException.class)
+                .hasMessage("The email provided is already in use.");
     }
 
     @Test
     public void updateUser_WithNonExistingId_ReturnsEmpty() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        Optional<UserResponseDTO> sut = userService.update(anyLong(), USER);
+        Optional<UserResponseDTO> sut = userService.update(anyLong(), USER_UPDATE_DTO);
         assertThat(sut).isEmpty();
     }
 

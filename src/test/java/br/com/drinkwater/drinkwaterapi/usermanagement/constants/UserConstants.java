@@ -2,6 +2,7 @@ package br.com.drinkwater.drinkwaterapi.usermanagement.constants;
 
 import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserCreateDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserResponseDTO;
+import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserUpdateDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.model.User;
 import br.com.drinkwater.drinkwaterapi.usermanagement.model.BiologicalSex;
 import br.com.drinkwater.drinkwaterapi.usermanagement.model.WeightUnit;
@@ -20,6 +21,9 @@ public final class UserConstants {
     public static final UserCreateDTO USER_CREATE_DTO_WITH_NULL_EMAIL = createUserCreateDTOWithNullEmail();
     public static final UserCreateDTO USER_CREATE_DTO_WITH_INVALID_EMAIL = createUserCreateDTOWithInvalidEmail();
     public static final UserCreateDTO USER_CREATE_DTO_WITH_INVALID_DATA = createUserCreateDTOWithInvalidData();
+    public static final User UPDATED_USER = createUpdatedUser();
+    public static final UserUpdateDTO USER_UPDATE_DTO = createUserUpdateDTO();
+
 
     private UserConstants() {
     }
@@ -150,5 +154,26 @@ public final class UserConstants {
         user.setUpdatedAt(null);
 
         return user;
+    }
+
+    private static User createUpdatedUser() {
+        User user = createUser();
+        user.setEmail("updated@example.com");
+        return user;
+    }
+
+    private static UserUpdateDTO createUserUpdateDTO() {
+        return new UserUpdateDTO(
+                "updated@example.com",
+                "password",
+                "First",
+                "Last",
+                OffsetDateTime.parse("1989-12-31T00:00:00Z"),
+                BiologicalSex.MALE,
+                70.0,
+                WeightUnit.KG,
+                175.0,
+                HeightUnit.CM
+        );
     }
 }

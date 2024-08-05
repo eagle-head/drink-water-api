@@ -1,6 +1,7 @@
 package br.com.drinkwater.drinkwaterapi.usermanagement.service;
 
 import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserCreateDTO;
+import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserUpdateDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.mapper.UserMapper;
 import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserResponseDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.exception.EmailAlreadyUsedException;
@@ -47,11 +48,15 @@ public class UserService {
     }
 
     @Transactional
-    public Optional<UserResponseDTO> update(Long id, User user) {
+    public Optional<UserResponseDTO> update(Long id, UserUpdateDTO userUpdateDTO) {
         return userRepository.findById(id)
                 .map(existingUser -> {
-                    user.setId(existingUser.getId());
-                    User updatedUser = userRepository.save(user);
+                    if (!existingUser.getEmail().equals(userUpdateDTO.email()) && userRepository.existsByEmail(userUpdateDTO.email())) {
+                        throw new EmailAlreadyUsedException("The email provided is already in use.");
+                    }
+                    User newUser = mapper.convertToEntity(userUpdateDTO);
+                    newUser.setId(existingUser.getId());
+                    User updatedUser = userRepository.save(newUser);
                     return mapper.convertToDTO(updatedUser);
                 });
     }
