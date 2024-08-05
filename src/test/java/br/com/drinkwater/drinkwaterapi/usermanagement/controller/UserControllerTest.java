@@ -2,8 +2,9 @@ package br.com.drinkwater.drinkwaterapi.usermanagement.controller;
 
 import static br.com.drinkwater.drinkwaterapi.usermanagement.constants.UserConstants.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -21,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @WebMvcTest(UserController.class)
@@ -86,5 +88,63 @@ public class UserControllerTest {
                         .content(objectMapper.writeValueAsString(USER))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    public void findUserById_WithValidData_ReturnsOk() throws Exception {
+        when(userService.findById(anyLong())).thenReturn(Optional.of(USER_RESPONSE_DTO));
+
+        mockMvc
+                .perform(get("/users/{requestedId}", anyLong())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value(USER_RESPONSE_DTO.email()))
+                .andExpect(jsonPath("$.firstName").value(USER_RESPONSE_DTO.firstName()))
+                .andExpect(jsonPath("$.lastName").value(USER_RESPONSE_DTO.lastName()))
+                .andExpect(jsonPath("$.birthDate").value(USER_RESPONSE_DTO.birthDate()
+                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX"))))
+                .andExpect(jsonPath("$.biologicalSex").value(USER_RESPONSE_DTO.biologicalSex().toString()))
+                .andExpect(jsonPath("$.weight").value(USER_RESPONSE_DTO.weight()))
+                .andExpect(jsonPath("$.weightUnit").value(USER_RESPONSE_DTO.weightUnit().toString()))
+                .andExpect(jsonPath("$.height").value(USER_RESPONSE_DTO.height()))
+                .andExpect(jsonPath("$.heightUnit").value(USER_RESPONSE_DTO.heightUnit().toString()));
+    }
+
+    @Test
+    public void findUserById_WithInvalidData_ReturnsNotFound() throws Exception {
+        when(userService.findById(anyLong())).thenReturn(Optional.empty());
+
+        mockMvc
+                .perform(get("/users/{requestedId}", anyLong())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deleteUser_WithExistingId_ReturnsNoContent() throws Exception {
+        when(userService.existsById(anyLong())).thenReturn(true);
+
+        mockMvc
+                .perform(delete("/users/{requestedId}", anyLong())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void deleteUser_WithNonExistingId_ReturnsNotFound() throws Exception {
+        when(userService.existsById(anyLong())).thenReturn(false);
+
+        mockMvc
+                .perform(delete("/users/{requestedId}", anyLong())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deleteUser_WithInvalidId_ReturnsBadRequest() throws Exception {
+        mockMvc
+                .perform(delete("/users/{requestedId}", "invalid")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 }

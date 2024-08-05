@@ -73,7 +73,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void findUserById_WithInvalidData_ReturnsUser() {
+    public void findUserById_WithInvalidData_ReturnsEmpty() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         Optional<UserResponseDTO> sut = userService.findById(anyLong());
@@ -109,5 +109,23 @@ public class UserServiceTest {
 
         Optional<UserResponseDTO> sut = userService.update(anyLong(), USER);
         assertThat(sut).isEmpty();
+    }
+
+    @Test
+    public void existsById_WithExistingId_ReturnsTrue() {
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+
+        boolean result = userService.existsById(anyLong());
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void existsById_WithNonExistingId_ReturnsFalse() {
+        when(userRepository.existsById(anyLong())).thenReturn(false);
+
+        boolean result = userService.existsById(anyLong());
+
+        assertThat(result).isFalse();
     }
 }

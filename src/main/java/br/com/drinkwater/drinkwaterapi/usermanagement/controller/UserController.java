@@ -4,6 +4,7 @@ import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserCreateDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.dto.UserResponseDTO;
 import br.com.drinkwater.drinkwaterapi.usermanagement.model.User;
 import br.com.drinkwater.drinkwaterapi.usermanagement.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,11 @@ public class UserController {
 
     @DeleteMapping("/{requestedId}")
     public ResponseEntity<Void> delete(@PathVariable Long requestedId) {
+        boolean userExists = userService.existsById(requestedId);
+        if (!userExists) {
+            throw new EntityNotFoundException("User not found with ID: " + requestedId + ".");
+        }
+
         userService.deleteById(requestedId);
         return ResponseEntity.noContent().build();
     }

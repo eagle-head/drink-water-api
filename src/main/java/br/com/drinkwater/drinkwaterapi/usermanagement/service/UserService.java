@@ -55,4 +55,9 @@ public class UserService {
                     return mapper.convertToDTO(updatedUser);
                 });
     }
+
+    @Transactional(readOnly = true)
+    public boolean existsById(Long id) {
+        return userRepository.existsById(id);
+    }
 }

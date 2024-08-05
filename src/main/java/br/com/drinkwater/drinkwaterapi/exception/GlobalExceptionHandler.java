@@ -1,6 +1,8 @@
 package br.com.drinkwater.drinkwaterapi.exception;
 
 import br.com.drinkwater.drinkwaterapi.usermanagement.exception.EmailAlreadyUsedException;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
@@ -13,12 +15,14 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Objects;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -84,6 +88,36 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(exception, responseBody, new HttpHeaders(), status, request);
     }
 
+    @ExceptionHandler(EntityNotFoundException.class)
+    protected ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException exception, WebRequest request) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        String detail = exception.getMessage();
+        ProblemDetailResponseType type = ProblemDetailResponseType.ENTITY_NOT_FOUND;
+        ProblemDetailResponse responseBody = createProblemDetailResponseBuilder(status, type, detail)
+                .userMessage(detail)
+                .build();
+
+        return handleExceptionInternal(exception, responseBody, new HttpHeaders(), status, request);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex,
+                                                        HttpHeaders headers,
+                                                        HttpStatusCode statusCode,
+                                                        WebRequest request) {
+        HttpStatus status = HttpStatus.resolve(statusCode.value());
+        if (status == null) {
+            status = HttpStatus.BAD_REQUEST;
+        }
+
+        if (ex instanceof MethodArgumentTypeMismatchException) {
+            return handleMethodArgumentTypeMismatch(
+                    (MethodArgumentTypeMismatchException) ex, headers, status, request);
+        }
+
+        return super.handleTypeMismatch(ex, headers, status, request);
+    }
+
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex,
                                                              Object body,
@@ -122,5 +156,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .title(type.getTitle())
                 .detail(detail)
                 .timestamp(OffsetDateTime.now(ZoneOffset.UTC));
+    }
+
+    private ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex,
+                                                                    HttpHeaders headers,
+                                                                    HttpStatus status,
+                                                                    WebRequest request) {
+        ProblemDetailResponseType type = ProblemDetailResponseType.TYPE_MISMATCH;
+
+        String detail = String.format("The URL parameter '%s' received the value '%s', which is of an invalid type."
+                        + " Please correct and provide a value that is compatible with the type %s.",
+                ex.getName(), ex.getValue(), Objects.requireNonNull(ex.getRequiredType()).getSimpleName());
+
+        ProblemDetailResponse response = createProblemDetailResponseBuilder(status, type, detail)
+                .userMessage(UNEXPECTED_INTERNAL_ERROR)
+                .build();
+
+        return handleExceptionInternal(ex, response, headers, status, request);
     }
 }

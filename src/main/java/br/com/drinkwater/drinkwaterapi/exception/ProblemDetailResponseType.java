@@ -6,7 +6,9 @@ import lombok.Getter;
 public enum ProblemDetailResponseType {
 
     VALIDATION_ERROR("Validation error", "/validation-error"),
-    CONFLICT("Data conflict occurred.", "/data-conflict");
+    CONFLICT("Data conflict occurred.", "/data-conflict"),
+    ENTITY_NOT_FOUND("Entity not found.", "/entity-not-found"),
+    TYPE_MISMATCH("Type mismatch error", "/type-mismatch");
 
     private final String title;
     private final String uri;
