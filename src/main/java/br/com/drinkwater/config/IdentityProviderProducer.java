@@ -1,0 +1,29 @@
+package br.com.drinkwater.config;
+
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class IdentityProviderProducer {
+
+    @Bean
+    public Keycloak configKeycloak(
+        @Value("${keycloak.url}") String serverURL,
+        @Value("${keycloak.realm}") String realm,
+        @Value("${keycloak.clientid}") String clientId,
+        @Value("${keycloak.username}") String username,
+        @Value("${keycloak.password}") String password
+    ) {
+
+        return KeycloakBuilder.builder()
+            .serverUrl(serverURL)
+            .realm(realm)
+            .clientId(clientId)
+            .username(username)
+            .password(password)
+            .build();
+    }
+}

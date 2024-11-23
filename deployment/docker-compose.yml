@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: drink_water_db
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  postgres:
+    image: postgres:16-alpine
+    volumes:
+      - postgres_kc:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: security
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.5
+    command: start
+    environment:
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 8080
+      KC_HOSTNAME_STRICT_BACKCHANNEL: false
+      KC_HTTP_ENABLED: true
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HEALTH_ENABLED: true
+      KEYCLOAK_ADMIN: security
+      KEYCLOAK_ADMIN_PASSWORD: security
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres/security
+      KC_DB_USERNAME: admin
+      KC_DB_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    restart: always
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+  postgres_kc:

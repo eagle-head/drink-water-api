@@ -1,0 +1,39 @@
+server:
+  port: 8081
+  error:
+    include-stacktrace: never
+
+spring:
+  application:
+    name: drink-water-api
+  datasource:
+    url: jdbc:postgresql://localhost:5432/drink_water_db?options=-c%20TimeZone%3DUTC
+    driver-class-name: org.postgresql.Driver
+    password: password
+    username: username
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+    defer-datasource-initialization: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  sql:
+    init:
+      mode: always
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/drinkwater
+          jwk-set-uri: http://localhost:8080/realms/drinkwater/protocol/openid-connect/certs
+
+keycloak:
+  url: ${KEYCLOAK_URL}
+  realm: ${KEYCLOAK_REALM}
+  clientid: ${KEYCLOAK_CLIENT_ID}
+  username: ${KEYCLOAK_USERNAME}
+  password: ${KEYCLOAK_PASSWORD}
+
+logging:
+  level:
+    root: debug
