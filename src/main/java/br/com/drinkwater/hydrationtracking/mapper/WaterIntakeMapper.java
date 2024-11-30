@@ -1,13 +1,15 @@
 package br.com.drinkwater.hydrationtracking.mapper;
 
-import br.com.drinkwater.hydrationtracking.dto.WaterIntakeCreateDTO;
-import br.com.drinkwater.hydrationtracking.dto.WaterIntakeResponseDTO;
-import br.com.drinkwater.hydrationtracking.dto.WaterIntakeUpdateDTO;
+import br.com.drinkwater.hydrationtracking.dto.*;
 import br.com.drinkwater.hydrationtracking.model.WaterIntake;
 import br.com.drinkwater.usermanagement.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface WaterIntakeMapper {
@@ -25,4 +27,22 @@ public interface WaterIntakeMapper {
     void toEntity(WaterIntakeUpdateDTO dto, @MappingTarget WaterIntake entity);
 
     WaterIntakeResponseDTO toDto(WaterIntake waterIntake);
+
+    default PaginatedWaterIntakeResponseDTO toPaginatedDto(Page<WaterIntake> waterIntakePage) {
+        List<WaterIntakeResponseDTO> data = waterIntakePage.getContent()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+
+        PaginationDTO pagination = new PaginationDTO(
+                waterIntakePage.getNumber(),
+                waterIntakePage.getSize(),
+                waterIntakePage.getTotalElements(),
+                waterIntakePage.getTotalPages(),
+                waterIntakePage.isFirst(),
+                waterIntakePage.isLast()
+        );
+
+        return new PaginatedWaterIntakeResponseDTO(data, pagination);
+    }
 }

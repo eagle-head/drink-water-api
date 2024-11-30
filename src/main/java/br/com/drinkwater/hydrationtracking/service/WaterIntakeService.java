@@ -2,12 +2,17 @@ package br.com.drinkwater.hydrationtracking.service;
 
 import br.com.drinkwater.hydrationtracking.exception.DuplicateDateTimeException;
 import br.com.drinkwater.hydrationtracking.exception.WaterIntakeNotFoundException;
+import br.com.drinkwater.hydrationtracking.model.VolumeUnit;
 import br.com.drinkwater.hydrationtracking.model.WaterIntake;
 import br.com.drinkwater.hydrationtracking.repository.WaterIntakeRepository;
+import br.com.drinkwater.hydrationtracking.specification.WaterIntakeSpecifications;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.time.OffsetDateTime;
 
 @Service
 public class WaterIntakeService {
@@ -36,14 +41,25 @@ public class WaterIntakeService {
     @Transactional(readOnly = true)
     public WaterIntake findByIdAndUserId(Long requestedId, Long userId) {
         return this.waterIntakeRepository.findByIdAndUser_Id(requestedId, userId)
-            .orElseThrow(() -> new WaterIntakeNotFoundException("Water intake with ID " + requestedId
-                + " not found for the user."));
+                .orElseThrow(() -> new WaterIntakeNotFoundException("Water intake with ID " + requestedId
+                        + " not found for the user."));
     }
 
-    // TODO: apply pagination
     @Transactional(readOnly = true)
-    public List<WaterIntake> findAllByUserId(Long userId) {
-        return this.waterIntakeRepository.findAllByUser_Id(userId);
+    public Page<WaterIntake> findAllByUserIdWithFilters(Long userId,
+                                                        OffsetDateTime startDate,
+                                                        OffsetDateTime endDate,
+                                                        Integer minVolume,
+                                                        Integer maxVolume,
+                                                        VolumeUnit volumeUnit,
+                                                        Pageable pageable) {
+        Specification<WaterIntake> spec = Specification
+                .where(WaterIntakeSpecifications.userIdEqual(userId))
+                .and(WaterIntakeSpecifications.dateTimeBetween(startDate, endDate))
+                .and(WaterIntakeSpecifications.volumeBetween(minVolume, maxVolume))
+                .and(WaterIntakeSpecifications.volumeUnitEqual(volumeUnit));
+
+        return this.waterIntakeRepository.findAll(spec, pageable);
     }
 
     @Transactional

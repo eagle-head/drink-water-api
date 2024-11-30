@@ -1,18 +1,26 @@
 package br.com.drinkwater.hydrationtracking.controller;
 
+import br.com.drinkwater.hydrationtracking.dto.PaginatedWaterIntakeResponseDTO;
 import br.com.drinkwater.hydrationtracking.dto.WaterIntakeCreateDTO;
 import br.com.drinkwater.hydrationtracking.dto.WaterIntakeResponseDTO;
 import br.com.drinkwater.hydrationtracking.dto.WaterIntakeUpdateDTO;
 import br.com.drinkwater.hydrationtracking.mapper.WaterIntakeMapper;
+import br.com.drinkwater.hydrationtracking.model.VolumeUnit;
 import br.com.drinkwater.hydrationtracking.model.WaterIntake;
 import br.com.drinkwater.hydrationtracking.service.WaterIntakeService;
 import br.com.drinkwater.usermanagement.model.User;
 import br.com.drinkwater.usermanagement.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,17 +64,30 @@ public class WaterIntakeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<WaterIntakeResponseDTO>> findAll(JwtAuthenticationToken token) {
+    public ResponseEntity<PaginatedWaterIntakeResponseDTO> findAll(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime endDate,
+            @RequestParam(required = false) Integer minVolume,
+            @RequestParam(required = false) Integer maxVolume,
+            @RequestParam(required = false) VolumeUnit volumeUnit,
+            @RequestParam(defaultValue = "dateTimeUTC") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            JwtAuthenticationToken token) {
+
         var email = token.getToken().getClaimAsString("preferred_username");
         var user = this.userService.findByEmail(email);
 
-        List<WaterIntake> waterIntakes = this.waterIntakeService.findAllByUserId(user.getId());
-        List<WaterIntakeResponseDTO> responseDTOList = waterIntakes
-                .stream()
-                .map(this.waterIntakeMapper::toDto)
-                .collect(Collectors.toList());
+        Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
 
-        return ResponseEntity.ok(responseDTOList);
+        Page<WaterIntake> waterIntakePage = this.waterIntakeService.findAllByUserIdWithFilters(
+                user.getId(), startDate, endDate, minVolume, maxVolume, volumeUnit, pageRequest);
+
+        PaginatedWaterIntakeResponseDTO responseDTO = this.waterIntakeMapper.toPaginatedDto(waterIntakePage);
+
+        return ResponseEntity.ok(responseDTO);
     }
 
     @PutMapping("/{requestedId}")
