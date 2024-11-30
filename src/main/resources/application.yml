@@ -7,13 +7,13 @@ spring:
   application:
     name: drink-water-api
   datasource:
-    url: jdbc:postgresql://localhost:5432/drink_water_db?options=-c%20TimeZone%3DUTC
+    url: ${DATABASE_URL}
     driver-class-name: org.postgresql.Driver
-    password: password
-    username: username
+    password: ${DATABASE_PASSWORD}
+    username: ${DATABASE_USERNAME}
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: ${JPA_HIBERNATE_DDL_AUTO}
     open-in-view: false
     defer-datasource-initialization: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -24,8 +24,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080/realms/drinkwater
-          jwk-set-uri: http://localhost:8080/realms/drinkwater/protocol/openid-connect/certs
+          issuer-uri: ${KEYCLOAK_ISSUER_URI}
+          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI}
 
 keycloak:
   url: ${KEYCLOAK_URL}
@@ -36,4 +36,4 @@ keycloak:
 
 logging:
   level:
-    root: debug
+    root: ${LOGGING_LEVEL_ROOT:debug}

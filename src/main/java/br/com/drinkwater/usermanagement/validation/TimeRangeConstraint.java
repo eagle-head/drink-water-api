@@ -16,7 +16,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = TimeRangeValidator.class)
 public @interface TimeRangeConstraint {
 
-    String message() default "Validation error in time ranges";
+    String message() default "time.range.validation.error";
 
     Class<?>[] groups() default {};
 
