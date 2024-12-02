@@ -2,24 +2,16 @@ package br.com.drinkwater.hydrationtracking.controller;
 
 import br.com.drinkwater.hydrationtracking.dto.*;
 import br.com.drinkwater.hydrationtracking.mapper.WaterIntakeMapper;
-import br.com.drinkwater.hydrationtracking.model.VolumeUnit;
 import br.com.drinkwater.hydrationtracking.model.WaterIntake;
 import br.com.drinkwater.hydrationtracking.service.WaterIntakeService;
-import br.com.drinkwater.usermanagement.model.User;
 import br.com.drinkwater.usermanagement.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users/waterintakes")
