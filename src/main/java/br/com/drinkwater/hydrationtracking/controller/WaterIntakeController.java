@@ -1,9 +1,6 @@
 package br.com.drinkwater.hydrationtracking.controller;
 
-import br.com.drinkwater.hydrationtracking.dto.PaginatedWaterIntakeResponseDTO;
-import br.com.drinkwater.hydrationtracking.dto.WaterIntakeCreateDTO;
-import br.com.drinkwater.hydrationtracking.dto.WaterIntakeResponseDTO;
-import br.com.drinkwater.hydrationtracking.dto.WaterIntakeUpdateDTO;
+import br.com.drinkwater.hydrationtracking.dto.*;
 import br.com.drinkwater.hydrationtracking.mapper.WaterIntakeMapper;
 import br.com.drinkwater.hydrationtracking.model.VolumeUnit;
 import br.com.drinkwater.hydrationtracking.model.WaterIntake;
@@ -64,28 +61,28 @@ public class WaterIntakeController {
     }
 
     @GetMapping
-    public ResponseEntity<PaginatedWaterIntakeResponseDTO> findAll(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime endDate,
-            @RequestParam(required = false) Integer minVolume,
-            @RequestParam(required = false) Integer maxVolume,
-            @RequestParam(required = false) VolumeUnit volumeUnit,
-            @RequestParam(defaultValue = "dateTimeUTC") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            JwtAuthenticationToken token) {
+    public ResponseEntity<PaginatedWaterIntakeResponseDTO> findAll(@ModelAttribute @Valid WaterIntakeFilterDTO filterDTO,
+                                                                                    JwtAuthenticationToken token) {
 
         var email = token.getToken().getClaimAsString("preferred_username");
         var user = this.userService.findByEmail(email);
 
-        Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        Sort sort = filterDTO.direction().equalsIgnoreCase("asc")
+                ? Sort.by(filterDTO.sortBy()).ascending()
+                : Sort.by(filterDTO.sortBy()).descending();
+
+        PageRequest pageRequest = PageRequest.of(filterDTO.page(), filterDTO.size(), sort);
 
         Page<WaterIntake> waterIntakePage = this.waterIntakeService.findAllByUserIdWithFilters(
-                user.getId(), startDate, endDate, minVolume, maxVolume, volumeUnit, pageRequest);
+                user.getId(),
+                filterDTO.startDate(),
+                filterDTO.endDate(),
+                filterDTO.minVolume(),
+                filterDTO.maxVolume(),
+                filterDTO.volumeUnit(),
+                pageRequest);
 
-        PaginatedWaterIntakeResponseDTO responseDTO = this.waterIntakeMapper.toPaginatedDto(waterIntakePage);
+        var responseDTO = this.waterIntakeMapper.toPaginatedDto(waterIntakePage);
 
         return ResponseEntity.ok(responseDTO);
     }

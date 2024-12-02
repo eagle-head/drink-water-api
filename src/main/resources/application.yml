@@ -36,4 +36,4 @@ keycloak:
 
 logging:
   level:
-    root: ${LOGGING_LEVEL_ROOT:debug}
+    root: ${LOGGING_LEVEL_ROOT}
