@@ -30,7 +30,7 @@
 		<java.version>17</java.version>
 		<org.mapstruct.version>1.6.3</org.mapstruct.version>
 		<org.apache.maven.plugins.version>3.13.0</org.apache.maven.plugins.version>
-		<org.keycloak.version>26.0.2</org.keycloak.version>
+		<keycloak.admin.client.version>26.0.2</keycloak.admin.client.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -82,7 +82,7 @@
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-admin-client</artifactId>
-			<version>${org.keycloak.version}</version>
+			<version>${keycloak.admin.client.version}</version>
 		</dependency>
 	</dependencies>
 

@@ -6,18 +6,20 @@ import br.com.drinkwater.usermanagement.model.WeightUnit;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 public record UserResponseDTO(
-        
-         String email,
-         String firstName,
-         String lastName,
-         OffsetDateTime birthDate,
-         BiologicalSex biologicalSex,
-         BigDecimal weight,
-         WeightUnit weightUnit,
-         BigDecimal height,
-         HeightUnit heightUnit,
-         AlarmSettingsResponseDTO alarmSettings
+
+        UUID publicId,
+        String email,
+        String firstName,
+        String lastName,
+        OffsetDateTime birthDate,
+        BiologicalSex biologicalSex,
+        BigDecimal weight,
+        WeightUnit weightUnit,
+        BigDecimal height,
+        HeightUnit heightUnit,
+        AlarmSettingsResponseDTO alarmSettings
 ) {
 }

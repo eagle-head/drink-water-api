@@ -4,19 +4,12 @@ import br.com.drinkwater.usermanagement.model.BiologicalSex;
 import br.com.drinkwater.usermanagement.model.HeightUnit;
 import br.com.drinkwater.usermanagement.model.WeightUnit;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 public record UserUpdateDTO(
-
-        @Email
-        @NotBlank
-        String email,
 
         @NotBlank
         String firstName,
@@ -32,11 +25,13 @@ public record UserUpdateDTO(
         @Min(45)
         BigDecimal weight,
 
+        @NotNull
         WeightUnit weightUnit,
 
         @Min(100)
         BigDecimal height,
 
+        @NotNull
         HeightUnit heightUnit,
 
         @Valid

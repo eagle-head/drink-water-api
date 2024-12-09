@@ -1,0 +1,32 @@
+@startuml
+title User Registration with External IdP, PKCE, and Email Confirmation\n(Happy Path)
+
+actor User
+participant "Client\n(Front End)" as Client
+participant "Authorization Server" as AuthServer
+participant "Identity Provider\n(External)" as IdP
+
+User -> Client: Opens the application\nand chooses "Sign Up with IdP"
+Client -> Client: Generates code verifier and code challenge
+
+group PKCE Flow Begins
+Client -> AuthServer: Redirects user to AuthServer\nwith code challenge (PKCE)
+AuthServer -> IdP: Redirects user to IdP login page
+User -> IdP: Provides IdP credentials
+IdP -> AuthServer: Returns authorization result
+AuthServer --> Client: Returns authorization code
+group PKCE Flow Ends
+
+Client -> AuthServer: Sends authorization code + code verifier
+AuthServer -> AuthServer: Validates PKCE\nand exchanges code for tokens
+AuthServer --> Client: Returns JWT Token (ID, Access, Refresh)
+
+AuthServer -> User: Sends email verification
+User -> AuthServer: Clicks on verification link in email
+AuthServer -> AuthServer: Marks email as verified
+
+AuthServer --> Client: Redirects user back to the application
+
+User -> Client: User is now signed in via IdP\nand can access the App in free mode
+
+@enduml

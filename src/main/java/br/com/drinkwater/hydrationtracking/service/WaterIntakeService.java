@@ -9,6 +9,7 @@ import br.com.drinkwater.hydrationtracking.specification.WaterIntakeSpecificatio
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +24,9 @@ public class WaterIntakeService {
         this.waterIntakeRepository = waterIntakeRepository;
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_free:create')")
     @Transactional
-    public WaterIntake save(WaterIntake waterIntake) {
+    public WaterIntake create(WaterIntake waterIntake) {
         var exists = this.waterIntakeRepository.existsByDateTimeUTCAndUser_IdAndIdNot(
                 waterIntake.getDateTimeUTC(),
                 waterIntake.getUser().getId(),
@@ -38,6 +40,23 @@ public class WaterIntakeService {
         return this.waterIntakeRepository.save(waterIntake);
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_free:update')")
+    @Transactional
+    public WaterIntake update(WaterIntake waterIntake) {
+        var exists = this.waterIntakeRepository.existsByDateTimeUTCAndUser_IdAndIdNot(
+                waterIntake.getDateTimeUTC(),
+                waterIntake.getUser().getId(),
+                waterIntake.getId()
+        );
+
+        if (exists) {
+            throw new DuplicateDateTimeException();
+        }
+
+        return this.waterIntakeRepository.save(waterIntake);
+    }
+
+    @PreAuthorize("hasAuthority('SCOPE_free:read')")
     @Transactional(readOnly = true)
     public WaterIntake findByIdAndUserId(Long requestedId, Long userId) {
         return this.waterIntakeRepository.findByIdAndUser_Id(requestedId, userId)
@@ -45,6 +64,7 @@ public class WaterIntakeService {
                         + " not found for the user."));
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_free:read')")
     @Transactional(readOnly = true)
     public Page<WaterIntake> findAllByUserIdWithFilters(Long userId,
                                                         OffsetDateTime startDate,
@@ -62,6 +82,7 @@ public class WaterIntakeService {
         return this.waterIntakeRepository.findAll(spec, pageable);
     }
 
+    @PreAuthorize("hasAuthority('SCOPE_free:delete')")
     @Transactional
     public void deleteByIdAndUserId(Long id, Long userId) {
         this.waterIntakeRepository.deleteByIdAndUser_Id(id, userId);

@@ -6,18 +6,25 @@ import br.com.drinkwater.usermanagement.dto.UserUpdateDTO;
 import br.com.drinkwater.usermanagement.model.User;
 import org.mapstruct.*;
 
+import java.util.UUID;
+
 @Mapper(componentModel = "spring", uses = {AlarmSettingsMapper.class})
 public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "publicId", ignore = true)
+    @Mapping(target = "email", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "waterIntakes", ignore = true)
     @Mapping(target = "alarmSettings.user", ignore = true)
-    User toEntity(UserCreateDTO dto);
+    User toEntity(UserCreateDTO dto, @Context UUID publicId, @Context String email);
 
     @AfterMapping
-    default void setAlarmSettingsUser(@MappingTarget User user) {
+    default void setAdditionalFields(@MappingTarget User user, @Context UUID publicId, @Context String email) {
+        user.setPublicId(publicId);
+        user.setEmail(email);
+
         if (user.getAlarmSettings() != null) {
             user.getAlarmSettings().setUser(user);
         }
@@ -28,9 +35,12 @@ public interface UserMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "publicId", ignore = true)
+    @Mapping(target = "email", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "waterIntakes", ignore = true)
     @Mapping(target = "alarmSettings.user", ignore = true)
-    void toEntity(UserUpdateDTO dto, @MappingTarget User entity);
+    void toEntity(UserUpdateDTO dto, @MappingTarget User entity, @Context UUID publicId, @Context String email);
 }
+

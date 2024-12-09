@@ -11,13 +11,6 @@ import java.time.OffsetDateTime;
 
 public record UserCreateDTO(
 
-        @Email
-        @NotBlank
-        String email,
-
-        @NotBlank
-        String password,
-
         @NotBlank
         String firstName,
 

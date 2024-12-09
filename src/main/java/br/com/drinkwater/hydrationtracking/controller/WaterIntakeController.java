@@ -2,16 +2,16 @@ package br.com.drinkwater.hydrationtracking.controller;
 
 import br.com.drinkwater.hydrationtracking.dto.*;
 import br.com.drinkwater.hydrationtracking.mapper.WaterIntakeMapper;
-import br.com.drinkwater.hydrationtracking.model.WaterIntake;
 import br.com.drinkwater.hydrationtracking.service.WaterIntakeService;
 import br.com.drinkwater.usermanagement.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users/waterintakes")
@@ -31,11 +31,10 @@ public class WaterIntakeController {
     @PostMapping
     public ResponseEntity<WaterIntakeResponseDTO> create(@Valid @RequestBody WaterIntakeCreateDTO dto,
                                                          JwtAuthenticationToken token) {
-        var email = token.getToken().getClaimAsString("preferred_username");
-        var user = this.userService.findByEmail(email);
-
+        var publicId = UUID.fromString(token.getToken().getSubject());
+        var user = this.userService.findByPublicId(publicId);
         var waterIntake = this.waterIntakeMapper.toEntity(dto, user);
-        var savedWaterIntake = this.waterIntakeService.save(waterIntake);
+        var savedWaterIntake = this.waterIntakeService.create(waterIntake);
         var responseDTO = this.waterIntakeMapper.toDto(savedWaterIntake);
 
         return ResponseEntity.ok(responseDTO);
@@ -44,8 +43,8 @@ public class WaterIntakeController {
     @GetMapping("/{requestedId}")
     public ResponseEntity<WaterIntakeResponseDTO> findById(@PathVariable Long requestedId,
                                                            JwtAuthenticationToken token) {
-        var email = token.getToken().getClaimAsString("preferred_username");
-        var user = this.userService.findByEmail(email);
+        var publicId = UUID.fromString(token.getToken().getSubject());
+        var user = this.userService.findByPublicId(publicId);
         var waterIntake = this.waterIntakeService.findByIdAndUserId(requestedId, user.getId());
         var responseDTO = this.waterIntakeMapper.toDto(waterIntake);
 
@@ -54,18 +53,14 @@ public class WaterIntakeController {
 
     @GetMapping
     public ResponseEntity<PaginatedWaterIntakeResponseDTO> findAll(@ModelAttribute @Valid WaterIntakeFilterDTO filterDTO,
-                                                                                    JwtAuthenticationToken token) {
-
-        var email = token.getToken().getClaimAsString("preferred_username");
-        var user = this.userService.findByEmail(email);
-
-        Sort sort = filterDTO.direction().equalsIgnoreCase("asc")
+                                                                   JwtAuthenticationToken token) {
+        var publicId = UUID.fromString(token.getToken().getSubject());
+        var user = this.userService.findByPublicId(publicId);
+        var sort = filterDTO.direction().equalsIgnoreCase("asc")
                 ? Sort.by(filterDTO.sortBy()).ascending()
                 : Sort.by(filterDTO.sortBy()).descending();
-
-        PageRequest pageRequest = PageRequest.of(filterDTO.page(), filterDTO.size(), sort);
-
-        Page<WaterIntake> waterIntakePage = this.waterIntakeService.findAllByUserIdWithFilters(
+        var pageRequest = PageRequest.of(filterDTO.page(), filterDTO.size(), sort);
+        var waterIntakePage = this.waterIntakeService.findAllByUserIdWithFilters(
                 user.getId(),
                 filterDTO.startDate(),
                 filterDTO.endDate(),
@@ -73,7 +68,6 @@ public class WaterIntakeController {
                 filterDTO.maxVolume(),
                 filterDTO.volumeUnit(),
                 pageRequest);
-
         var responseDTO = this.waterIntakeMapper.toPaginatedDto(waterIntakePage);
 
         return ResponseEntity.ok(responseDTO);
@@ -83,12 +77,11 @@ public class WaterIntakeController {
     public ResponseEntity<WaterIntakeResponseDTO> updateById(@PathVariable Long requestedId,
                                                              @Valid @RequestBody WaterIntakeUpdateDTO updateDTO,
                                                              JwtAuthenticationToken token) {
-        var email = token.getToken().getClaimAsString("preferred_username");
-        var user = this.userService.findByEmail(email);
-
+        var publicId = UUID.fromString(token.getToken().getSubject());
+        var user = this.userService.findByPublicId(publicId);
         var waterIntake = this.waterIntakeService.findByIdAndUserId(requestedId, user.getId());
         this.waterIntakeMapper.toEntity(updateDTO, waterIntake);
-        var updatedWaterIntake = this.waterIntakeService.save(waterIntake);
+        var updatedWaterIntake = this.waterIntakeService.update(waterIntake);
         var responseDTO = this.waterIntakeMapper.toDto(updatedWaterIntake);
 
         return ResponseEntity.ok(responseDTO);
@@ -96,9 +89,8 @@ public class WaterIntakeController {
 
     @DeleteMapping("/{requestedId}")
     public ResponseEntity<Void> deleteById(@PathVariable Long requestedId, JwtAuthenticationToken token) {
-        var email = token.getToken().getClaimAsString("preferred_username");
-        var user = this.userService.findByEmail(email);
-
+        var publicId = UUID.fromString(token.getToken().getSubject());
+        var user = this.userService.findByPublicId(publicId);
         this.waterIntakeService.deleteByIdAndUserId(requestedId, user.getId());
 
         return ResponseEntity.noContent().build();

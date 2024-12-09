@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -22,29 +24,40 @@ public class UserController {
         this.userMapper = userMapper;
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getCurrentUser(JwtAuthenticationToken token) {
+        var publicId = UUID.fromString(token.getToken().getSubject());
+        var user = this.userService.findByPublicId(publicId);
+        var responseDTO = this.userMapper.toDTO(user);
+
+        return ResponseEntity.ok(responseDTO);
+    }
+
     @PostMapping
-    public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserCreateDTO createDTO) {
-        var user = this.userMapper.toEntity(createDTO);
-        var createdUser = this.userService.create(user, createDTO.password());
+    public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserCreateDTO createDTO, JwtAuthenticationToken token) {
+        var publicId = UUID.fromString(token.getToken().getSubject());
+        var email = token.getToken().getClaimAsString("email");
+        var user = this.userMapper.toEntity(createDTO, publicId, email);
+        var createdUser = this.userService.create(user);
         var responseDTO = this.userMapper.toDTO(createdUser);
 
         return ResponseEntity.ok(responseDTO);
     }
 
     @GetMapping
-    public ResponseEntity<UserResponseDTO> findByEmail(JwtAuthenticationToken token) {
-        var email = token.getToken().getClaimAsString("preferred_username");
-        var user = this.userService.findByEmail(email);
+    public ResponseEntity<UserResponseDTO> findUser(JwtAuthenticationToken token) {
+        var publicId = UUID.fromString(token.getToken().getSubject());
+        var user = this.userService.findByPublicId(publicId);
         var responseDTO = this.userMapper.toDTO(user);
 
         return ResponseEntity.ok(responseDTO);
     }
 
     @PutMapping
-    public ResponseEntity<UserResponseDTO> update(@Valid @RequestBody UserUpdateDTO userUpdateDTO,
-                                                  JwtAuthenticationToken token) {
-        var email = token.getToken().getClaimAsString("preferred_username");
-        var updatedUser = this.userService.update(email, userUpdateDTO);
+    public ResponseEntity<UserResponseDTO> update(@Valid @RequestBody UserUpdateDTO userUpdateDTO, JwtAuthenticationToken token) {
+        var publicId = UUID.fromString(token.getToken().getSubject());
+        var email = token.getToken().getClaimAsString("email");
+        var updatedUser = this.userService.update(publicId, userUpdateDTO, email);
         var responseDTO = this.userMapper.toDTO(updatedUser);
 
         return ResponseEntity.ok(responseDTO);
@@ -52,8 +65,9 @@ public class UserController {
 
     @DeleteMapping
     public ResponseEntity<Void> delete(JwtAuthenticationToken token) {
-        var email = token.getToken().getClaimAsString("preferred_username");
-        this.userService.delete(email);
+        var publicId = UUID.fromString(token.getToken().getSubject());
+        this.userService.delete(publicId);
+
         return ResponseEntity.noContent().build();
     }
 }

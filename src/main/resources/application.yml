@@ -37,3 +37,8 @@ keycloak:
 logging:
   level:
     root: ${LOGGING_LEVEL_ROOT}
+    org.springframework.security: DEBUG
+    org.springframework.security.web.FilterChainProxy: TRACE
+    org.springframework.security.oauth2.server.resource: DEBUG
+    org.springframework.security.authentication: DEBUG
+    org.springframework.security.access: DEBUG
