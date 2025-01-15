@@ -11,19 +11,21 @@ public class IdentityProviderProducer {
 
     @Bean
     public Keycloak configKeycloak(
-        @Value("${keycloak.url}") String serverURL,
-        @Value("${keycloak.realm}") String realm,
-        @Value("${keycloak.clientid}") String clientId,
-        @Value("${keycloak.username}") String username,
-        @Value("${keycloak.password}") String password
+            @Value("${keycloak.url}") String serverURL,
+            @Value("${keycloak.realm}") String realm,
+            @Value("${keycloak.clientId}") String clientId,
+            @Value("${keycloak.username}") String username,
+            @Value("${keycloak.password}") String password,
+            @Value("${keycloak.clientSecret}") String clientSecret
     ) {
 
         return KeycloakBuilder.builder()
-            .serverUrl(serverURL)
-            .realm(realm)
-            .clientId(clientId)
-            .username(username)
-            .password(password)
-            .build();
+                .serverUrl(serverURL)
+                .clientSecret(clientSecret)
+                .realm(realm)
+                .clientId(clientId)
+                .username(username)
+                .password(password)
+                .build();
     }
 }

@@ -33,6 +33,7 @@ keycloak:
   clientid: ${KEYCLOAK_CLIENT_ID}
   username: ${KEYCLOAK_USERNAME}
   password: ${KEYCLOAK_PASSWORD}
+  clientSecret: ${KEYCLOAK_CLIENT_SECRET}
 
 logging:
   level:
