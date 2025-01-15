@@ -1,14 +1,11 @@
 package br.com.drinkwater.usermanagement.model;
 
-import br.com.drinkwater.hydrationtracking.model.WaterIntake;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -25,39 +22,14 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
+    @Embedded
+    private PersonalData personalData;
 
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
-
-    @Column(name = "birth_date", nullable = false)
-    private OffsetDateTime birthDate;
-
-    @Convert(converter = BiologicalSexConverter.class)
-    @Column(name = "biological_sex", nullable = false)
-    private BiologicalSex biologicalSex;
-
-    @Column(nullable = false)
-    private BigDecimal weight;
-
-    @Convert(converter = WeightUnitConverter.class)
-    @Column(name = "weight_unit", nullable = false)
-    private WeightUnit weightUnit;
-
-    @Column(nullable = false)
-    private BigDecimal height;
-
-    @Convert(converter = HeightUnitConverter.class)
-    @Column(name = "height_unit", nullable = false)
-    private HeightUnit heightUnit;
+    @Embedded
+    private PhysicalData physicalData;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private AlarmSettings alarmSettings;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<WaterIntake> waterIntakes;
 
     @JsonIgnore
     @CreationTimestamp
@@ -93,68 +65,20 @@ public class User {
         this.email = email;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public PersonalData getPersonalData() {
+        return personalData;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setPersonalData(PersonalData personalData) {
+        this.personalData = personalData;
     }
 
-    public String getLastName() {
-        return lastName;
+    public PhysicalData getPhysicalData() {
+        return physicalData;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public OffsetDateTime getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(OffsetDateTime birthDate) {
-        this.birthDate = birthDate;
-    }
-
-    public BiologicalSex getBiologicalSex() {
-        return biologicalSex;
-    }
-
-    public void setBiologicalSex(BiologicalSex biologicalSex) {
-        this.biologicalSex = biologicalSex;
-    }
-
-    public BigDecimal getWeight() {
-        return weight;
-    }
-
-    public void setWeight(BigDecimal weight) {
-        this.weight = weight;
-    }
-
-    public WeightUnit getWeightUnit() {
-        return weightUnit;
-    }
-
-    public void setWeightUnit(WeightUnit weightUnit) {
-        this.weightUnit = weightUnit;
-    }
-
-    public BigDecimal getHeight() {
-        return height;
-    }
-
-    public void setHeight(BigDecimal height) {
-        this.height = height;
-    }
-
-    public HeightUnit getHeightUnit() {
-        return heightUnit;
-    }
-
-    public void setHeightUnit(HeightUnit heightUnit) {
-        this.heightUnit = heightUnit;
+    public void setPhysicalData(PhysicalData physicalData) {
+        this.physicalData = physicalData;
     }
 
     public AlarmSettings getAlarmSettings() {
@@ -163,14 +87,6 @@ public class User {
 
     public void setAlarmSettings(AlarmSettings alarmSettings) {
         this.alarmSettings = alarmSettings;
-    }
-
-    public List<WaterIntake> getWaterIntakes() {
-        return waterIntakes;
-    }
-
-    public void setWaterIntakes(List<WaterIntake> waterIntakes) {
-        this.waterIntakes = waterIntakes;
     }
 
     public OffsetDateTime getCreatedAt() {
