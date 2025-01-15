@@ -30,7 +30,7 @@ spring:
 keycloak:
   url: ${KEYCLOAK_URL}
   realm: ${KEYCLOAK_REALM}
-  clientid: ${KEYCLOAK_CLIENT_ID}
+  clientId: ${KEYCLOAK_CLIENT_ID}
   username: ${KEYCLOAK_USERNAME}
   password: ${KEYCLOAK_PASSWORD}
   clientSecret: ${KEYCLOAK_CLIENT_SECRET}

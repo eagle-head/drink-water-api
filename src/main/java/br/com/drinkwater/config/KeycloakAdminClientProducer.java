@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class IdentityProviderProducer {
+public class KeycloakAdminClientProducer {
 
     @Bean
     public Keycloak configKeycloak(
