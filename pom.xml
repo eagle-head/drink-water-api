@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.6</version>
+		<version>3.4.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>br.com.drinkwater</groupId>
@@ -30,7 +30,7 @@
 		<java.version>17</java.version>
 		<org.mapstruct.version>1.6.3</org.mapstruct.version>
 		<org.apache.maven.plugins.version>3.13.0</org.apache.maven.plugins.version>
-		<keycloak.admin.client.version>26.0.2</keycloak.admin.client.version>
+		<keycloak.admin.client.version>26.0.3</keycloak.admin.client.version>
 	</properties>
 	<dependencies>
 		<dependency>
