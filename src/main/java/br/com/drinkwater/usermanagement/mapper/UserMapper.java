@@ -1,46 +1,72 @@
 package br.com.drinkwater.usermanagement.mapper;
 
-import br.com.drinkwater.usermanagement.dto.UserCreateDTO;
-import br.com.drinkwater.usermanagement.dto.UserResponseDTO;
-import br.com.drinkwater.usermanagement.dto.UserUpdateDTO;
-import br.com.drinkwater.usermanagement.model.User;
-import org.mapstruct.*;
+import br.com.drinkwater.usermanagement.dto.*;
+import br.com.drinkwater.usermanagement.model.*;
+import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
-@Mapper(componentModel = "spring", uses = {AlarmSettingsMapper.class})
-public interface UserMapper {
+@Component
+public class UserMapper {
+    private final PersonalMapper personalMapper;
+    private final PhysicalMapper physicalMapper;
+    private final AlarmSettingsMapper alarmSettingsMapper;
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "publicId", ignore = true)
-    @Mapping(target = "email", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "waterIntakes", ignore = true)
-    @Mapping(target = "alarmSettings.user", ignore = true)
-    User toEntity(UserCreateDTO dto, @Context UUID publicId, @Context String email);
-
-    @AfterMapping
-    default void setAdditionalFields(@MappingTarget User user, @Context UUID publicId, @Context String email) {
-        user.setPublicId(publicId);
-        user.setEmail(email);
-
-        if (user.getAlarmSettings() != null) {
-            user.getAlarmSettings().setUser(user);
-        }
+    public UserMapper(PersonalMapper personalMapper, PhysicalMapper physicalMapper,
+                      AlarmSettingsMapper alarmSettingsMapper) {
+        this.personalMapper = personalMapper;
+        this.physicalMapper = physicalMapper;
+        this.alarmSettingsMapper = alarmSettingsMapper;
     }
 
-    @Mapping(target = "alarmSettings", source = "alarmSettings")
-    UserResponseDTO toDTO(User user);
+    public User toEntity(UserDTO dto) {
+        if (dto == null) {
+            return null;
+        }
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "publicId", ignore = true)
-    @Mapping(target = "email", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "waterIntakes", ignore = true)
-    @Mapping(target = "alarmSettings.user", ignore = true)
-    void toEntity(UserUpdateDTO dto, @MappingTarget User entity, @Context UUID publicId, @Context String email);
+        User user = new User();
+        user.setPublicId(UUID.randomUUID());
+        this.updateUserFromDTO(user, dto);
+
+        return user;
+    }
+
+    public ResponseUserDTO toDto(User entity) {
+        if (entity == null) {
+            return null;
+        }
+
+        return new ResponseUserDTO(
+                entity.getPublicId(),
+                entity.getEmail(),
+                personalMapper.toDto(entity.getPersonal()),
+                physicalMapper.toDto(entity.getPhysical()),
+                alarmSettingsMapper.toDto(entity.getSettings())
+        );
+    }
+
+    public void updateUserFromDTO(User user, UserDTO userDTO) {
+        if (user == null || userDTO == null) {
+            return;
+        }
+
+        // TODO: A webhook/listener needs to be implemented in Keycloak to sync with the Resource Server
+//        user.setEmail(userDTO.email());
+
+        Personal personal = personalMapper.toEntity(userDTO.personal());
+        user.setPersonal(personal);
+
+        Physical physical = physicalMapper.toEntity(userDTO.physical());
+        user.setPhysical(physical);
+
+        AlarmSettings alarmSettings = alarmSettingsMapper.toEntity(userDTO.settings());
+        if (alarmSettings != null) {
+            if (user.getSettings() != null) {
+                alarmSettings.setId(user.getSettings().getId());
+            }
+
+            alarmSettings.setUser(user);
+            user.setSettings(alarmSettings);
+        }
+    }
 }
-

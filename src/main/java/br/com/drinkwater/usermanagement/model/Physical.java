@@ -7,7 +7,7 @@ import jakarta.persistence.Embeddable;
 import java.math.BigDecimal;
 
 @Embeddable
-public class PhysicalData {
+public class Physical {
 
     @Column(nullable = false)
     private BigDecimal weight;

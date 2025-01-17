@@ -14,14 +14,17 @@ public class AlarmSettings {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "goal", nullable = false)
+    private int goal;
+
     @Column(name = "interval_minutes", nullable = false)
     private int intervalMinutes;
 
-    @Column(name = "start_time", nullable = false)
-    private OffsetDateTime startTime;
+    @Column(name = "daily_start_time", nullable = false)
+    private OffsetDateTime dailyStartTime;
 
-    @Column(name = "end_time", nullable = false)
-    private OffsetDateTime endTime;
+    @Column(name = "daily_end_time", nullable = false)
+    private OffsetDateTime dailyEndTime;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
@@ -46,6 +49,14 @@ public class AlarmSettings {
         this.id = id;
     }
 
+    public int getGoal() {
+        return goal;
+    }
+
+    public void setGoal(int goal) {
+        this.goal = goal;
+    }
+
     public int getIntervalMinutes() {
         return intervalMinutes;
     }
@@ -54,20 +65,20 @@ public class AlarmSettings {
         this.intervalMinutes = intervalMinutes;
     }
 
-    public OffsetDateTime getStartTime() {
-        return startTime;
+    public OffsetDateTime getDailyStartTime() {
+        return dailyStartTime;
     }
 
-    public void setStartTime(OffsetDateTime startTime) {
-        this.startTime = startTime;
+    public void setDailyStartTime(OffsetDateTime dailyStartTime) {
+        this.dailyStartTime = dailyStartTime;
     }
 
-    public OffsetDateTime getEndTime() {
-        return endTime;
+    public OffsetDateTime getDailyEndTime() {
+        return dailyEndTime;
     }
 
-    public void setEndTime(OffsetDateTime endTime) {
-        this.endTime = endTime;
+    public void setDailyEndTime(OffsetDateTime dailyEndTime) {
+        this.dailyEndTime = dailyEndTime;
     }
 
     public User getUser() {

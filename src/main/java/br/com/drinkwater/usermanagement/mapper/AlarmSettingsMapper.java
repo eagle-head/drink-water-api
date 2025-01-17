@@ -3,23 +3,35 @@ package br.com.drinkwater.usermanagement.mapper;
 import br.com.drinkwater.usermanagement.dto.AlarmSettingsDTO;
 import br.com.drinkwater.usermanagement.dto.AlarmSettingsResponseDTO;
 import br.com.drinkwater.usermanagement.model.AlarmSettings;
-import org.mapstruct.*;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring")
-public interface AlarmSettingsMapper {
+@Component
+public class AlarmSettingsMapper {
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "user", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    AlarmSettings toEntity(AlarmSettingsDTO dto);
+    public AlarmSettings toEntity(AlarmSettingsDTO dto) {
+        if (dto == null) {
+            return null;
+        }
 
-    AlarmSettingsResponseDTO toDTO(AlarmSettings alarmSettings);
+        AlarmSettings alarmSettings = new AlarmSettings();
+        alarmSettings.setGoal(dto.goal());
+        alarmSettings.setIntervalMinutes(dto.intervalMinutes());
+        alarmSettings.setDailyStartTime(dto.dailyStartTime());
+        alarmSettings.setDailyEndTime(dto.dailyEndTime());
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "user", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    void toEntity(AlarmSettingsDTO dto, @MappingTarget AlarmSettings entity);
+        return alarmSettings;
+    }
+
+    public AlarmSettingsResponseDTO toDto(AlarmSettings entity) {
+        if (entity == null) {
+            return null;
+        }
+
+        return new AlarmSettingsResponseDTO(
+                entity.getGoal(),
+                entity.getIntervalMinutes(),
+                entity.getDailyStartTime(),
+                entity.getDailyEndTime()
+        );
+    }
 }

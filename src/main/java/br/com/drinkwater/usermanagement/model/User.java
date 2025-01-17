@@ -1,11 +1,14 @@
 package br.com.drinkwater.usermanagement.model;
 
+import br.com.drinkwater.hydrationtracking.model.WaterIntake;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -23,13 +26,17 @@ public class User {
     private String email;
 
     @Embedded
-    private PersonalData personalData;
+    private Personal personal;
 
     @Embedded
-    private PhysicalData physicalData;
+    private Physical physical;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private AlarmSettings alarmSettings;
+    private AlarmSettings settings;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<WaterIntake> waterIntakes = new HashSet<>();
 
     @JsonIgnore
     @CreationTimestamp
@@ -65,28 +72,36 @@ public class User {
         this.email = email;
     }
 
-    public PersonalData getPersonalData() {
-        return personalData;
+    public Personal getPersonal() {
+        return personal;
     }
 
-    public void setPersonalData(PersonalData personalData) {
-        this.personalData = personalData;
+    public void setPersonal(Personal personal) {
+        this.personal = personal;
     }
 
-    public PhysicalData getPhysicalData() {
-        return physicalData;
+    public Physical getPhysical() {
+        return physical;
     }
 
-    public void setPhysicalData(PhysicalData physicalData) {
-        this.physicalData = physicalData;
+    public void setPhysical(Physical physical) {
+        this.physical = physical;
     }
 
-    public AlarmSettings getAlarmSettings() {
-        return alarmSettings;
+    public AlarmSettings getSettings() {
+        return settings;
     }
 
-    public void setAlarmSettings(AlarmSettings alarmSettings) {
-        this.alarmSettings = alarmSettings;
+    public void setSettings(AlarmSettings settings) {
+        this.settings = settings;
+    }
+
+    public Set<WaterIntake> getWaterIntakes() {
+        return waterIntakes;
+    }
+
+    public void setWaterIntakes(Set<WaterIntake> waterIntakes) {
+        this.waterIntakes = waterIntakes;
     }
 
     public OffsetDateTime getCreatedAt() {

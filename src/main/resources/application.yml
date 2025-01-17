@@ -35,6 +35,9 @@ keycloak:
   password: ${KEYCLOAK_PASSWORD}
   clientSecret: ${KEYCLOAK_CLIENT_SECRET}
 
+cors:
+  allowed-origin: ${BASE_URL}
+
 logging:
   level:
     root: ${LOGGING_LEVEL_ROOT}

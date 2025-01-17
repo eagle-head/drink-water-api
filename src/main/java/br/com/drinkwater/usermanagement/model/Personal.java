@@ -7,7 +7,7 @@ import jakarta.persistence.Embeddable;
 import java.time.OffsetDateTime;
 
 @Embeddable
-public class PersonalData {
+public class Personal {
 
     @Column(name = "first_name", nullable = false)
     private String firstName;

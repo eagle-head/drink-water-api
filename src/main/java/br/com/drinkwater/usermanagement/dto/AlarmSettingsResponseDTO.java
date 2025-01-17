@@ -4,8 +4,9 @@ import java.time.OffsetDateTime;
 
 public record AlarmSettingsResponseDTO(
 
+        int goal,
         int intervalMinutes,
-        OffsetDateTime startTime,
-        OffsetDateTime endTime
+        OffsetDateTime dailyStartTime,
+        OffsetDateTime dailyEndTime
 ) {
 }
