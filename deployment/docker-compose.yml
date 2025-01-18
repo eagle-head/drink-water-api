@@ -19,7 +19,7 @@ services:
       POSTGRES_PASSWORD: admin
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.0.5
+    image: quay.io/keycloak/keycloak:26.0.7
     command: start
     environment:
       KC_HOSTNAME: localhost
@@ -28,8 +28,8 @@ services:
       KC_HTTP_ENABLED: true
       KC_HOSTNAME_STRICT_HTTPS: false
       KC_HEALTH_ENABLED: true
-      KEYCLOAK_ADMIN: security
-      KEYCLOAK_ADMIN_PASSWORD: security
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: password
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres/security
       KC_DB_USERNAME: admin
@@ -39,6 +39,7 @@ services:
     restart: always
     depends_on:
       - postgres
+
 #  drinkwater:
 #    image: eduardokohn/drinkwaterapi
 #    environment:

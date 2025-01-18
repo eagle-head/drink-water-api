@@ -15,5 +15,5 @@ public interface WaterIntakeRepository extends JpaRepository<WaterIntake, Long>,
 
     void deleteByIdAndUser_Id(Long id, Long userId);
 
-    boolean existsByDateTimeUTCAndUser_IdAndIdNot(OffsetDateTime dateTimeUTC, Long userId, Long id);
+    boolean existsByDateTimeUTCAndUser_IdAndIdIsNot(OffsetDateTime dateTimeUTC, Long userId, Long id);
 }

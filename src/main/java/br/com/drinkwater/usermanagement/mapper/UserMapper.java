@@ -8,6 +8,7 @@ import java.util.UUID;
 
 @Component
 public class UserMapper {
+
     private final PersonalMapper personalMapper;
     private final PhysicalMapper physicalMapper;
     private final AlarmSettingsMapper alarmSettingsMapper;
