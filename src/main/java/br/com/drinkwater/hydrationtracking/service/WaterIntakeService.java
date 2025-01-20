@@ -2,12 +2,18 @@ package br.com.drinkwater.hydrationtracking.service;
 
 import br.com.drinkwater.hydrationtracking.dto.ResponseWaterIntakeDTO;
 import br.com.drinkwater.hydrationtracking.dto.WaterIntakeDTO;
+import br.com.drinkwater.hydrationtracking.dto.WaterIntakeFilterDTO;
 import br.com.drinkwater.hydrationtracking.exception.DuplicateDateTimeException;
 import br.com.drinkwater.hydrationtracking.exception.WaterIntakeNotFoundException;
 import br.com.drinkwater.hydrationtracking.mapper.WaterIntakeMapper;
 import br.com.drinkwater.hydrationtracking.model.WaterIntake;
 import br.com.drinkwater.hydrationtracking.repository.WaterIntakeRepository;
+import br.com.drinkwater.hydrationtracking.specification.WaterIntakeSpecification;
+import br.com.drinkwater.hydrationtracking.validation.WaterIntakeFilterValidator;
 import br.com.drinkwater.usermanagement.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,10 +22,13 @@ public class WaterIntakeService {
 
     private final WaterIntakeRepository waterIntakeRepository;
     private final WaterIntakeMapper waterIntakeMapper;
+    private final WaterIntakeFilterValidator filterValidator;
 
-    public WaterIntakeService(WaterIntakeRepository waterIntakeRepository, WaterIntakeMapper waterIntakeMapper) {
+    public WaterIntakeService(WaterIntakeRepository waterIntakeRepository, WaterIntakeMapper waterIntakeMapper
+            , WaterIntakeFilterValidator filterValidator) {
         this.waterIntakeRepository = waterIntakeRepository;
         this.waterIntakeMapper = waterIntakeMapper;
+        this.filterValidator = filterValidator;
     }
 
     @Transactional
@@ -65,20 +74,20 @@ public class WaterIntakeService {
         }
     }
 
-//    @Transactional(readOnly = true)
-//    public Page<WaterIntake> findAllByUserIdWithFilters(Long userId,
-//                                                        OffsetDateTime startDate,
-//                                                        OffsetDateTime endDate,
-//                                                        Integer minVolume,
-//                                                        Integer maxVolume,
-//                                                        VolumeUnit volumeUnit,
-//                                                        Pageable pageable) {
-//        Specification<WaterIntake> spec = Specification
-//                .where(WaterIntakeSpecifications.userIdEqual(userId))
-//                .and(WaterIntakeSpecifications.dateTimeBetween(startDate, endDate))
-//                .and(WaterIntakeSpecifications.volumeBetween(minVolume, maxVolume))
-//                .and(WaterIntakeSpecifications.volumeUnitEqual(volumeUnit));
-//
-//        return this.waterIntakeRepository.findAll(spec, pageable);
-//    }
+    @Transactional(readOnly = true)
+    public Page<ResponseWaterIntakeDTO> search(WaterIntakeFilterDTO filter, User user) {
+        this.filterValidator.validate(filter);
+
+        var pageable = PageRequest.of(
+                filter.page(),
+                filter.size(),
+                Sort.Direction.valueOf(filter.sortDirection()),
+                filter.sortField()
+        );
+
+        var specification = WaterIntakeSpecification.withFilters(filter, user.getId());
+        return this.waterIntakeRepository
+                .findAll(specification, pageable)
+                .map(waterIntakeMapper::toResponseDTO);
+    }
 }

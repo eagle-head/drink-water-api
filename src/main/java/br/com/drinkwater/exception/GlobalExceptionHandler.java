@@ -1,6 +1,7 @@
 package br.com.drinkwater.exception;
 
 import br.com.drinkwater.hydrationtracking.exception.DuplicateDateTimeException;
+import br.com.drinkwater.hydrationtracking.exception.InvalidFilterException;
 import br.com.drinkwater.hydrationtracking.exception.WaterIntakeNotFoundException;
 import br.com.drinkwater.usermanagement.exception.EmailAlreadyUsedException;
 import br.com.drinkwater.usermanagement.exception.UserNotFoundException;
@@ -33,6 +34,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     public GlobalExceptionHandler(MessageSource messageSource) {
         this.messageSource = messageSource;
+    }
+
+    @ExceptionHandler(InvalidFilterException.class)
+    public ResponseEntity<Object> handleInvalidFilterException(InvalidFilterException ex, WebRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        String title = status.getReasonPhrase();
+        String detail = this.messageSource.getMessage("invalid.filter.detail", null, LocaleContextHolder.getLocale());
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
+        problemDetail.setTitle(title);
+        problemDetail.setType(URI.create(BASE_ERROR_URI + "/invalid-filter"));
+        problemDetail.setProperty("errors", ex.getErrors());
+
+        return super.handleExceptionInternal(ex, problemDetail, new HttpHeaders(), status, request);
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)

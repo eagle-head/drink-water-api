@@ -33,7 +33,6 @@ keycloak:
   clientId: ${KEYCLOAK_CLIENT_ID}
   username: ${KEYCLOAK_USERNAME}
   password: ${KEYCLOAK_PASSWORD}
-  clientSecret: ${KEYCLOAK_CLIENT_SECRET}
 
 cors:
   allowed-origin: ${BASE_URL}

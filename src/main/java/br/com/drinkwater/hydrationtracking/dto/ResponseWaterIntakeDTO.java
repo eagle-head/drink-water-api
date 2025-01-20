@@ -9,8 +9,6 @@ public record ResponseWaterIntakeDTO(
         Long id,
         OffsetDateTime dateTimeUTC,
         int volume,
-        VolumeUnit volumeUnit,
-        OffsetDateTime createdAt,
-        OffsetDateTime updatedAt
+        VolumeUnit volumeUnit
 ) {
 }

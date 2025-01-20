@@ -24,9 +24,7 @@ public class WaterIntakeMapper {
                 entity.getId(),
                 entity.getDateTimeUTC(),
                 entity.getVolume(),
-                entity.getVolumeUnit(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
+                entity.getVolumeUnit()
         );
     }
 }

@@ -15,13 +15,11 @@ public class KeycloakAdminClientProducer {
             @Value("${keycloak.realm}") String realm,
             @Value("${keycloak.clientId}") String clientId,
             @Value("${keycloak.username}") String username,
-            @Value("${keycloak.password}") String password,
-            @Value("${keycloak.clientSecret}") String clientSecret
+            @Value("${keycloak.password}") String password
     ) {
 
         return KeycloakBuilder.builder()
                 .serverUrl(serverURL)
-                .clientSecret(clientSecret)
                 .realm(realm)
                 .clientId(clientId)
                 .username(username)
