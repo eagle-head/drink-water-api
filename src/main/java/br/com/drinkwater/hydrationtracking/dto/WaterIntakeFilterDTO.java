@@ -27,11 +27,11 @@ public record WaterIntakeFilterDTO(
         @UTCOffsetDateTimeConstraint
         OffsetDateTime endDate,
 
-        @Min(value = 0, message = "The minimum volume must be at least 0.")
+        @Min(value = 50, message = "The minimum volume must be at least 50.")
         @Max(value = 5000, message = "The minimum volume cannot exceed 5000.")
         Integer minVolume,
 
-        @Min(value = 0, message = "The maximum volume must be at least 0.")
+        @Min(value = 50, message = "The maximum volume must be at least 50.")
         @Max(value = 5000, message = "The maximum volume cannot exceed 5000.")
         Integer maxVolume,
 
