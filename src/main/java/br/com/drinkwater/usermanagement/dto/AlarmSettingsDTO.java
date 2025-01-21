@@ -1,6 +1,7 @@
 package br.com.drinkwater.usermanagement.dto;
 
 import br.com.drinkwater.validation.TimeRangeConstraint;
+import br.com.drinkwater.validation.UTCOffsetDateTimeConstraint;
 import jakarta.validation.constraints.*;
 
 import java.time.OffsetDateTime;
@@ -24,9 +25,11 @@ public record AlarmSettingsDTO(
         int intervalMinutes,
 
         @NotNull(message = "Daily start time is required")
+        @UTCOffsetDateTimeConstraint
         OffsetDateTime dailyStartTime,
 
         @NotNull(message = "Daily end time is required")
+        @UTCOffsetDateTimeConstraint
         OffsetDateTime dailyEndTime
 ) {
 }
