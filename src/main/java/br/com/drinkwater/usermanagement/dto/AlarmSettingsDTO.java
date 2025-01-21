@@ -1,11 +1,16 @@
 package br.com.drinkwater.usermanagement.dto;
 
-import br.com.drinkwater.usermanagement.validation.TimeRangeConstraint;
+import br.com.drinkwater.validation.TimeRangeConstraint;
 import jakarta.validation.constraints.*;
 
 import java.time.OffsetDateTime;
 
-@TimeRangeConstraint
+@TimeRangeConstraint(
+        startDateField = "dailyStartTime",
+        endDateField = "dailyEndTime",
+        requireSameDay = true,
+        message = "{time.range.max.days}"
+)
 public record AlarmSettingsDTO(
 
         @NotNull(message = "Goal is required")

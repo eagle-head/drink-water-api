@@ -1,11 +1,18 @@
 package br.com.drinkwater.hydrationtracking.dto;
 
+import br.com.drinkwater.validation.TimeRangeConstraint;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.OffsetDateTime;
 
+@TimeRangeConstraint(
+        startDateField = "startDate",
+        endDateField = "endDate",
+        maxDays = 31,
+        message = "{time.range.max.days}"
+)
 public record WaterIntakeFilterDTO(
 
         @PastOrPresent

@@ -1,5 +1,6 @@
 package br.com.drinkwater.hydrationtracking.service;
 
+import br.com.drinkwater.core.PageResponse;
 import br.com.drinkwater.hydrationtracking.dto.ResponseWaterIntakeDTO;
 import br.com.drinkwater.hydrationtracking.dto.WaterIntakeDTO;
 import br.com.drinkwater.hydrationtracking.dto.WaterIntakeFilterDTO;
@@ -75,7 +76,7 @@ public class WaterIntakeService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ResponseWaterIntakeDTO> search(WaterIntakeFilterDTO filter, User user) {
+    public PageResponse<ResponseWaterIntakeDTO> search(WaterIntakeFilterDTO filter, User user) {
         this.filterValidator.validate(filter);
 
         var pageable = PageRequest.of(
@@ -86,8 +87,10 @@ public class WaterIntakeService {
         );
 
         var specification = WaterIntakeSpecification.withFilters(filter, user.getId());
-        return this.waterIntakeRepository
+        var result = this.waterIntakeRepository
                 .findAll(specification, pageable)
                 .map(waterIntakeMapper::toResponseDTO);
+
+        return PageResponse.of(result);
     }
 }

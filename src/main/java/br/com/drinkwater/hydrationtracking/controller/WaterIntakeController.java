@@ -1,10 +1,10 @@
 package br.com.drinkwater.hydrationtracking.controller;
 
+import br.com.drinkwater.core.PageResponse;
 import br.com.drinkwater.hydrationtracking.dto.*;
 import br.com.drinkwater.hydrationtracking.service.WaterIntakeService;
 import br.com.drinkwater.usermanagement.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -65,13 +65,12 @@ public class WaterIntakeController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ResponseWaterIntakeDTO>> search(
-            @Valid WaterIntakeFilterDTO filter,
-            JwtAuthenticationToken token) {
+    public ResponseEntity<PageResponse<ResponseWaterIntakeDTO>> search(@Valid WaterIntakeFilterDTO filter,
+                                                                       JwtAuthenticationToken token) {
         var publicId = UUID.fromString(token.getToken().getSubject());
         var user = this.userService.findByPublicId(publicId);
-        var result = this.waterIntakeService.search(filter, user);
+        var response = this.waterIntakeService.search(filter, user);
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(response);
     }
 }
