@@ -320,8 +320,6 @@ Essential steps for Keycloak setup:
 2. Create a new realm
 3. Configure clients
 
-Here's the updated testing documentation in English:
-
 ## 🧪 Testing
 
 This project includes comprehensive testing capabilities with unit tests, integration tests, code coverage reports, and mutation testing.
