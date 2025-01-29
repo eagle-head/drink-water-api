@@ -320,9 +320,55 @@ Essential steps for Keycloak setup:
 2. Create a new realm
 3. Configure clients
 
+Here's the updated testing documentation in English:
+
 ## 🧪 Testing
 
-Under construction
+This project includes comprehensive testing capabilities with unit tests, integration tests, code coverage reports, and mutation testing.
+
+### Running Tests
+
+#### Complete Test Suite
+Run all unit and integration tests:
+```bash
+./mvnw clean verify
+```
+
+#### Unit Tests
+Run only unit tests:
+```bash
+./mvnw test
+```
+
+#### Skip Integration Tests
+Execute tests while skipping integration tests:
+```bash
+./mvnw verify -DskipITs
+```
+
+### Code Coverage
+Generate a detailed code coverage report using JaCoCo:
+```bash
+./mvnw clean test jacoco:report
+```
+After execution, you can find the HTML report in `target/site/jacoco/index.html`
+
+### Mutation Testing
+Run mutation testing with PIT to evaluate test suite effectiveness:
+```bash
+./mvnw test-compile org.pitest:pitest-maven:mutationCoverage
+```
+The mutation testing report will be available at `target/pit-reports/YYYYMMDDHHMI/index.html`
+
+### Test Reports
+Test reports are typically found under the `target` directory:
+- JaCoCo: `target/site/jacoco/`
+- PIT Mutation: `target/pit-reports/`
+- Surefire: `target/surefire-reports/`
+
+#### 🚨 Note: Exact paths may vary depending on your project configuration and build settings.
+
+This documentation now includes complete information about the different types of testing available in the project, how to run them, and where to find the generated reports. The commands for code coverage and mutation testing have been integrated alongside the existing test commands, providing a comprehensive testing guide.
 
 ## 📝 API Documentation
 
