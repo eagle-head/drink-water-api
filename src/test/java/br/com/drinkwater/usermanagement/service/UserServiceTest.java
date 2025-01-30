@@ -9,6 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static br.com.drinkwater.usermanagement.constants.ResponseUserDTOConstants.JOHN_DOE_RESPONSE_DTO;
 import static br.com.drinkwater.usermanagement.constants.UserConstants.JOHN_DOE;
 import static br.com.drinkwater.usermanagement.constants.UserDTOConstants.JOHN_DOE_DTO;
@@ -32,9 +34,12 @@ public class UserServiceTest {
     public void givenValidUserData_WhenCreateUser_ThenReturnsResponseUserDTO() {
 
         // Arrange
-        when(this.userMapper.toEntity(JOHN_DOE_DTO)).thenReturn(JOHN_DOE);
-        when(this.userRepository.save(JOHN_DOE)).thenReturn(JOHN_DOE);
-        when(this.userMapper.toDto(JOHN_DOE)).thenReturn(JOHN_DOE_RESPONSE_DTO);
+        when(this.userMapper.toEntity(JOHN_DOE_DTO))
+                .thenReturn(JOHN_DOE);
+        when(this.userRepository.save(JOHN_DOE))
+                .thenReturn(JOHN_DOE);
+        when(this.userMapper.toDto(JOHN_DOE))
+                .thenReturn(JOHN_DOE_RESPONSE_DTO);
 
         // Act
         var actualResponse = this.userService.createUser(JOHN_DOE.getPublicId(), JOHN_DOE_DTO);
@@ -48,7 +53,8 @@ public class UserServiceTest {
 
     @Test
     public void givenExistingPublicId_whenCreateUser_thenThrowEmailAlreadyUsedException() {
-        when(this.userRepository.existsByPublicId(JOHN_DOE.getPublicId())).thenReturn(true);
+        when(this.userRepository.existsByPublicId(JOHN_DOE.getPublicId()))
+                .thenReturn(true);
 
         assertThatThrownBy(() -> this.userService.createUser(JOHN_DOE.getPublicId(), JOHN_DOE_DTO))
                 .isInstanceOf(EmailAlreadyUsedException.class);
@@ -58,7 +64,16 @@ public class UserServiceTest {
 
     @Test
     public void givenValidPublicId_whenGetUserByPublicId_thenReturnResponseUserDTO() {
-        throw new RuntimeException("Test not implemented");
+        when(this.userRepository.findByPublicId(JOHN_DOE.getPublicId()))
+                .thenReturn(Optional.of(JOHN_DOE));
+        when(this.userMapper.toDto(JOHN_DOE))
+                .thenReturn(JOHN_DOE_RESPONSE_DTO);
+
+        var actualResponse = this.userService.getUserByPublicId(JOHN_DOE.getPublicId());
+
+        assertThat(actualResponse).isEqualTo(JOHN_DOE_RESPONSE_DTO);
+        verify(this.userRepository).findByPublicId(JOHN_DOE.getPublicId());
+        verify(this.userMapper).toDto(JOHN_DOE);
     }
 
     @Test
