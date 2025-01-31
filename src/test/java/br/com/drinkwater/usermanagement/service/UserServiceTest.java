@@ -111,6 +111,7 @@ public class UserServiceTest {
 
     @Test
     public void givenInvalidPublicId_whenUpdateUser_thenThrowUserNotFoundException() {
+
         when(this.userRepository.findByPublicId(DEFAULT_UUID))
                 .thenReturn(Optional.empty());
 
@@ -125,6 +126,7 @@ public class UserServiceTest {
 
     @Test
     public void givenValidPublicId_whenDeleteUser_thenByPublicIdShouldBeDeleted() {
+
         assertThatCode(() -> this.userService.deleteByPublicId(DEFAULT_UUID))
                 .doesNotThrowAnyException();
 
@@ -133,12 +135,28 @@ public class UserServiceTest {
 
     @Test
     public void givenValidPublicId_whenFindByPublicId_thenReturnUser() {
-        throw new RuntimeException("Test not implemented");
+
+        when(this.userRepository.findByPublicId(DEFAULT_UUID))
+                .thenReturn(Optional.of(DEFAULT_USER));
+
+        var actualResponse = this.userService.findByPublicId(DEFAULT_UUID);
+
+        assertThat(actualResponse)
+                .isNotNull()
+                .isEqualTo(DEFAULT_USER);
+        verify(this.userRepository).findByPublicId(DEFAULT_UUID);
     }
 
     @Test
     public void givenInvalidPublicId_whenFindByPublicId_thenThrowUserNotFoundException() {
-        throw new RuntimeException("Test not implemented");
+
+        when(this.userRepository.findByPublicId(DEFAULT_UUID))
+                .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> this.userService.findByPublicId(DEFAULT_UUID))
+                .isInstanceOf(UserNotFoundException.class);
+
+        verify(this.userRepository).findByPublicId(DEFAULT_UUID);
     }
 
     @Test
