@@ -13,9 +13,9 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-public final class TestData {
+public final class UserManagementTestData {
 
-    private TestData() {
+    private UserManagementTestData() {
     }
 
     // Model constants

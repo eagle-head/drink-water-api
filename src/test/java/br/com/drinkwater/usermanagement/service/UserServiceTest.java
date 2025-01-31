@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static br.com.drinkwater.usermanagement.constants.TestData.*;
+import static br.com.drinkwater.usermanagement.constants.UserManagementTestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
