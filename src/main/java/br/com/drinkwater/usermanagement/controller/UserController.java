@@ -50,7 +50,7 @@ public class UserController {
     @DeleteMapping
     public ResponseEntity<Void> deleteCurrentUser(JwtAuthenticationToken token) {
         UUID publicId = UUID.fromString(token.getToken().getSubject());
-        this.userService.deleteUser(publicId);
+        this.userService.deleteByPublicId(publicId);
 
         return ResponseEntity.noContent().build();
     }

@@ -48,9 +48,8 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(UUID publicId) {
-        User existingUser = this.findByPublicId(publicId);
-        this.userRepository.delete(existingUser);
+    public void deleteByPublicId(UUID publicId) {
+        this.userRepository.deleteByPublicId(publicId);
     }
 
     @Transactional(readOnly = true)
