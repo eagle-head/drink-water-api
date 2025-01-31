@@ -11,9 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static br.com.drinkwater.usermanagement.constants.ResponseUserDTOConstants.JOHN_DOE_RESPONSE_DTO;
-import static br.com.drinkwater.usermanagement.constants.UserConstants.JOHN_DOE;
-import static br.com.drinkwater.usermanagement.constants.UserDTOConstants.JOHN_DOE_DTO;
+import static br.com.drinkwater.usermanagement.constants.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -31,49 +29,50 @@ public class UserServiceTest {
     private UserMapper userMapper;
 
     @Test
-    public void givenValidUserData_WhenCreateUser_ThenReturnsResponseUserDTO() {
-
+    public void givenValidUserData_WhenCreateUser_ThenReturnsUserResponseDTO() {
         // Arrange
-        when(this.userMapper.toEntity(JOHN_DOE_DTO))
-                .thenReturn(JOHN_DOE);
-        when(this.userRepository.save(JOHN_DOE))
-                .thenReturn(JOHN_DOE);
-        when(this.userMapper.toDto(JOHN_DOE))
-                .thenReturn(JOHN_DOE_RESPONSE_DTO);
+        when(this.userMapper.toEntity(DEFAULT_USER_DTO))
+                .thenReturn(DEFAULT_USER);
+        when(this.userRepository.save(DEFAULT_USER))
+                .thenReturn(DEFAULT_USER);
+        when(this.userMapper.toDto(DEFAULT_USER))
+                .thenReturn(DEFAULT_USER_RESPONSE_DTO);
 
         // Act
-        var actualResponse = this.userService.createUser(JOHN_DOE.getPublicId(), JOHN_DOE_DTO);
+        var actualResponse = this.userService.createUser(DEFAULT_UUID, DEFAULT_USER_DTO);
 
         // Assert
-        assertThat(actualResponse).isEqualTo(JOHN_DOE_RESPONSE_DTO);
-        verify(this.userMapper).toEntity(JOHN_DOE_DTO);
-        verify(this.userRepository).save(JOHN_DOE);
-        verify(this.userMapper).toDto(JOHN_DOE);
+        assertThat(actualResponse).isEqualTo(DEFAULT_USER_RESPONSE_DTO);
+        verify(this.userMapper).toEntity(DEFAULT_USER_DTO);
+        verify(this.userRepository).save(DEFAULT_USER);
+        verify(this.userMapper).toDto(DEFAULT_USER);
     }
 
     @Test
     public void givenExistingPublicId_whenCreateUser_thenThrowEmailAlreadyUsedException() {
-        when(this.userRepository.existsByPublicId(JOHN_DOE.getPublicId()))
+
+        when(this.userRepository.existsByPublicId(DEFAULT_UUID))
                 .thenReturn(true);
 
-        assertThatThrownBy(() -> this.userService.createUser(JOHN_DOE.getPublicId(), JOHN_DOE_DTO))
+        assertThatThrownBy(() -> this.userService.createUser(DEFAULT_UUID, DEFAULT_USER_DTO))
                 .isInstanceOf(EmailAlreadyUsedException.class);
 
-        verify(this.userRepository).existsByPublicId(JOHN_DOE.getPublicId());
+        verify(this.userRepository).existsByPublicId(DEFAULT_UUID);
     }
 
     @Test
-    public void givenValidPublicId_whenGetUserByPublicId_thenReturnResponseUserDTO() {
-        when(this.userRepository.findByPublicId(JOHN_DOE.getPublicId()))
-                .thenReturn(Optional.of(JOHN_DOE));
-        when(this.userMapper.toDto(JOHN_DOE))
-                .thenReturn(JOHN_DOE_RESPONSE_DTO);
+    public void givenValidPublicId_whenGetUserByPublicId_thenReturnUserResponseDTO() {
 
-        var actualResponse = this.userService.getUserByPublicId(JOHN_DOE.getPublicId());
+        when(this.userRepository.findByPublicId(DEFAULT_UUID))
+                .thenReturn(Optional.of(DEFAULT_USER));
+        when(this.userMapper.toDto(DEFAULT_USER))
+                .thenReturn(DEFAULT_USER_RESPONSE_DTO);
 
-        assertThat(actualResponse).isEqualTo(JOHN_DOE_RESPONSE_DTO);
-        verify(this.userRepository).findByPublicId(JOHN_DOE.getPublicId());
-        verify(this.userMapper).toDto(JOHN_DOE);
+        var actualResponse = this.userService.getUserByPublicId(DEFAULT_UUID);
+
+        assertThat(actualResponse).isEqualTo(DEFAULT_USER_RESPONSE_DTO);
+        verify(this.userRepository).findByPublicId(DEFAULT_UUID);
+        verify(this.userMapper).toDto(DEFAULT_USER);
     }
 
     @Test
