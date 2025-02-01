@@ -324,6 +324,14 @@ Essential steps for Keycloak setup:
 
 This project includes comprehensive testing capabilities with unit tests, integration tests, code coverage reports, and mutation testing.
 
+### Test Naming Pattern
+We follow the `given_when_then` naming pattern for test methods, which helps create clear and descriptive test names:
+- `given`: Initial context/preconditions
+- `when`: Action or behavior being tested
+- `then`: Expected outcome
+
+Example: `givenValidUserData_whenCreateUser_thenReturnsUserResponseDTO()`
+
 ### Running Tests
 
 #### Complete Test Suite
