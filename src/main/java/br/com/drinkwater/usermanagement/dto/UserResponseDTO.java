@@ -2,7 +2,7 @@ package br.com.drinkwater.usermanagement.dto;
 
 import java.util.UUID;
 
-public record ResponseUserDTO(
+public record UserResponseDTO(
 
         UUID publicId,
         String email,

@@ -32,12 +32,12 @@ public class UserMapper {
         return user;
     }
 
-    public ResponseUserDTO toDto(User entity) {
+    public UserResponseDTO toDto(User entity) {
         if (entity == null) {
             return null;
         }
 
-        return new ResponseUserDTO(
+        return new UserResponseDTO(
                 entity.getPublicId(),
                 entity.getEmail(),
                 personalMapper.toDto(entity.getPersonal()),

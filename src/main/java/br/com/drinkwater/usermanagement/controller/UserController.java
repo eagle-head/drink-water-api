@@ -1,6 +1,6 @@
 package br.com.drinkwater.usermanagement.controller;
 
-import br.com.drinkwater.usermanagement.dto.ResponseUserDTO;
+import br.com.drinkwater.usermanagement.dto.UserResponseDTO;
 import br.com.drinkwater.usermanagement.dto.UserDTO;
 import br.com.drinkwater.usermanagement.service.UserService;
 import jakarta.validation.Valid;
@@ -22,27 +22,27 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ResponseUserDTO> getCurrentUser(JwtAuthenticationToken token) {
+    public ResponseEntity<UserResponseDTO> getCurrentUser(JwtAuthenticationToken token) {
         UUID publicId = UUID.fromString(token.getToken().getSubject());
-        ResponseUserDTO userDTO = this.userService.getUserByPublicId(publicId);
+        UserResponseDTO userDTO = this.userService.getUserByPublicId(publicId);
 
         return ResponseEntity.ok(userDTO);
     }
 
     @PostMapping
-    public ResponseEntity<ResponseUserDTO> createUser(@Valid @RequestBody UserDTO userDTO,
+    public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserDTO userDTO,
                                                       JwtAuthenticationToken token) {
         UUID publicId = UUID.fromString(token.getToken().getSubject());
-        ResponseUserDTO createdUser = this.userService.createUser(publicId, userDTO);
+        UserResponseDTO createdUser = this.userService.createUser(publicId, userDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
     @PutMapping
-    public ResponseEntity<ResponseUserDTO> updateCurrentUser(JwtAuthenticationToken token,
+    public ResponseEntity<UserResponseDTO> updateCurrentUser(JwtAuthenticationToken token,
                                                              @Valid @RequestBody UserDTO updateUserDTO) {
         UUID publicId = UUID.fromString(token.getToken().getSubject());
-        ResponseUserDTO updatedUser = this.userService.updateUser(publicId, updateUserDTO);
+        UserResponseDTO updatedUser = this.userService.updateUser(publicId, updateUserDTO);
 
         return ResponseEntity.ok(updatedUser);
     }
@@ -50,7 +50,7 @@ public class UserController {
     @DeleteMapping
     public ResponseEntity<Void> deleteCurrentUser(JwtAuthenticationToken token) {
         UUID publicId = UUID.fromString(token.getToken().getSubject());
-        this.userService.deleteUser(publicId);
+        this.userService.deleteByPublicId(publicId);
 
         return ResponseEntity.noContent().build();
     }

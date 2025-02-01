@@ -3,7 +3,7 @@ package br.com.drinkwater.exception;
 import br.com.drinkwater.hydrationtracking.exception.DuplicateDateTimeException;
 import br.com.drinkwater.hydrationtracking.exception.InvalidFilterException;
 import br.com.drinkwater.hydrationtracking.exception.WaterIntakeNotFoundException;
-import br.com.drinkwater.usermanagement.exception.EmailAlreadyUsedException;
+import br.com.drinkwater.usermanagement.exception.UserAlreadyExistsException;
 import br.com.drinkwater.usermanagement.exception.UserNotFoundException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.context.MessageSource;
@@ -106,16 +106,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return super.handleExceptionInternal(ex, problemDetail, new HttpHeaders(), status, request);
     }
 
-    @ExceptionHandler(EmailAlreadyUsedException.class)
-    public ResponseEntity<Object> handleEmailAlreadyUsedException(EmailAlreadyUsedException ex, WebRequest request) {
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<Object> handleEmailAlreadyUsedException(UserAlreadyExistsException ex, WebRequest request) {
 
         HttpStatus status = HttpStatus.CONFLICT;
         String title = status.getReasonPhrase();
-        String detail = this.messageSource.getMessage("email.already.used.detail", null, LocaleContextHolder.getLocale());
+        String detail = this.messageSource.getMessage("user.already.exists.detail", null, LocaleContextHolder.getLocale());
 
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
         problemDetail.setTitle(title);
-        problemDetail.setType(URI.create(BASE_ERROR_URI + "/email-already-used"));
+        problemDetail.setType(URI.create(BASE_ERROR_URI + "/user-already-exists"));
 
         return super.handleExceptionInternal(ex, problemDetail, new HttpHeaders(), status, request);
     }

@@ -1,8 +1,8 @@
 package br.com.drinkwater.usermanagement.service;
 
-import br.com.drinkwater.usermanagement.dto.ResponseUserDTO;
+import br.com.drinkwater.usermanagement.dto.UserResponseDTO;
 import br.com.drinkwater.usermanagement.dto.UserDTO;
-import br.com.drinkwater.usermanagement.exception.EmailAlreadyUsedException;
+import br.com.drinkwater.usermanagement.exception.UserAlreadyExistsException;
 import br.com.drinkwater.usermanagement.exception.UserNotFoundException;
 import br.com.drinkwater.usermanagement.mapper.UserMapper;
 import br.com.drinkwater.usermanagement.model.User;
@@ -24,7 +24,7 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseUserDTO createUser(UUID publicId, UserDTO userDTO) {
+    public UserResponseDTO createUser(UUID publicId, UserDTO userDTO) {
         this.validateUserExistence(publicId);
         User userEntity = this.userMapper.toEntity(userDTO);
         User savedUser = this.userRepository.save(userEntity);
@@ -33,13 +33,13 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseUserDTO getUserByPublicId(UUID publicId) {
+    public UserResponseDTO getUserByPublicId(UUID publicId) {
         User existingUser = this.findByPublicId(publicId);
         return this.userMapper.toDto(existingUser);
     }
 
     @Transactional
-    public ResponseUserDTO updateUser(UUID publicId, UserDTO updateUserDTO) {
+    public UserResponseDTO updateUser(UUID publicId, UserDTO updateUserDTO) {
         User existingUser = this.findByPublicId(publicId);
         this.userMapper.updateUserFromDTO(existingUser, updateUserDTO);
         User updatedUser = this.userRepository.save(existingUser);
@@ -48,9 +48,8 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(UUID publicId) {
-        User existingUser = this.findByPublicId(publicId);
-        this.userRepository.delete(existingUser);
+    public void deleteByPublicId(UUID publicId) {
+        this.userRepository.deleteByPublicId(publicId);
     }
 
     @Transactional(readOnly = true)
@@ -61,7 +60,7 @@ public class UserService {
     @Transactional(readOnly = true)
     protected void validateUserExistence(UUID publicId) {
         if (this.userRepository.existsByPublicId(publicId)) {
-            throw new EmailAlreadyUsedException();
+            throw new UserAlreadyExistsException();
         }
     }
 }
