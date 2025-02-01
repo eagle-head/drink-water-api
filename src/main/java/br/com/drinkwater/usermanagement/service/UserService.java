@@ -2,7 +2,7 @@ package br.com.drinkwater.usermanagement.service;
 
 import br.com.drinkwater.usermanagement.dto.UserResponseDTO;
 import br.com.drinkwater.usermanagement.dto.UserDTO;
-import br.com.drinkwater.usermanagement.exception.EmailAlreadyUsedException;
+import br.com.drinkwater.usermanagement.exception.UserAlreadyExistsException;
 import br.com.drinkwater.usermanagement.exception.UserNotFoundException;
 import br.com.drinkwater.usermanagement.mapper.UserMapper;
 import br.com.drinkwater.usermanagement.model.User;
@@ -60,7 +60,7 @@ public class UserService {
     @Transactional(readOnly = true)
     protected void validateUserExistence(UUID publicId) {
         if (this.userRepository.existsByPublicId(publicId)) {
-            throw new EmailAlreadyUsedException();
+            throw new UserAlreadyExistsException();
         }
     }
 }

@@ -1,6 +1,6 @@
 package br.com.drinkwater.usermanagement.service;
 
-import br.com.drinkwater.usermanagement.exception.EmailAlreadyUsedException;
+import br.com.drinkwater.usermanagement.exception.UserAlreadyExistsException;
 import br.com.drinkwater.usermanagement.exception.UserNotFoundException;
 import br.com.drinkwater.usermanagement.mapper.UserMapper;
 import br.com.drinkwater.usermanagement.repository.UserRepository;
@@ -56,7 +56,7 @@ public class UserServiceTest {
                 .thenReturn(true);
 
         assertThatThrownBy(() -> this.userService.createUser(DEFAULT_UUID, DEFAULT_USER_DTO))
-                .isInstanceOf(EmailAlreadyUsedException.class);
+                .isInstanceOf(UserAlreadyExistsException.class);
 
         verify(this.userRepository, times(1)).existsByPublicId(DEFAULT_UUID);
         verify(this.userMapper, never()).toEntity(any());
@@ -189,7 +189,7 @@ public class UserServiceTest {
                 .thenReturn(true);
 
         assertThatThrownBy(() -> this.userService.validateUserExistence(DEFAULT_UUID))
-                .isInstanceOf(EmailAlreadyUsedException.class);
+                .isInstanceOf(UserAlreadyExistsException.class);
 
         verify(this.userRepository, times(1)).existsByPublicId(DEFAULT_UUID);
         verifyNoMoreInteractions(this.userRepository);
