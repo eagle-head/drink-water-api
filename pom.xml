@@ -139,6 +139,7 @@
 				<configuration>
 					<excludes>
 						<exclude>br/com/drinkwater/DrinkWaterApiApplication.class</exclude>
+						<exclude>br/com/drinkwater/config/**/*</exclude>
 					</excludes>
 				</configuration>
 				<executions>
@@ -170,6 +171,10 @@
 					</dependency>
 				</dependencies>
 				<configuration>
+					<excludedClasses>
+						<param>br.com.drinkwater.config.*</param>
+						<param>br.com.drinkwater.DrinkWaterApiApplication</param>
+					</excludedClasses>
 					<targetClasses>
 						<param>br.com.drinkwater.**</param>
 					</targetClasses>
