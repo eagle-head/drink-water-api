@@ -1,5 +1,7 @@
 package br.com.drinkwater.usermanagement.model;
 
+import br.com.drinkwater.usermanagement.converter.HeightUnitConverter;
+import br.com.drinkwater.usermanagement.converter.WeightUnitConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;

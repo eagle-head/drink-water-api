@@ -1,5 +1,6 @@
 package br.com.drinkwater.usermanagement.model;
 
+import br.com.drinkwater.usermanagement.converter.BiologicalSexConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
