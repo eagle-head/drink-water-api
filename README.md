@@ -335,13 +335,19 @@ Run all unit and integration tests:
 #### Unit Tests
 Run only unit tests:
 ```bash
-./mvnw test
+./mvnw clean test
 ```
 
 #### Skip Integration Tests
 Execute tests while skipping integration tests:
 ```bash
-./mvnw verify -DskipITs
+./mvnw clean verify -DskipITs=true
+```
+
+#### Skip Unit Tests
+Execute tests while skipping unit tests:
+```bash
+./mvnw clean verify -Dsurefire.skip=true
 ```
 
 ### Code Coverage
