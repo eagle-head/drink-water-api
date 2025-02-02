@@ -34,6 +34,7 @@ public final class UserManagementTestData {
 
     // Common field values
     public static final UUID DEFAULT_UUID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    public static final Long DEFAULT_ID = 1L;
     public static final String DEFAULT_EMAIL = "john.doe@example.com";
     public static final String DEFAULT_FIRST_NAME = "John";
     public static final String DEFAULT_LAST_NAME = "Doe";
