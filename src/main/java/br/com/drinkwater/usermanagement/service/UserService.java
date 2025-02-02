@@ -57,8 +57,7 @@ public class UserService {
         return this.userRepository.findByPublicId(publicId).orElseThrow(UserNotFoundException::new);
     }
 
-    @Transactional(readOnly = true)
-    protected void validateUserExistence(UUID publicId) {
+    private void validateUserExistence(UUID publicId) {
         if (this.userRepository.existsByPublicId(publicId)) {
             throw new UserAlreadyExistsException();
         }

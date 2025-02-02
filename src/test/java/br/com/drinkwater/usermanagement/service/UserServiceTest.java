@@ -73,9 +73,9 @@ public class UserServiceTest {
         when(this.userMapper.toDto(DEFAULT_USER))
                 .thenReturn(DEFAULT_USER_RESPONSE_DTO);
 
-        var actualResponse = this.userService.getUserByPublicId(DEFAULT_UUID);
+        var sut = this.userService.getUserByPublicId(DEFAULT_UUID);
 
-        assertThat(actualResponse).isEqualTo(DEFAULT_USER_RESPONSE_DTO);
+        assertThat(sut).isEqualTo(DEFAULT_USER_RESPONSE_DTO);
         verify(this.userRepository, times(1)).findByPublicId(DEFAULT_UUID);
         verify(this.userMapper, times(1)).toDto(DEFAULT_USER);
         verifyNoMoreInteractions(this.userRepository, this.userMapper);
@@ -105,9 +105,9 @@ public class UserServiceTest {
         when(this.userMapper.toDto(DEFAULT_USER))
                 .thenReturn(DEFAULT_USER_RESPONSE_DTO);
 
-        var actualResponse = this.userService.updateUser(DEFAULT_UUID, DEFAULT_USER_DTO);
+        var sut = this.userService.updateUser(DEFAULT_UUID, DEFAULT_USER_DTO);
 
-        assertThat(actualResponse).isEqualTo(DEFAULT_USER_RESPONSE_DTO);
+        assertThat(sut).isEqualTo(DEFAULT_USER_RESPONSE_DTO);
         verify(this.userRepository, times(1)).findByPublicId(DEFAULT_UUID);
         verify(this.userMapper, times(1)).updateUserFromDTO(DEFAULT_USER, DEFAULT_USER_DTO);
         verify(this.userRepository, times(1)).save(DEFAULT_USER);
@@ -147,9 +147,9 @@ public class UserServiceTest {
         when(this.userRepository.findByPublicId(DEFAULT_UUID))
                 .thenReturn(Optional.of(DEFAULT_USER));
 
-        var actualResponse = this.userService.findByPublicId(DEFAULT_UUID);
+        var sut = this.userService.findByPublicId(DEFAULT_UUID);
 
-        assertThat(actualResponse)
+        assertThat(sut)
                 .isNotNull()
                 .isEqualTo(DEFAULT_USER);
         verify(this.userRepository, times(1)).findByPublicId(DEFAULT_UUID);
@@ -166,32 +166,6 @@ public class UserServiceTest {
                 .isInstanceOf(UserNotFoundException.class);
 
         verify(this.userRepository, times(1)).findByPublicId(DEFAULT_UUID);
-        verifyNoMoreInteractions(this.userRepository);
-    }
-
-    @Test
-    public void givenNonExistingPublicId_whenValidateUserExistence_thenShouldNotThrowException() {
-
-        when(this.userRepository.existsByPublicId(DEFAULT_UUID))
-                .thenReturn(false);
-
-        assertThatCode(() -> this.userService.validateUserExistence(DEFAULT_UUID))
-                .doesNotThrowAnyException();
-
-        verify(this.userRepository, times(1)).existsByPublicId(DEFAULT_UUID);
-        verifyNoMoreInteractions(this.userRepository);
-    }
-
-    @Test
-    public void givenExistingPublicId_whenValidateUserExistence_thenThrowEmailAlreadyUsedException() {
-
-        when(this.userRepository.existsByPublicId(DEFAULT_UUID))
-                .thenReturn(true);
-
-        assertThatThrownBy(() -> this.userService.validateUserExistence(DEFAULT_UUID))
-                .isInstanceOf(UserAlreadyExistsException.class);
-
-        verify(this.userRepository, times(1)).existsByPublicId(DEFAULT_UUID);
         verifyNoMoreInteractions(this.userRepository);
     }
 }
