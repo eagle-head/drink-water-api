@@ -1,5 +1,6 @@
-package br.com.drinkwater.usermanagement.model;
+package br.com.drinkwater.usermanagement.converter;
 
+import br.com.drinkwater.usermanagement.model.HeightUnit;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 

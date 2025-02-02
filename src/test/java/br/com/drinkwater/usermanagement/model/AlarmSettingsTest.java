@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AlarmSettingsTest {
+public final class AlarmSettingsTest {
 
     @Test
     public void givenAlarmSettings_whenSetId_thenIdShouldBeUpdated() {

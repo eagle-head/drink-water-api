@@ -42,6 +42,13 @@ public final class UserManagementTestData {
     public static final BigDecimal DEFAULT_HEIGHT = BigDecimal.valueOf(170.0);
     public static final int DEFAULT_GOAL = 2000;
     public static final int DEFAULT_INTERVAL = 60;
+    public static final int VALID_BIOLOGICAL_SEX_MALE_CODE = 1;
+    public static final int VALID_BIOLOGICAL_SEX_FEMALE_CODE = 2;
+    public static final int INVALID_BIOLOGICAL_SEX_CODE = 99;
+    public static final int VALID_HEIGHT_UNIT_CM_CODE = 1;
+    public static final int INVALID_HEIGHT_UNIT_CODE = 99;
+    public static final int VALID_WEIGHT_UNIT_KG_CODE = 1;
+    public static final int INVALID_WEIGHT_UNIT_CODE = 99;
 
     // Enums
     public static final BiologicalSex DEFAULT_BIOLOGICAL_SEX = BiologicalSexTestData.DEFAULT;
