@@ -7,16 +7,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static br.com.drinkwater.usermanagement.constants.UserManagementTestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public final class WeightUnitTest {
 
+    private static final int INVALID_WEIGHT_UNIT_CODE = -1;
+
     private static Stream<Arguments> validWeightUnitCodes() {
-        return Stream.of(
-            Arguments.of(WeightUnit.KG, VALID_WEIGHT_UNIT_KG_CODE)
-        );
+        return Stream.of(Arguments.of(WeightUnit.KG, 1));
     }
 
     @ParameterizedTest
@@ -30,7 +29,7 @@ public final class WeightUnitTest {
     public void givenValidCode_whenFromCode_thenReturnCorrectWeightUnit(WeightUnit expectedUnit, int code) {
         assertThat(WeightUnit.fromCode(code)).isEqualTo(expectedUnit);
     }
-    
+
     @Test
     public void givenInvalidCode_whenFromCode_thenThrowIllegalArgumentException() {
         assertThatThrownBy(() -> WeightUnit.fromCode(INVALID_WEIGHT_UNIT_CODE))

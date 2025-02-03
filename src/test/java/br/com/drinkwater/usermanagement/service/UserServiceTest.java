@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static br.com.drinkwater.usermanagement.constants.UserManagementTestData.*;
+import static br.com.drinkwater.usermanagement.constants.UserTestConstants.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -30,142 +30,134 @@ public final class UserServiceTest {
 
     @Test
     public void givenValidUserData_WhenCreateUser_ThenReturnsUserResponseDTO() {
-        when(this.userRepository.existsByPublicId(DEFAULT_UUID))
+        when(userRepository.existsByPublicId(USER_UUID))
                 .thenReturn(false);
-        when(this.userMapper.toEntity(DEFAULT_USER_DTO))
-                .thenReturn(DEFAULT_USER);
-        when(this.userRepository.save(DEFAULT_USER))
-                .thenReturn(DEFAULT_USER);
-        when(this.userMapper.toDto(DEFAULT_USER))
-                .thenReturn(DEFAULT_USER_RESPONSE_DTO);
+        when(userMapper.toEntity(USER_DTO))
+                .thenReturn(USER);
+        when(userRepository.save(USER))
+                .thenReturn(USER);
+        when(userMapper.toDto(USER))
+                .thenReturn(USER_RESPONSE_DTO);
 
-        var actualResponse = this.userService.createUser(DEFAULT_UUID, DEFAULT_USER_DTO);
+        var actualResponse = userService.createUser(USER_UUID, USER_DTO);
 
-        assertThat(actualResponse).isEqualTo(DEFAULT_USER_RESPONSE_DTO);
-        verify(this.userRepository, times(1)).existsByPublicId(DEFAULT_UUID);
-        verify(this.userMapper, times(1)).toEntity(DEFAULT_USER_DTO);
-        verify(this.userRepository, times(1)).save(DEFAULT_USER);
-        verify(this.userMapper, times(1)).toDto(DEFAULT_USER);
-        verifyNoMoreInteractions(this.userRepository, this.userMapper);
+        assertThat(actualResponse).isEqualTo(USER_RESPONSE_DTO);
+        verify(userRepository).existsByPublicId(USER_UUID);
+        verify(userMapper).toEntity(USER_DTO);
+        verify(userRepository).save(USER);
+        verify(userMapper).toDto(USER);
+        verifyNoMoreInteractions(userRepository, userMapper);
     }
 
     @Test
     public void givenExistingPublicId_whenCreateUser_thenThrowEmailAlreadyUsedException() {
-
-        when(this.userRepository.existsByPublicId(DEFAULT_UUID))
+        when(userRepository.existsByPublicId(USER_UUID))
                 .thenReturn(true);
 
-        assertThatThrownBy(() -> this.userService.createUser(DEFAULT_UUID, DEFAULT_USER_DTO))
+        assertThatThrownBy(() -> userService.createUser(USER_UUID, USER_DTO))
                 .isInstanceOf(UserAlreadyExistsException.class);
 
-        verify(this.userRepository, times(1)).existsByPublicId(DEFAULT_UUID);
-        verify(this.userMapper, never()).toEntity(any());
-        verify(this.userRepository, never()).save(any());
-        verify(this.userMapper, never()).toDto(any());
-        verifyNoMoreInteractions(this.userRepository, this.userMapper);
+        verify(userRepository).existsByPublicId(USER_UUID);
+        verify(userMapper, never()).toEntity(any());
+        verify(userRepository, never()).save(any());
+        verify(userMapper, never()).toDto(any());
+        verifyNoMoreInteractions(userRepository, userMapper);
     }
 
     @Test
     public void givenValidPublicId_whenGetUserByPublicId_thenReturnUserResponseDTO() {
+        when(userRepository.findByPublicId(USER_UUID))
+                .thenReturn(Optional.of(USER));
+        when(userMapper.toDto(USER))
+                .thenReturn(USER_RESPONSE_DTO);
 
-        when(this.userRepository.findByPublicId(DEFAULT_UUID))
-                .thenReturn(Optional.of(DEFAULT_USER));
-        when(this.userMapper.toDto(DEFAULT_USER))
-                .thenReturn(DEFAULT_USER_RESPONSE_DTO);
+        var result = userService.getUserByPublicId(USER_UUID);
 
-        var sut = this.userService.getUserByPublicId(DEFAULT_UUID);
-
-        assertThat(sut).isEqualTo(DEFAULT_USER_RESPONSE_DTO);
-        verify(this.userRepository, times(1)).findByPublicId(DEFAULT_UUID);
-        verify(this.userMapper, times(1)).toDto(DEFAULT_USER);
-        verifyNoMoreInteractions(this.userRepository, this.userMapper);
+        assertThat(result).isEqualTo(USER_RESPONSE_DTO);
+        verify(userRepository).findByPublicId(USER_UUID);
+        verify(userMapper).toDto(USER);
+        verifyNoMoreInteractions(userRepository, userMapper);
     }
 
     @Test
     public void givenInvalidPublicId_whenGetUserByPublicId_thenThrowUserNotFoundException() {
-
-        when(this.userRepository.findByPublicId(DEFAULT_UUID))
+        when(userRepository.findByPublicId(USER_UUID))
                 .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> this.userService.getUserByPublicId(DEFAULT_UUID))
+        assertThatThrownBy(() -> userService.getUserByPublicId(USER_UUID))
                 .isInstanceOf(UserNotFoundException.class);
 
-        verify(this.userRepository, times(1)).findByPublicId(DEFAULT_UUID);
-        verify(this.userMapper, never()).toDto(any());
-        verifyNoMoreInteractions(this.userRepository, this.userMapper);
+        verify(userRepository).findByPublicId(USER_UUID);
+        verify(userMapper, never()).toDto(any());
+        verifyNoMoreInteractions(userRepository, userMapper);
     }
 
     @Test
     public void givenValidUserAndUpdateData_whenUpdateUser_thenReturnUpdatedUserDTO() {
+        when(userRepository.findByPublicId(USER_UUID))
+                .thenReturn(Optional.of(USER));
+        when(userRepository.save(USER))
+                .thenReturn(USER);
+        when(userMapper.toDto(USER))
+                .thenReturn(USER_RESPONSE_DTO);
 
-        when(this.userRepository.findByPublicId(DEFAULT_UUID))
-                .thenReturn(Optional.of(DEFAULT_USER));
-        when(this.userRepository.save(DEFAULT_USER))
-                .thenReturn(DEFAULT_USER);
-        when(this.userMapper.toDto(DEFAULT_USER))
-                .thenReturn(DEFAULT_USER_RESPONSE_DTO);
+        var result = userService.updateUser(USER_UUID, USER_DTO);
 
-        var sut = this.userService.updateUser(DEFAULT_UUID, DEFAULT_USER_DTO);
-
-        assertThat(sut).isEqualTo(DEFAULT_USER_RESPONSE_DTO);
-        verify(this.userRepository, times(1)).findByPublicId(DEFAULT_UUID);
-        verify(this.userMapper, times(1)).updateUserFromDTO(DEFAULT_USER, DEFAULT_USER_DTO);
-        verify(this.userRepository, times(1)).save(DEFAULT_USER);
-        verify(this.userMapper, times(1)).toDto(DEFAULT_USER);
-        verifyNoMoreInteractions(this.userRepository, this.userMapper);
+        assertThat(result).isEqualTo(USER_RESPONSE_DTO);
+        verify(userRepository).findByPublicId(USER_UUID);
+        verify(userMapper).updateUserFromDTO(USER, USER_DTO);
+        verify(userRepository).save(USER);
+        verify(userMapper).toDto(USER);
+        verifyNoMoreInteractions(userRepository, userMapper);
     }
 
     @Test
     public void givenInvalidPublicId_whenUpdateUser_thenThrowUserNotFoundException() {
-
-        when(this.userRepository.findByPublicId(DEFAULT_UUID))
+        when(userRepository.findByPublicId(USER_UUID))
                 .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> this.userService.updateUser(DEFAULT_UUID, DEFAULT_USER_DTO))
+        assertThatThrownBy(() -> userService.updateUser(USER_UUID, USER_DTO))
                 .isInstanceOf(UserNotFoundException.class);
 
-        verify(this.userRepository, times(1)).findByPublicId(DEFAULT_UUID);
-        verify(this.userMapper, never()).updateUserFromDTO(any(), any());
-        verify(this.userRepository, never()).save(any());
-        verify(this.userMapper, never()).toDto(any());
-        verifyNoMoreInteractions(this.userRepository, this.userMapper);
+        verify(userRepository).findByPublicId(USER_UUID);
+        verify(userMapper, never()).updateUserFromDTO(any(), any());
+        verify(userRepository, never()).save(any());
+        verify(userMapper, never()).toDto(any());
+        verifyNoMoreInteractions(userRepository, userMapper);
     }
 
     @Test
     public void givenValidPublicId_whenDeleteUser_thenByPublicIdShouldBeDeleted() {
-
-        assertThatCode(() -> this.userService.deleteByPublicId(DEFAULT_UUID))
+        assertThatCode(() -> userService.deleteByPublicId(USER_UUID))
                 .doesNotThrowAnyException();
 
-        verify(this.userRepository, times(1)).deleteByPublicId(DEFAULT_UUID);
-        verifyNoMoreInteractions(this.userRepository);
+        verify(userRepository).deleteByPublicId(USER_UUID);
+        verifyNoMoreInteractions(userRepository);
     }
 
     @Test
     public void givenValidPublicId_whenFindByPublicId_thenReturnUser() {
+        when(userRepository.findByPublicId(USER_UUID))
+                .thenReturn(Optional.of(USER));
 
-        when(this.userRepository.findByPublicId(DEFAULT_UUID))
-                .thenReturn(Optional.of(DEFAULT_USER));
+        var result = userService.findByPublicId(USER_UUID);
 
-        var sut = this.userService.findByPublicId(DEFAULT_UUID);
-
-        assertThat(sut)
+        assertThat(result)
                 .isNotNull()
-                .isEqualTo(DEFAULT_USER);
-        verify(this.userRepository, times(1)).findByPublicId(DEFAULT_UUID);
-        verifyNoMoreInteractions(this.userRepository);
+                .isEqualTo(USER);
+        verify(userRepository).findByPublicId(USER_UUID);
+        verifyNoMoreInteractions(userRepository);
     }
 
     @Test
     public void givenInvalidPublicId_whenFindByPublicId_thenThrowUserNotFoundException() {
-
-        when(this.userRepository.findByPublicId(DEFAULT_UUID))
+        when(userRepository.findByPublicId(USER_UUID))
                 .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> this.userService.findByPublicId(DEFAULT_UUID))
+        assertThatThrownBy(() -> userService.findByPublicId(USER_UUID))
                 .isInstanceOf(UserNotFoundException.class);
 
-        verify(this.userRepository, times(1)).findByPublicId(DEFAULT_UUID);
-        verifyNoMoreInteractions(this.userRepository);
+        verify(userRepository).findByPublicId(USER_UUID);
+        verifyNoMoreInteractions(userRepository);
     }
 }

@@ -7,16 +7,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static br.com.drinkwater.usermanagement.constants.UserManagementTestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public final class HeightUnitTest {
 
+    private static final int INVALID_HEIGHT_UNIT_CODE = -1;
+
     private static Stream<Arguments> validHeightUnitCodes() {
-        return Stream.of(
-            Arguments.of(HeightUnit.CM, VALID_HEIGHT_UNIT_CM_CODE)
-        );
+        return Stream.of(Arguments.of(HeightUnit.CM, 1));
     }
 
     @ParameterizedTest
@@ -30,7 +29,7 @@ public final class HeightUnitTest {
     public void givenValidCode_whenFromCode_thenReturnCorrectHeightUnit(HeightUnit expectedUnit, int code) {
         assertThat(HeightUnit.fromCode(code)).isEqualTo(expectedUnit);
     }
-    
+
     @Test
     public void givenInvalidCode_whenFromCode_thenThrowIllegalArgumentException() {
         assertThatThrownBy(() -> HeightUnit.fromCode(INVALID_HEIGHT_UNIT_CODE))
