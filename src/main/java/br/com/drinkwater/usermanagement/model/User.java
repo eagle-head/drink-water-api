@@ -8,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.OffsetDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -102,5 +103,35 @@ public class User {
 
     public void setWaterIntakes(Set<WaterIntake> waterIntakes) {
         this.waterIntakes = waterIntakes;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User that)) return false;
+
+        return Objects.equals(id, that.id) &&
+                Objects.equals(publicId, that.publicId) &&
+                Objects.equals(email, that.email) &&
+                Objects.equals(personal, that.personal) &&
+                Objects.equals(physical, that.physical) &&
+                Objects.equals(settings, that.settings);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, publicId, email, personal, physical, settings);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", publicId='" + publicId + '\'' +
+                ", email='" + email + '\'' +
+                ", personal=" + personal +
+                ", physical=" + physical +
+                ", settings=" + (settings != null ? settings.getId() : "null") +
+                '}';
     }
 }

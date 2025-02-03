@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.OffsetDateTime;
+import java.util.Objects;
 
 @Entity
 public class AlarmSettings {
@@ -87,5 +88,35 @@ public class AlarmSettings {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AlarmSettings that)) return false;
+
+        return goal == that.goal &&
+                intervalMinutes == that.intervalMinutes &&
+                Objects.equals(id, that.id) &&
+                Objects.equals(dailyStartTime, that.dailyStartTime) &&
+                Objects.equals(dailyEndTime, that.dailyEndTime) &&
+                Objects.equals(user, that.user);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, goal, intervalMinutes, dailyStartTime, dailyEndTime, user);
+    }
+
+    @Override
+    public String toString() {
+        return "AlarmSettings{" +
+                "id=" + id +
+                ", goal=" + goal +
+                ", intervalMinutes=" + intervalMinutes +
+                ", dailyStartTime=" + dailyStartTime +
+                ", dailyEndTime=" + dailyEndTime +
+                ", user=" + (user != null ? user.getId() : "null") +
+                '}';
     }
 }
