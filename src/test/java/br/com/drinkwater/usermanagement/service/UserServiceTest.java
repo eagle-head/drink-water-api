@@ -30,134 +30,134 @@ public final class UserServiceTest {
 
     @Test
     public void givenValidUserData_WhenCreateUser_ThenReturnsUserResponseDTO() {
-        when(userRepository.existsByPublicId(USER_UUID))
+        when(this.userRepository.existsByPublicId(USER_UUID))
                 .thenReturn(false);
-        when(userMapper.toEntity(USER_DTO))
+        when(this.userMapper.toEntity(USER_DTO))
                 .thenReturn(USER);
-        when(userRepository.save(USER))
+        when(this.userRepository.save(USER))
                 .thenReturn(USER);
-        when(userMapper.toDto(USER))
+        when(this.userMapper.toDto(USER))
                 .thenReturn(USER_RESPONSE_DTO);
 
-        var actualResponse = userService.createUser(USER_UUID, USER_DTO);
+        var sut = this.userService.createUser(USER_UUID, USER_DTO);
 
-        assertThat(actualResponse).isEqualTo(USER_RESPONSE_DTO);
-        verify(userRepository).existsByPublicId(USER_UUID);
-        verify(userMapper).toEntity(USER_DTO);
-        verify(userRepository).save(USER);
-        verify(userMapper).toDto(USER);
-        verifyNoMoreInteractions(userRepository, userMapper);
+        assertThat(sut).isEqualTo(USER_RESPONSE_DTO);
+        verify(this.userRepository).existsByPublicId(USER_UUID);
+        verify(this.userMapper).toEntity(USER_DTO);
+        verify(this.userRepository).save(USER);
+        verify(this.userMapper).toDto(USER);
+        verifyNoMoreInteractions(this.userRepository, this.userMapper);
     }
 
     @Test
     public void givenExistingPublicId_whenCreateUser_thenThrowEmailAlreadyUsedException() {
-        when(userRepository.existsByPublicId(USER_UUID))
+        when(this.userRepository.existsByPublicId(USER_UUID))
                 .thenReturn(true);
 
-        assertThatThrownBy(() -> userService.createUser(USER_UUID, USER_DTO))
+        assertThatThrownBy(() -> this.userService.createUser(USER_UUID, USER_DTO))
                 .isInstanceOf(UserAlreadyExistsException.class);
 
-        verify(userRepository).existsByPublicId(USER_UUID);
-        verify(userMapper, never()).toEntity(any());
-        verify(userRepository, never()).save(any());
-        verify(userMapper, never()).toDto(any());
-        verifyNoMoreInteractions(userRepository, userMapper);
+        verify(this.userRepository).existsByPublicId(USER_UUID);
+        verify(this.userMapper, never()).toEntity(any());
+        verify(this.userRepository, never()).save(any());
+        verify(this.userMapper, never()).toDto(any());
+        verifyNoMoreInteractions(this.userRepository, this.userMapper);
     }
 
     @Test
     public void givenValidPublicId_whenGetUserByPublicId_thenReturnUserResponseDTO() {
-        when(userRepository.findByPublicId(USER_UUID))
+        when(this.userRepository.findByPublicId(USER_UUID))
                 .thenReturn(Optional.of(USER));
-        when(userMapper.toDto(USER))
+        when(this.userMapper.toDto(USER))
                 .thenReturn(USER_RESPONSE_DTO);
 
-        var result = userService.getUserByPublicId(USER_UUID);
+        var sut = this.userService.getUserByPublicId(USER_UUID);
 
-        assertThat(result).isEqualTo(USER_RESPONSE_DTO);
-        verify(userRepository).findByPublicId(USER_UUID);
-        verify(userMapper).toDto(USER);
-        verifyNoMoreInteractions(userRepository, userMapper);
+        assertThat(sut).isEqualTo(USER_RESPONSE_DTO);
+        verify(this.userRepository).findByPublicId(USER_UUID);
+        verify(this.userMapper).toDto(USER);
+        verifyNoMoreInteractions(this.userRepository, this.userMapper);
     }
 
     @Test
     public void givenInvalidPublicId_whenGetUserByPublicId_thenThrowUserNotFoundException() {
-        when(userRepository.findByPublicId(USER_UUID))
+        when(this.userRepository.findByPublicId(USER_UUID))
                 .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> userService.getUserByPublicId(USER_UUID))
+        assertThatThrownBy(() -> this.userService.getUserByPublicId(USER_UUID))
                 .isInstanceOf(UserNotFoundException.class);
 
-        verify(userRepository).findByPublicId(USER_UUID);
-        verify(userMapper, never()).toDto(any());
-        verifyNoMoreInteractions(userRepository, userMapper);
+        verify(this.userRepository).findByPublicId(USER_UUID);
+        verify(this.userMapper, never()).toDto(any());
+        verifyNoMoreInteractions(this.userRepository, this.userMapper);
     }
 
     @Test
     public void givenValidUserAndUpdateData_whenUpdateUser_thenReturnUpdatedUserDTO() {
-        when(userRepository.findByPublicId(USER_UUID))
+        when(this.userRepository.findByPublicId(USER_UUID))
                 .thenReturn(Optional.of(USER));
-        when(userRepository.save(USER))
+        when(this.userRepository.save(USER))
                 .thenReturn(USER);
-        when(userMapper.toDto(USER))
+        when(this.userMapper.toDto(USER))
                 .thenReturn(USER_RESPONSE_DTO);
 
-        var result = userService.updateUser(USER_UUID, USER_DTO);
+        var sut = this.userService.updateUser(USER_UUID, USER_DTO);
 
-        assertThat(result).isEqualTo(USER_RESPONSE_DTO);
-        verify(userRepository).findByPublicId(USER_UUID);
-        verify(userMapper).updateUserFromDTO(USER, USER_DTO);
-        verify(userRepository).save(USER);
-        verify(userMapper).toDto(USER);
-        verifyNoMoreInteractions(userRepository, userMapper);
+        assertThat(sut).isEqualTo(USER_RESPONSE_DTO);
+        verify(this.userRepository).findByPublicId(USER_UUID);
+        verify(this.userMapper).updateUserFromDTO(USER, USER_DTO);
+        verify(this.userRepository).save(USER);
+        verify(this.userMapper).toDto(USER);
+        verifyNoMoreInteractions(this.userRepository, this.userMapper);
     }
 
     @Test
     public void givenInvalidPublicId_whenUpdateUser_thenThrowUserNotFoundException() {
-        when(userRepository.findByPublicId(USER_UUID))
+        when(this.userRepository.findByPublicId(USER_UUID))
                 .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> userService.updateUser(USER_UUID, USER_DTO))
+        assertThatThrownBy(() -> this.userService.updateUser(USER_UUID, USER_DTO))
                 .isInstanceOf(UserNotFoundException.class);
 
-        verify(userRepository).findByPublicId(USER_UUID);
-        verify(userMapper, never()).updateUserFromDTO(any(), any());
-        verify(userRepository, never()).save(any());
-        verify(userMapper, never()).toDto(any());
-        verifyNoMoreInteractions(userRepository, userMapper);
+        verify(this.userRepository).findByPublicId(USER_UUID);
+        verify(this.userMapper, never()).updateUserFromDTO(any(), any());
+        verify(this.userRepository, never()).save(any());
+        verify(this.userMapper, never()).toDto(any());
+        verifyNoMoreInteractions(this.userRepository, this.userMapper);
     }
 
     @Test
     public void givenValidPublicId_whenDeleteUser_thenByPublicIdShouldBeDeleted() {
-        assertThatCode(() -> userService.deleteByPublicId(USER_UUID))
+        assertThatCode(() -> this.userService.deleteByPublicId(USER_UUID))
                 .doesNotThrowAnyException();
 
-        verify(userRepository).deleteByPublicId(USER_UUID);
-        verifyNoMoreInteractions(userRepository);
+        verify(this.userRepository).deleteByPublicId(USER_UUID);
+        verifyNoMoreInteractions(this.userRepository);
     }
 
     @Test
     public void givenValidPublicId_whenFindByPublicId_thenReturnUser() {
-        when(userRepository.findByPublicId(USER_UUID))
+        when(this.userRepository.findByPublicId(USER_UUID))
                 .thenReturn(Optional.of(USER));
 
-        var result = userService.findByPublicId(USER_UUID);
+        var sut = this.userService.findByPublicId(USER_UUID);
 
-        assertThat(result)
+        assertThat(sut)
                 .isNotNull()
                 .isEqualTo(USER);
-        verify(userRepository).findByPublicId(USER_UUID);
-        verifyNoMoreInteractions(userRepository);
+        verify(this.userRepository).findByPublicId(USER_UUID);
+        verifyNoMoreInteractions(this.userRepository);
     }
 
     @Test
     public void givenInvalidPublicId_whenFindByPublicId_thenThrowUserNotFoundException() {
-        when(userRepository.findByPublicId(USER_UUID))
+        when(this.userRepository.findByPublicId(USER_UUID))
                 .thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> userService.findByPublicId(USER_UUID))
+        assertThatThrownBy(() -> this.userService.findByPublicId(USER_UUID))
                 .isInstanceOf(UserNotFoundException.class);
 
-        verify(userRepository).findByPublicId(USER_UUID);
-        verifyNoMoreInteractions(userRepository);
+        verify(this.userRepository).findByPublicId(USER_UUID);
+        verifyNoMoreInteractions(this.userRepository);
     }
 }
