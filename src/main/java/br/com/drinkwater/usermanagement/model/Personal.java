@@ -6,6 +6,7 @@ import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
 
 import java.time.OffsetDateTime;
+import java.util.Objects;
 
 @Embeddable
 public class Personal {
@@ -53,5 +54,31 @@ public class Personal {
 
     public void setBiologicalSex(BiologicalSex biologicalSex) {
         this.biologicalSex = biologicalSex;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Personal personal)) return false;
+
+        return Objects.equals(firstName, personal.firstName) &&
+                Objects.equals(lastName, personal.lastName) &&
+                Objects.equals(birthDate, personal.birthDate) &&
+                biologicalSex == personal.biologicalSex;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstName, lastName, birthDate, biologicalSex);
+    }
+
+    @Override
+    public String toString() {
+        return "Personal{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", birthDate=" + birthDate +
+                ", biologicalSex=" + biologicalSex +
+                '}';
     }
 }
