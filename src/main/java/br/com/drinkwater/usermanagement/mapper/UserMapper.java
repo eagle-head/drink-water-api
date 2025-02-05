@@ -1,7 +1,11 @@
 package br.com.drinkwater.usermanagement.mapper;
 
-import br.com.drinkwater.usermanagement.dto.*;
-import br.com.drinkwater.usermanagement.model.*;
+import br.com.drinkwater.usermanagement.dto.UserDTO;
+import br.com.drinkwater.usermanagement.dto.UserResponseDTO;
+import br.com.drinkwater.usermanagement.model.AlarmSettings;
+import br.com.drinkwater.usermanagement.model.Personal;
+import br.com.drinkwater.usermanagement.model.Physical;
+import br.com.drinkwater.usermanagement.model.User;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -20,14 +24,14 @@ public class UserMapper {
         this.alarmSettingsMapper = alarmSettingsMapper;
     }
 
-    public User toEntity(UserDTO dto) {
+    public User toEntity(UserDTO dto, UUID publicId) {
         if (dto == null) {
             return null;
         }
 
         User user = new User();
-        user.setPublicId(UUID.randomUUID());
-        this.updateUserFromDTO(user, dto);
+        user.setPublicId(publicId);
+        updateUserFromDTO(user, dto);
 
         return user;
     }
@@ -51,8 +55,7 @@ public class UserMapper {
             return;
         }
 
-        // TODO: A webhook/listener needs to be implemented in Keycloak to sync with the Resource Server
-//        user.setEmail(userDTO.email());
+        user.setEmail(userDTO.email());
 
         Personal personal = personalMapper.toEntity(userDTO.personal());
         user.setPersonal(personal);
@@ -60,14 +63,18 @@ public class UserMapper {
         Physical physical = physicalMapper.toEntity(userDTO.physical());
         user.setPhysical(physical);
 
-        AlarmSettings alarmSettings = alarmSettingsMapper.toEntity(userDTO.settings());
-        if (alarmSettings != null) {
-            if (user.getSettings() != null) {
-                alarmSettings.setId(user.getSettings().getId());
-            }
-
-            alarmSettings.setUser(user);
-            user.setSettings(alarmSettings);
+        if (userDTO.settings() == null) {
+            user.setSettings(null);
+            return;
         }
+
+        if (user.getSettings() != null) {
+            alarmSettingsMapper.updateEntity(user.getSettings(), userDTO.settings());
+            return;
+        }
+
+        AlarmSettings alarmSettings = alarmSettingsMapper.toEntity(userDTO.settings());
+        alarmSettings.setUser(user);
+        user.setSettings(alarmSettings);
     }
 }
