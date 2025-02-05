@@ -32,7 +32,7 @@ public final class UserServiceTest {
     public void givenValidUserData_WhenCreateUser_ThenReturnsUserResponseDTO() {
         when(this.userRepository.existsByPublicId(USER_UUID))
                 .thenReturn(false);
-        when(this.userMapper.toEntity(USER_DTO))
+        when(this.userMapper.toEntity(USER_DTO, USER_UUID))
                 .thenReturn(USER);
         when(this.userRepository.save(USER))
                 .thenReturn(USER);
@@ -43,7 +43,7 @@ public final class UserServiceTest {
 
         assertThat(sut).isEqualTo(USER_RESPONSE_DTO);
         verify(this.userRepository).existsByPublicId(USER_UUID);
-        verify(this.userMapper).toEntity(USER_DTO);
+        verify(this.userMapper).toEntity(USER_DTO, USER_UUID);
         verify(this.userRepository).save(USER);
         verify(this.userMapper).toDto(USER);
         verifyNoMoreInteractions(this.userRepository, this.userMapper);
@@ -58,7 +58,7 @@ public final class UserServiceTest {
                 .isInstanceOf(UserAlreadyExistsException.class);
 
         verify(this.userRepository).existsByPublicId(USER_UUID);
-        verify(this.userMapper, never()).toEntity(any());
+        verify(this.userMapper, never()).toEntity(any(), any());
         verify(this.userRepository, never()).save(any());
         verify(this.userMapper, never()).toDto(any());
         verifyNoMoreInteractions(this.userRepository, this.userMapper);

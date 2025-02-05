@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static br.com.drinkwater.usermanagement.constants.AlarmSettingsTestConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 public final class AlarmSettingsMapperTest {
 
@@ -41,5 +42,17 @@ public final class AlarmSettingsMapperTest {
         var sut = this.mapper.toDto(null);
 
         assertThat(sut).isNull();
+    }
+
+    @Test
+    public void givenNullEntity_whenUpdatingEntity_thenShouldNotThrowException() {
+        assertThatCode(() -> this.mapper.updateEntity(null, ALARM_SETTINGS_DTO))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    public void givenNullDTO_whenUpdatingEntity_thenShouldNotThrowException() {
+        assertThatCode(() -> this.mapper.updateEntity(ALARM_SETTINGS, null))
+                .doesNotThrowAnyException();
     }
 }

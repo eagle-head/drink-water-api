@@ -26,7 +26,7 @@ public class UserService {
     @Transactional
     public UserResponseDTO createUser(UUID publicId, UserDTO userDTO) {
         this.validateUserExistence(publicId);
-        User userEntity = this.userMapper.toEntity(userDTO);
+        User userEntity = this.userMapper.toEntity(userDTO, publicId);
         User savedUser = this.userRepository.save(userEntity);
 
         return this.userMapper.toDto(savedUser);

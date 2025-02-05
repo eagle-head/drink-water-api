@@ -6,7 +6,7 @@ import br.com.drinkwater.usermanagement.model.AlarmSettings;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AlarmSettingsMapper {
+public final class AlarmSettingsMapper {
 
     public AlarmSettings toEntity(AlarmSettingsDTO dto) {
         if (dto == null) {
@@ -14,11 +14,7 @@ public class AlarmSettingsMapper {
         }
 
         AlarmSettings alarmSettings = new AlarmSettings();
-        alarmSettings.setGoal(dto.goal());
-        alarmSettings.setIntervalMinutes(dto.intervalMinutes());
-        alarmSettings.setDailyStartTime(dto.dailyStartTime());
-        alarmSettings.setDailyEndTime(dto.dailyEndTime());
-
+        updateEntity(alarmSettings, dto);
         return alarmSettings;
     }
 
@@ -33,5 +29,15 @@ public class AlarmSettingsMapper {
                 entity.getDailyStartTime(),
                 entity.getDailyEndTime()
         );
+    }
+
+    public void updateEntity(AlarmSettings entity, AlarmSettingsDTO dto) {
+        if (entity == null || dto == null) {
+            return;
+        }
+        entity.setGoal(dto.goal());
+        entity.setIntervalMinutes(dto.intervalMinutes());
+        entity.setDailyStartTime(dto.dailyStartTime());
+        entity.setDailyEndTime(dto.dailyEndTime());
     }
 }
