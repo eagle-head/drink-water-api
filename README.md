@@ -194,11 +194,7 @@ The project follows a clean and modular architecture:
 ```
 src/main/java/br/com/drinkwater/
 ├── config/                  # Application configurations
-│   ├── SecurityConfig       # Security and Keycloak setup
-│   ├── CorsConfig           # CORS settings
-│   └── MessageConfig        # i18n configuration
 ├── core/                    # Core components and utilities
-│   └── PageResponse         # Standardized pagination response
 ├── exception/               # Global exception handling
 ├── hydrationtracking/       # Water intake tracking module
 │   ├── controller/          # REST endpoints
@@ -211,6 +207,7 @@ src/main/java/br/com/drinkwater/
 │   └── validation/          # Custom validators
 ├── usermanagement/          # User management module
 │   ├── controller/          # User endpoints
+│   ├── converter/           # JPA attribute converters for enums
 │   ├── dto/                 # User DTOs
 │   ├── mapper/              # User object mapping
 │   ├── model/               # User domain entities
@@ -388,7 +385,26 @@ Under construction
 
 ## 🛠️ Future Enhancements
 
-Under construction
+* Unit and Integration Testing using Jacoco and Pitest (in progress), including testcontainers for integration tests
+
+* Database Migration Management with Flyway for version control and automated schema updates
+
+* API Documentation and Testing with OpenAPI/Swagger UI
+
+* Event-Driven Architecture implementation using Apache Kafka for asynchronous communication
+
+* Cache Management using:
+  - Memcached for distributed memory caching
+  - Apache Ignite for in-memory computing and caching
+  - Hazelcast for distributed caching
+
+* Metrics and Monitoring using:
+  - Prometheus for metrics collection
+  - Grafana for visualization
+  - Micrometer for application metrics
+  - OpenSearch + Logstash + Kibana for log aggregation
+  - Jaeger or Zipkin for distributed tracing
+  - Alert Manager for notifications
 
 ## 🔨 Development Practices
 

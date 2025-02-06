@@ -12,7 +12,6 @@ import br.com.drinkwater.hydrationtracking.repository.WaterIntakeRepository;
 import br.com.drinkwater.hydrationtracking.specification.WaterIntakeSpecification;
 import br.com.drinkwater.hydrationtracking.validation.WaterIntakeFilterValidator;
 import br.com.drinkwater.usermanagement.model.User;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
