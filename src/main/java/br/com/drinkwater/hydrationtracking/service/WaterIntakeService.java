@@ -10,7 +10,6 @@ import br.com.drinkwater.hydrationtracking.mapper.WaterIntakeMapper;
 import br.com.drinkwater.hydrationtracking.model.WaterIntake;
 import br.com.drinkwater.hydrationtracking.repository.WaterIntakeRepository;
 import br.com.drinkwater.hydrationtracking.specification.WaterIntakeSpecification;
-import br.com.drinkwater.hydrationtracking.validation.WaterIntakeFilterValidator;
 import br.com.drinkwater.usermanagement.model.User;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -22,20 +21,18 @@ public class WaterIntakeService {
 
     private final WaterIntakeRepository waterIntakeRepository;
     private final WaterIntakeMapper waterIntakeMapper;
-    private final WaterIntakeFilterValidator filterValidator;
 
-    public WaterIntakeService(WaterIntakeRepository waterIntakeRepository, WaterIntakeMapper waterIntakeMapper
-            , WaterIntakeFilterValidator filterValidator) {
+    public WaterIntakeService(WaterIntakeRepository waterIntakeRepository, WaterIntakeMapper waterIntakeMapper) {
         this.waterIntakeRepository = waterIntakeRepository;
         this.waterIntakeMapper = waterIntakeMapper;
-        this.filterValidator = filterValidator;
     }
 
     @Transactional
     public ResponseWaterIntakeDTO create(WaterIntakeDTO dto, User user) {
         var waterIntake = waterIntakeMapper.toEntity(dto, user);
-        this.validateDuplicateDateTime(waterIntake);
-        var savedWaterIntake = this.waterIntakeRepository.save(waterIntake);
+        validateDuplicateDateTime(waterIntake);
+        var savedWaterIntake = waterIntakeRepository.save(waterIntake);
+
         return waterIntakeMapper.toResponseDTO(savedWaterIntake);
     }
 
@@ -45,13 +42,14 @@ public class WaterIntakeService {
         var waterIntake = waterIntakeMapper.toEntity(dto, user);
         waterIntake.setId(id);
         validateDuplicateDateTime(waterIntake);
-        var savedWaterIntake = this.waterIntakeRepository.save(waterIntake);
+        var savedWaterIntake = waterIntakeRepository.save(waterIntake);
+
         return waterIntakeMapper.toResponseDTO(savedWaterIntake);
     }
 
     @Transactional(readOnly = true)
     public ResponseWaterIntakeDTO findByIdAndUserId(Long requestedId, Long userId) {
-        return this.waterIntakeRepository.findByIdAndUser_Id(requestedId, userId)
+        return waterIntakeRepository.findByIdAndUser_Id(requestedId, userId)
                 .map(waterIntakeMapper::toResponseDTO)
                 .orElseThrow(() -> new WaterIntakeNotFoundException("Water intake with ID " + requestedId
                         + " not found for the user."));
@@ -63,7 +61,7 @@ public class WaterIntakeService {
     }
 
     private void validateDuplicateDateTime(WaterIntake waterIntake) {
-        var exists = this.waterIntakeRepository.existsByDateTimeUTCAndUser_IdAndIdIsNot(
+        boolean exists = waterIntakeRepository.existsByDateTimeUTCAndUser_IdAndIdIsNot(
                 waterIntake.getDateTimeUTC(),
                 waterIntake.getUser().getId(),
                 waterIntake.getId() == null ? -1L : waterIntake.getId()
@@ -76,7 +74,6 @@ public class WaterIntakeService {
 
     @Transactional(readOnly = true)
     public PageResponse<ResponseWaterIntakeDTO> search(WaterIntakeFilterDTO filter, User user) {
-        this.filterValidator.validate(filter);
 
         var pageable = PageRequest.of(
                 filter.page(),
@@ -86,8 +83,7 @@ public class WaterIntakeService {
         );
 
         var specification = WaterIntakeSpecification.withFilters(filter, user.getId());
-        var result = this.waterIntakeRepository
-                .findAll(specification, pageable)
+        var result = waterIntakeRepository.findAll(specification, pageable)
                 .map(waterIntakeMapper::toResponseDTO);
 
         return PageResponse.of(result);

@@ -4,7 +4,6 @@ import br.com.drinkwater.hydrationtracking.validation.WaterIntakeFilterTimeRange
 import br.com.drinkwater.usermanagement.validation.AlarmSettingsTimeRangeValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-
 import java.lang.annotation.*;
 
 @Documented
@@ -22,10 +21,4 @@ public @interface TimeRangeConstraint {
     String startDateField();
 
     String endDateField();
-
-    int maxDays() default Integer.MAX_VALUE;
-
-    boolean requireSameDay() default false;
-
-    boolean requireSameTimezone() default true;
 }

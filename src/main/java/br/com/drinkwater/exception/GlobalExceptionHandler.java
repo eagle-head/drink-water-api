@@ -52,7 +52,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<Object> handleAuthorizationDeniedException(AuthorizationDeniedException ex, WebRequest request) {
-
         HttpStatus status = HttpStatus.FORBIDDEN;
         String title = status.getReasonPhrase();
         String detail = this.messageSource.getMessage("authorization.denied.detail", null, LocaleContextHolder.getLocale());
@@ -66,7 +65,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(WaterIntakeNotFoundException.class)
     public ResponseEntity<Object> handleWaterIntakeNotFoundException(WaterIntakeNotFoundException ex, WebRequest request) {
-
         HttpStatus status = HttpStatus.NOT_FOUND;
         String title = status.getReasonPhrase();
         String detail = this.messageSource.getMessage("waterintake.not.found.detail", null, LocaleContextHolder.getLocale());
@@ -80,7 +78,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DuplicateDateTimeException.class)
     public ResponseEntity<Object> handleDuplicateDateTimeException(DuplicateDateTimeException ex, WebRequest request) {
-
         HttpStatus status = HttpStatus.BAD_REQUEST;
         String title = status.getReasonPhrase();
         String detail = this.messageSource.getMessage("duplicate.date.time.detail", null, LocaleContextHolder.getLocale());
@@ -94,7 +91,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {
-
         HttpStatus status = HttpStatus.NOT_FOUND;
         String title = status.getReasonPhrase();
         String detail = this.messageSource.getMessage("user.not.found.detail", null, LocaleContextHolder.getLocale());
@@ -108,7 +104,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<Object> handleEmailAlreadyUsedException(UserAlreadyExistsException ex, WebRequest request) {
-
         HttpStatus status = HttpStatus.CONFLICT;
         String title = status.getReasonPhrase();
         String detail = this.messageSource.getMessage("user.already.exists.detail", null, LocaleContextHolder.getLocale());
@@ -122,7 +117,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
-
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         String title = status.getReasonPhrase();
         String detail = this.messageSource.getMessage("internal.server.error.detail", null, LocaleContextHolder.getLocale());
@@ -136,9 +130,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(@NonNull HttpMessageNotReadableException ex,
-                                                                                @NonNull HttpHeaders headers,
-                                                                                @NonNull HttpStatusCode statusCode,
-                                                                                @NonNull WebRequest request) {
+                                                                  @NonNull HttpHeaders headers,
+                                                                  @NonNull HttpStatusCode statusCode,
+                                                                  @NonNull WebRequest request) {
 
         HttpStatus status = HttpStatus.BAD_REQUEST;
         String title = status.getReasonPhrase();
@@ -177,13 +171,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(@NonNull MethodArgumentNotValidException ex,
-                                                                            @NonNull HttpHeaders headers,
-                                                                            @NonNull HttpStatusCode statusCode,
-                                                                            @NonNull WebRequest request) {
+                                                                  @NonNull HttpHeaders headers,
+                                                                  @NonNull HttpStatusCode statusCode,
+                                                                  @NonNull WebRequest request) {
 
         HttpStatus status = HttpStatus.BAD_REQUEST;
         String title = status.getReasonPhrase();
-        String detail = this.messageSource.getMessage("validation.error.detail", null, LocaleContextHolder.getLocale());
+        String detail = this.messageSource
+                .getMessage("validation.error.detail", null, LocaleContextHolder.getLocale());
 
         ProblemDetail problemDetail = ex.getBody();
         problemDetail.setTitle(title);
@@ -193,25 +188,31 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         BindingResult bindingResult = ex.getBindingResult();
 
-        List<Map<String, String>> errors = bindingResult.getFieldErrors().stream()
+        // Collect field errors
+        List<Map<String, String>> fieldErrors = bindingResult.getFieldErrors().stream()
                 .map(fieldError -> {
                     Map<String, String> error = new HashMap<>();
                     error.put("field", fieldError.getField());
-
-                    if ("typeMismatch".equals(fieldError.getCode()) && fieldError.getRejectedValue() != null) {
-                        error.put("message", this.messageSource.getMessage(
-                                "validation.invalid.value",
-                                new Object[]{fieldError.getRejectedValue(), fieldError.getField()},
-                                LocaleContextHolder.getLocale()));
-                    } else {
-                        error.put("message", messageSource.getMessage(fieldError, LocaleContextHolder.getLocale()));
-                    }
+                    error.put("message", messageSource.getMessage(fieldError, LocaleContextHolder.getLocale()));
 
                     return error;
                 })
                 .collect(Collectors.toList());
 
-        problemDetail.setProperty("errors", errors);
+        // Collect global errors (class level)
+        List<Map<String, String>> globalErrors = bindingResult.getGlobalErrors().stream()
+                .map(objectError -> {
+                    Map<String, String> error = new HashMap<>();
+                    error.put("field", objectError.getObjectName());
+                    error.put("message", messageSource.getMessage(objectError, LocaleContextHolder.getLocale()));
+
+                    return error;
+                })
+                .collect(Collectors.toList());
+
+        // Merge field and global errors
+        fieldErrors.addAll(globalErrors);
+        problemDetail.setProperty("errors", fieldErrors);
 
         return super.handleExceptionInternal(ex, problemDetail, headers, status, request);
     }
