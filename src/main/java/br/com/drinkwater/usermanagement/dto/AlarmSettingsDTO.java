@@ -1,16 +1,12 @@
 package br.com.drinkwater.usermanagement.dto;
 
 import br.com.drinkwater.validation.TimeRangeConstraint;
-import br.com.drinkwater.validation.UTCOffsetDateTimeConstraint;
 import jakarta.validation.constraints.*;
-
 import java.time.OffsetDateTime;
 
 @TimeRangeConstraint(
         startDateField = "dailyStartTime",
-        endDateField = "dailyEndTime",
-        requireSameDay = true,
-        message = "{time.range.max.days}"
+        endDateField = "dailyEndTime"
 )
 public record AlarmSettingsDTO(
 
@@ -25,11 +21,11 @@ public record AlarmSettingsDTO(
         int intervalMinutes,
 
         @NotNull(message = "Daily start time is required")
-        @UTCOffsetDateTimeConstraint
+        @PastOrPresent(message = "Daily start time cannot be in the future.")
         OffsetDateTime dailyStartTime,
 
         @NotNull(message = "Daily end time is required")
-        @UTCOffsetDateTimeConstraint
+        @PastOrPresent(message = "Daily end time cannot be in the future.")
         OffsetDateTime dailyEndTime
 ) {
 }

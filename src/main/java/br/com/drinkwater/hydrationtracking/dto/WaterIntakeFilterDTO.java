@@ -1,30 +1,26 @@
 package br.com.drinkwater.hydrationtracking.dto;
 
 import br.com.drinkwater.validation.TimeRangeConstraint;
-import br.com.drinkwater.validation.UTCOffsetDateTimeConstraint;
+import br.com.drinkwater.hydrationtracking.validation.ValidWaterIntakeFilter;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
-
 import java.time.OffsetDateTime;
 
+@ValidWaterIntakeFilter
 @TimeRangeConstraint(
         startDateField = "startDate",
-        endDateField = "endDate",
-        maxDays = 31,
-        message = "{time.range.max.days}"
+        endDateField = "endDate"
 )
 public record WaterIntakeFilterDTO(
 
         @NotNull(message = "The start date must not be null.")
         @PastOrPresent(message = "The start date must be a past or present date.")
-        @UTCOffsetDateTimeConstraint
         OffsetDateTime startDate,
 
         @NotNull(message = "The end date must not be null.")
         @PastOrPresent(message = "The end date must be a past or present date.")
-        @UTCOffsetDateTimeConstraint
         OffsetDateTime endDate,
 
         @Min(value = 50, message = "The minimum volume must be at least 50.")
