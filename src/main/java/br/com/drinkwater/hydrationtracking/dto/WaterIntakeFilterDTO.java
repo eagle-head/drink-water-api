@@ -1,6 +1,6 @@
 package br.com.drinkwater.hydrationtracking.dto;
 
-import br.com.drinkwater.validation.TimeRangeConstraint;
+import br.com.drinkwater.core.validation.TimeRangeConstraint;
 import br.com.drinkwater.hydrationtracking.validation.ValidWaterIntakeFilter;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

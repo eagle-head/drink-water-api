@@ -1,4 +1,4 @@
-package br.com.drinkwater.validation;
+package br.com.drinkwater.core.validation;
 
 import br.com.drinkwater.hydrationtracking.validation.WaterIntakeFilterTimeRangeValidator;
 import br.com.drinkwater.usermanagement.validation.AlarmSettingsTimeRangeValidator;

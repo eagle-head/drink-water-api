@@ -1,6 +1,6 @@
 package br.com.drinkwater.usermanagement.dto;
 
-import br.com.drinkwater.validation.TimeRangeConstraint;
+import br.com.drinkwater.core.validation.TimeRangeConstraint;
 import jakarta.validation.constraints.*;
 import java.time.OffsetDateTime;
 
