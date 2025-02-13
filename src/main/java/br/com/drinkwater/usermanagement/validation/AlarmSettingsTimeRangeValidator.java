@@ -1,34 +1,73 @@
 package br.com.drinkwater.usermanagement.validation;
 
-import br.com.drinkwater.validation.BaseTimeRangeValidator;
+import br.com.drinkwater.core.validation.BaseTimeRangeValidator;
+import br.com.drinkwater.core.validation.date.DateTimeValidationRules;
 import br.com.drinkwater.usermanagement.dto.AlarmSettingsDTO;
 import jakarta.validation.ConstraintValidatorContext;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
 
 @Component
 public class AlarmSettingsTimeRangeValidator extends BaseTimeRangeValidator<AlarmSettingsDTO> {
 
-    public AlarmSettingsTimeRangeValidator() {
-        super();
+    private static final int BUSINESS_HOURS_START = 6;
+    private static final int BUSINESS_HOURS_END = 22;
+
+    public AlarmSettingsTimeRangeValidator(MessageSource messageSource) {
+        super(messageSource);
     }
 
     @Override
-    public boolean isValid(AlarmSettingsDTO value, ConstraintValidatorContext context) {
+    protected OffsetDateTime extractStartDate(AlarmSettingsDTO value) {
+        return value.dailyStartTime();
+    }
 
-        boolean baseValid = super.isValid(value, context);
-        if (!baseValid) {
+    @Override
+    protected OffsetDateTime extractEndDate(AlarmSettingsDTO value) {
+        return value.dailyEndTime();
+    }
+
+    @Override
+    protected DateTimeValidationRules getDateTimeValidationConfig() {
+        return DateTimeValidationRules.forAlarmSettings();
+    }
+
+    @Override
+    protected boolean validateCustomRules(OffsetDateTime startDate,
+                                          OffsetDateTime endDate,
+                                          DateTimeValidationRules config,
+                                          ConstraintValidatorContext context) {
+        if (startDate == null || endDate == null) {
             return false;
         }
 
-        if (!value.dailyStartTime().toLocalDate().equals(value.dailyEndTime().toLocalDate())) {
-            addConstraintViolation(
-                    context,
-                    "Start and end times must be on the same day.",
-                    "dailyStartTime");
+        LocalTime startTime = startDate.toLocalTime();
+        LocalTime endTime = endDate.toLocalTime();
+        LocalTime businessStart = LocalTime.of(BUSINESS_HOURS_START, 0);
+        LocalTime businessEnd = LocalTime.of(BUSINESS_HOURS_END, 0);
 
-            return false;
+        String message = messageSource.getMessage(
+                "validation.time.businesshours.detail",
+                new Object[]{BUSINESS_HOURS_START, BUSINESS_HOURS_END},
+                LocaleContextHolder.getLocale()
+        );
+
+        boolean isValid = true;
+
+        if (startTime.isBefore(businessStart) || startTime.isAfter(businessEnd)) {
+            addConstraintViolation(context, message, constraint.startDateField());
+            isValid = false;
         }
 
-        return true;
+        if (endTime.isBefore(businessStart) || endTime.isAfter(businessEnd)) {
+            addConstraintViolation(context, message, constraint.endDateField());
+            isValid = false;
+        }
+
+        return isValid;
     }
 }

@@ -1,27 +1,34 @@
 package br.com.drinkwater.usermanagement.dto;
 
 import br.com.drinkwater.usermanagement.model.BiologicalSex;
+import br.com.drinkwater.core.validation.date.ValidBirthDate;
 import jakarta.validation.constraints.*;
 
 import java.time.OffsetDateTime;
 
 public record PersonalDTO(
 
-        @NotBlank(message = "First name is required")
-        @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
-        @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\s]*$", message = "First name must contain only letters")
+        @NotBlank(message = "{personalDTO.firstName.notBlank}")
+        @Size(min = 2, max = 50, message = "{personalDTO.firstName.size}")
+        @Pattern(
+                regexp = "^[a-zA-ZÀ-ÿ\u0080-\u024F'](?:[a-zA-ZÀ-ÿ\u0080-\u024F'\\s-]*[a-zA-ZÀ-ÿ\u0080-\u024F']){1,}$",
+                message = "{personalDTO.firstName.pattern}"
+        )
         String firstName,
 
-        @NotBlank(message = "Last name is required")
-        @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
-        @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\s]*$", message = "Last name must contain only letters")
+        @NotBlank(message = "{personalDTO.lastName.notBlank}")
+        @Size(min = 2, max = 50, message = "{personalDTO.lastName.size}")
+        @Pattern(
+                regexp = "^[a-zA-ZÀ-ÿ\u0080-\u024F'](?:[a-zA-ZÀ-ÿ\u0080-\u024F'\\s-]*[a-zA-ZÀ-ÿ\u0080-\u024F']){1,}$",
+                message = "{personalDTO.lastName.pattern}"
+        )
         String lastName,
 
-        @NotNull(message = "Birth date is required")
-        @Past(message = "Birth date must be in the past")
+        @NotNull(message = "{personalDTO.birthDate.notNull}")
+        @ValidBirthDate
         OffsetDateTime birthDate,
 
-        @NotNull(message = "Biological sex is required")
+        @NotNull(message = "{personalDTO.biologicalSex.notNull}")
         BiologicalSex biologicalSex
 ) {
 }
