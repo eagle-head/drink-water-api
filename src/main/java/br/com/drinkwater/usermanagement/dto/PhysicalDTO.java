@@ -11,22 +11,22 @@ import java.math.BigDecimal;
 
 public record PhysicalDTO(
 
-        @NotNull(message = "Weight is required")
-        @Positive(message = "Weight must be a positive value")
-        @DecimalMax(value = "500.0", message = "Weight cannot be greater than 500")
-        @DecimalMin(value = "20.0", message = "Weight cannot be less than 20")
+        @NotNull(message = "{physicalDTO.weight.notNull}")
+        @Positive(message = "{physicalDTO.weight.positive}")
+        @DecimalMax(value = "500", message = "{physicalDTO.weight.decimalMax}")
+        @DecimalMin(value = "45", message = "{physicalDTO.weight.decimalMin}")
         BigDecimal weight,
 
-        @NotNull(message = "Weight unit is required")
+        @NotNull(message = "{physicalDTO.weightUnit.notNull}")
         WeightUnit weightUnit,
 
-        @NotNull(message = "Height is required")
-        @Positive(message = "Height must be a positive value")
-        @DecimalMax(value = "250", message = "Height cannot be greater than 250 centimeters")
-        @DecimalMin(value = "50", message = "Height cannot be less than 50 centimeters")
+        @NotNull(message = "{physicalDTO.height.notNull}")
+        @Positive(message = "{physicalDTO.height.positive}")
+        @DecimalMax(value = "250", message = "{physicalDTO.height.decimalMax}")
+        @DecimalMin(value = "50", message = "{physicalDTO.height.decimalMin}")
         BigDecimal height,
 
-        @NotNull(message = "Height unit is required")
+        @NotNull(message = "{physicalDTO.heightUnit.notNull}")
         HeightUnit heightUnit
 ) {
 }
