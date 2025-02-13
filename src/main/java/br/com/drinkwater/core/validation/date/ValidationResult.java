@@ -25,7 +25,6 @@ public final class ValidationResult<T> {
         return value; 
     }
 
-    // Factory methods com tipo genérico para maior flexibilidade
     public static <T> ValidationResult<T> valid(T value) {
         return new ValidationResult<>(true, null, value);
     }

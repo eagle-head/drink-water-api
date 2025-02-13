@@ -10,15 +10,15 @@ import java.time.OffsetDateTime;
 
 public record WaterIntakeDTO(
 
-        @NotNull(message = "DateTime is required")
-        @PastOrPresent(message = "DateTime cannot be in the future")
+        @NotNull(message = "{waterintake.datetime.notnull}")
+        @PastOrPresent(message = "{waterintake.datetime.pastorpresent}")
         OffsetDateTime dateTimeUTC,
 
-        @Positive(message = "Volume must be greater than zero")
-        @Max(value = 5000, message = "Volume cannot be greater than 5000ml")
+        @Positive(message = "{waterintake.volume.positive}")
+        @Max(value = 5000, message = "{waterintake.volume.max}")
         int volume,
 
-        @NotNull(message = "Volume unit is required")
+        @NotNull(message = "{waterintake.volumeunit.notnull}")
         VolumeUnit volumeUnit
 ) {
 }

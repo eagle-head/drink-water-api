@@ -1,49 +1,73 @@
 package br.com.drinkwater.usermanagement.validation;
 
 import br.com.drinkwater.core.validation.BaseTimeRangeValidator;
-import br.com.drinkwater.core.validation.date.DateTimeValidationConfig;
+import br.com.drinkwater.core.validation.date.DateTimeValidationRules;
 import br.com.drinkwater.usermanagement.dto.AlarmSettingsDTO;
 import jakarta.validation.ConstraintValidatorContext;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 
 @Component
 public class AlarmSettingsTimeRangeValidator extends BaseTimeRangeValidator<AlarmSettingsDTO> {
 
-    private static final int BUSINESS_HOURS_START = 6; // 06:00 AM
-    private static final int BUSINESS_HOURS_END = 22;  // 22:00 PM
+    private static final int BUSINESS_HOURS_START = 6;
+    private static final int BUSINESS_HOURS_END = 22;
 
-    @Override
-    protected DateTimeValidationConfig getDateTimeValidationConfig() {
-        return DateTimeValidationConfig.forAlarmSettings();
+    public AlarmSettingsTimeRangeValidator(MessageSource messageSource) {
+        super(messageSource);
     }
 
     @Override
-    protected boolean validateDateRange(OffsetDateTime startDate,
-                                        OffsetDateTime endDate,
-                                        DateTimeValidationConfig config,
-                                        ConstraintValidatorContext context) {
+    protected OffsetDateTime extractStartDate(AlarmSettingsDTO value) {
+        return value.dailyStartTime();
+    }
 
-        if (!super.validateDateRange(startDate, endDate, config, context)) {
+    @Override
+    protected OffsetDateTime extractEndDate(AlarmSettingsDTO value) {
+        return value.dailyEndTime();
+    }
+
+    @Override
+    protected DateTimeValidationRules getDateTimeValidationConfig() {
+        return DateTimeValidationRules.forAlarmSettings();
+    }
+
+    @Override
+    protected boolean validateCustomRules(OffsetDateTime startDate,
+                                          OffsetDateTime endDate,
+                                          DateTimeValidationRules config,
+                                          ConstraintValidatorContext context) {
+        if (startDate == null || endDate == null) {
             return false;
         }
 
-        int startHour = startDate.getHour();
-        int endHour = endDate.getHour();
-        if (startHour < BUSINESS_HOURS_START || startHour > BUSINESS_HOURS_END ||
-                endHour < BUSINESS_HOURS_START || endHour > BUSINESS_HOURS_END) {
+        LocalTime startTime = startDate.toLocalTime();
+        LocalTime endTime = endDate.toLocalTime();
+        LocalTime businessStart = LocalTime.of(BUSINESS_HOURS_START, 0);
+        LocalTime businessEnd = LocalTime.of(BUSINESS_HOURS_END, 0);
 
-            addConstraintViolation(
-                    context,
-                    String.format("Alarm times must be between %d:00 and %d:00",
-                            BUSINESS_HOURS_START, BUSINESS_HOURS_END),
-                    constraint.startDateField()
-            );
+        String message = messageSource.getMessage(
+                "validation.time.businesshours.detail",
+                new Object[]{BUSINESS_HOURS_START, BUSINESS_HOURS_END},
+                LocaleContextHolder.getLocale()
+        );
 
-            return false;
+        boolean isValid = true;
+
+        if (startTime.isBefore(businessStart) || startTime.isAfter(businessEnd)) {
+            addConstraintViolation(context, message, constraint.startDateField());
+            isValid = false;
         }
 
-        return true;
+        if (endTime.isBefore(businessStart) || endTime.isAfter(businessEnd)) {
+            addConstraintViolation(context, message, constraint.endDateField());
+            isValid = false;
+        }
+
+        return isValid;
     }
 }

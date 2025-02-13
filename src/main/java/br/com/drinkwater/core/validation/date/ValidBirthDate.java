@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidBirthDate {
 
-    String message() default "Invalid birth date";
+    String message() default "{validation.birthdate.invalid}";
 
     int minimumAge() default 18;
 

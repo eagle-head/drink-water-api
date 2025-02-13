@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = {WaterIntakeFilterTimeRangeValidator.class, AlarmSettingsTimeRangeValidator.class})
 public @interface TimeRangeConstraint {
 
-    String message() default "Invalid time range";
+    String message() default "{validation.timerange.constraint.default}";
 
     Class<?>[] groups() default {};
 

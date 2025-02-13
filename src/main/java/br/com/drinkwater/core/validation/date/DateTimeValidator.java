@@ -1,5 +1,8 @@
 package br.com.drinkwater.core.validation.date;
 
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -7,22 +10,27 @@ import java.time.format.DateTimeParseException;
 public class DateTimeValidator {
 
     private static final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+    private final MessageSource messageSource;
 
-    public static ValidationResult<OffsetDateTime> validateUTCDateTime(String dateTimeStr,
-                                                                       DateTimeValidationConfig config) {
+    public DateTimeValidator(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
+    public ValidationResult<OffsetDateTime> validateUTCDateTime(String dateTimeStr,
+                                                                DateTimeValidationRules config) {
         try {
             OffsetDateTime dateTime = OffsetDateTime.parse(dateTimeStr, UTC_FORMATTER);
 
             if (!dateTime.getOffset().equals(ZoneOffset.UTC)) {
-                return ValidationResult.invalid("Date must be in UTC timezone");
+                return ValidationResult.invalid(getMessage("validation.datetime.utc.timezone"));
             }
 
             if (!config.allowMilliseconds() && dateTime.getNano() > 0) {
-                return ValidationResult.invalid("Date cannot contain milliseconds");
+                return ValidationResult.invalid(getMessage("validation.datetime.no.milliseconds"));
             }
 
             if (config.requirePast() && dateTime.isAfter(OffsetDateTime.now())) {
-                return ValidationResult.invalid("Date must be in the past");
+                return ValidationResult.invalid(getMessage("validation.datetime.must.past"));
             }
 
             if (config.minimumAge() != null) {
@@ -32,7 +40,8 @@ public class DateTimeValidator {
 
                 if (age.getYears() < config.minimumAge()) {
                     return ValidationResult.invalid(
-                            String.format("Must be at least %d years old", config.minimumAge())
+                            getMessage("validation.datetime.minimum.age",
+                                    new Object[]{config.minimumAge()})
                     );
                 }
             }
@@ -40,16 +49,20 @@ public class DateTimeValidator {
             return ValidationResult.valid(dateTime);
 
         } catch (DateTimeParseException e) {
-            return ValidationResult.invalid("Invalid date format. Expected format: YYYY-MM-DDThh:mm:ssZ");
+            return ValidationResult.invalid(getMessage("validation.datetime.invalid.format"));
         }
     }
 
-    public static ValidationResult<OffsetDateTime> validateUTCDateTime(OffsetDateTime dateTime,
-                                                                       DateTimeValidationConfig config) {
+    public ValidationResult<OffsetDateTime> validateUTCDateTime(OffsetDateTime dateTime,
+                                                                DateTimeValidationRules config) {
         if (dateTime == null) {
-            return ValidationResult.invalid("Date cannot be null");
+            return ValidationResult.invalid(getMessage("validation.datetime.null"));
         }
 
         return validateUTCDateTime(dateTime.format(UTC_FORMATTER), config);
+    }
+
+    private String getMessage(String code, Object... args) {
+        return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
     }
 }
