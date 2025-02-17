@@ -5,6 +5,7 @@ import br.com.drinkwater.usermanagement.model.*;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -24,7 +25,11 @@ public final class UserTestConstants {
 
     // Constants for update tests
     public static final String UPDATE_EMAIL = "john.update@example.com";
-    public static final OffsetDateTime UPDATE_NOW = OffsetDateTime.now();
+    public static final OffsetDateTime UPDATE_NOW = OffsetDateTime.now()
+            .withOffsetSameInstant(ZoneOffset.UTC)
+            .withSecond(0)
+            .withNano(0);
+
 
     public static final PersonalDTO UPDATE_PERSONAL_DTO = new PersonalDTO(
             "John",
@@ -43,8 +48,8 @@ public final class UserTestConstants {
     public static final AlarmSettingsDTO UPDATE_SETTINGS_DTO = new AlarmSettingsDTO(
             2000,
             30,
-            UPDATE_NOW.withHour(8).withMinute(0),
-            UPDATE_NOW.withHour(22).withMinute(0)
+            UPDATE_NOW.withHour(8).withMinute(0).withSecond(0),
+            UPDATE_NOW.withHour(22).withMinute(0).withSecond(0)
     );
 
     public static final UserDTO UPDATE_USER_DTO = new UserDTO(
@@ -63,6 +68,44 @@ public final class UserTestConstants {
     );
 
     public static final AlarmSettings EXISTING_ALARM_SETTINGS;
+
+    public static final OffsetDateTime INVALID_EARLY_START_TIME = UPDATE_NOW
+            .withHour(5)
+            .withMinute(0)
+            .withSecond(0);
+
+    public static final OffsetDateTime INVALID_LATE_END_TIME = UPDATE_NOW
+            .withHour(23)
+            .withMinute(0)
+            .withSecond(0);
+
+    public static final AlarmSettingsDTO INVALID_EARLY_TIME_SETTINGS_DTO = new AlarmSettingsDTO(
+            2000,
+            30,
+            INVALID_EARLY_START_TIME,
+            UPDATE_NOW.withHour(17).withMinute(0).withSecond(0)
+    );
+
+    public static final AlarmSettingsDTO INVALID_LATE_TIME_SETTINGS_DTO = new AlarmSettingsDTO(
+            2000,
+            30,
+            UPDATE_NOW.withHour(8).withMinute(0).withSecond(0),
+            INVALID_LATE_END_TIME
+    );
+
+    public static final UserDTO INVALID_EARLY_TIME_USER_DTO = new UserDTO(
+            UPDATE_EMAIL,
+            UPDATE_PERSONAL_DTO,
+            UPDATE_PHYSICAL_DTO,
+            INVALID_EARLY_TIME_SETTINGS_DTO
+    );
+
+    public static final UserDTO INVALID_LATE_TIME_USER_DTO = new UserDTO(
+            UPDATE_EMAIL,
+            UPDATE_PERSONAL_DTO,
+            UPDATE_PHYSICAL_DTO,
+            INVALID_LATE_TIME_SETTINGS_DTO
+    );
 
     static {
         // Initialize regular test constants

@@ -92,11 +92,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex, WebRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND;
-        String title = status.getReasonPhrase();
         String detail = this.messageSource.getMessage("user.not.found.detail", null, LocaleContextHolder.getLocale());
 
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
-        problemDetail.setTitle(title);
         problemDetail.setType(URI.create(BASE_ERROR_URI + "/user-not-found"));
 
         return super.handleExceptionInternal(ex, problemDetail, new HttpHeaders(), status, request);
@@ -105,11 +103,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<Object> handleEmailAlreadyUsedException(UserAlreadyExistsException ex, WebRequest request) {
         HttpStatus status = HttpStatus.CONFLICT;
-        String title = status.getReasonPhrase();
         String detail = this.messageSource.getMessage("user.already.exists.detail", null, LocaleContextHolder.getLocale());
 
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
-        problemDetail.setTitle(title);
         problemDetail.setType(URI.create(BASE_ERROR_URI + "/user-already-exists"));
 
         return super.handleExceptionInternal(ex, problemDetail, new HttpHeaders(), status, request);
