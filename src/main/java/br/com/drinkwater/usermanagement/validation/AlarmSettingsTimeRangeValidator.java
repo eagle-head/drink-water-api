@@ -41,9 +41,6 @@ public class AlarmSettingsTimeRangeValidator extends BaseTimeRangeValidator<Alar
                                           OffsetDateTime endDate,
                                           DateTimeValidationRules config,
                                           ConstraintValidatorContext context) {
-        if (startDate == null || endDate == null) {
-            return false;
-        }
 
         LocalTime startTime = startDate.toLocalTime();
         LocalTime endTime = endDate.toLocalTime();

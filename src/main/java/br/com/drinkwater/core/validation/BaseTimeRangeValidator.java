@@ -8,6 +8,7 @@ import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 
+import java.time.Duration;
 import java.time.OffsetDateTime;
 
 public abstract class BaseTimeRangeValidator<T> implements ConstraintValidator<TimeRangeConstraint, T> {
@@ -32,36 +33,32 @@ public abstract class BaseTimeRangeValidator<T> implements ConstraintValidator<T
             return true;
         }
 
+        OffsetDateTime startDate = this.extractStartDate(value);
+        OffsetDateTime endDate = this.extractEndDate(value);
+
+        if (startDate == null || endDate == null) {
+            return true;
+        }
+
         context.disableDefaultConstraintViolation();
         DateTimeValidationRules config = getDateTimeValidationConfig();
 
-        OffsetDateTime startDate = extractStartDate(value);
-        OffsetDateTime endDate = extractEndDate(value);
-
-        if (startDate == null || endDate == null) {
-            addConstraintViolation(context,
-                    getMessage("validation.timerange.null.dates"),
-                    constraint.startDateField());
-            return false;
-        }
-
         ValidationResult<OffsetDateTime> startValidation = validateDate(startDate, config);
         if (!startValidation.isValid()) {
-            addConstraintViolation(context, startValidation.getErrorMessage(),
-                    constraint.startDateField());
+            addConstraintViolation(context, startValidation.getErrorMessage(), constraint.startDateField());
             return false;
         }
 
         ValidationResult<OffsetDateTime> endValidation = validateDate(endDate, config);
         if (!endValidation.isValid()) {
-            addConstraintViolation(context, endValidation.getErrorMessage(),
-                    constraint.endDateField());
+            addConstraintViolation(context, endValidation.getErrorMessage(), constraint.endDateField());
             return false;
         }
 
         return validateTimeRange(startDate, endDate, config, context) &&
                 validateCustomRules(startDate, endDate, config, context);
     }
+
 
     protected abstract OffsetDateTime extractStartDate(T value);
 
@@ -93,16 +90,17 @@ public abstract class BaseTimeRangeValidator<T> implements ConstraintValidator<T
             return false;
         }
 
-        if (config.minimumMinutesInterval() != null) {
-            long minutesBetween = java.time.Duration.between(startDate, endDate).toMinutes();
-            if (minutesBetween < config.minimumMinutesInterval()) {
-                addConstraintViolation(context,
-                        getMessage("validation.timerange.minimum.interval",
-                                new Object[]{config.minimumMinutesInterval()}),
-                        constraint.startDateField());
-                return false;
-            }
+        if (config.minimumMinutesInterval() != null &&
+                Duration.between(startDate, endDate).toMinutes() < config.minimumMinutesInterval()) {
+            addConstraintViolation(
+                    context,
+                    getMessage("validation.timerange.minimum.interval", config.minimumMinutesInterval()),
+                    constraint.startDateField()
+            );
+
+            return false;
         }
+
 
         return true;
     }

@@ -2,9 +2,10 @@ package br.com.drinkwater.hydrationtracking.dto;
 
 import br.com.drinkwater.core.validation.TimeRangeConstraint;
 import br.com.drinkwater.hydrationtracking.validation.ValidWaterIntakeFilter;
-import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
+import org.hibernate.validator.constraints.Range;
+
 import java.time.OffsetDateTime;
 
 @ValidWaterIntakeFilter
@@ -22,16 +23,16 @@ public record WaterIntakeFilterDTO(
         @PastOrPresent(message = "{waterintakefilter.enddate.pastorpresent}")
         OffsetDateTime endDate,
 
-        @Size(min = 50, max = 5000, message = "{waterintakefilter.volume.range}")
+        @Range(min = 50, max = 5000, message = "{waterintakefilter.volume.range}")
         Integer minVolume,
 
-        @Size(min = 50, max = 5000, message = "{waterintakefilter.volume.range}")
+        @Range(min = 50, max = 5000, message = "{waterintakefilter.volume.range}")
         Integer maxVolume,
 
-        @Size(max = 50, message = "{waterintakefilter.page.range}")
+        @Range(min = 0, max = 50, message = "{waterintakefilter.page.range}")
         Integer page,
 
-        @Size(min = 1, max = 50, message = "{waterintakefilter.size.range}")
+        @Range(min = 1, max = 50, message = "{waterintakefilter.size.range}")
         Integer size,
 
         String sortField,

@@ -151,7 +151,7 @@ public final class UserControllerTest {
     @Test
     public void givenExistingUser_whenCreateUser_thenThrowUserAlreadyExistsException() throws Exception {
         when(this.userService.createUser(USER_UUID, USER_DTO))
-                .thenThrow(new UserAlreadyExistsException());
+                .thenThrow(UserAlreadyExistsException.class);
 
         mockMvc.perform(post("/users")
                         .with(jwt()

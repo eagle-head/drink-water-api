@@ -12,7 +12,6 @@ import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authorization.AuthorizationDeniedException;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,7 +27,7 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private static final String BASE_ERROR_URI = "https://www.drinkwater.com.br";
+    private static final String PROBLEM_DETAILS_BASE_URL = "https://www.drinkwater.com.br";
 
     private final MessageSource messageSource;
 
@@ -39,12 +38,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(InvalidFilterException.class)
     public ResponseEntity<Object> handleInvalidFilterException(InvalidFilterException ex, WebRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
-        String title = status.getReasonPhrase();
         String detail = this.messageSource.getMessage("invalid.filter.detail", null, LocaleContextHolder.getLocale());
 
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
-        problemDetail.setTitle(title);
-        problemDetail.setType(URI.create(BASE_ERROR_URI + "/invalid-filter"));
+        problemDetail.setType(URI.create(PROBLEM_DETAILS_BASE_URL + "/invalid-filter"));
         problemDetail.setProperty("errors", ex.getErrors());
 
         return super.handleExceptionInternal(ex, problemDetail, new HttpHeaders(), status, request);
@@ -53,12 +50,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<Object> handleAuthorizationDeniedException(AuthorizationDeniedException ex, WebRequest request) {
         HttpStatus status = HttpStatus.FORBIDDEN;
-        String title = status.getReasonPhrase();
         String detail = this.messageSource.getMessage("authorization.denied.detail", null, LocaleContextHolder.getLocale());
 
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
-        problemDetail.setTitle(title);
-        problemDetail.setType(URI.create(BASE_ERROR_URI + "/forbidden"));
+        problemDetail.setType(URI.create(PROBLEM_DETAILS_BASE_URL + "/forbidden"));
 
         return super.handleExceptionInternal(ex, problemDetail, new HttpHeaders(), status, request);
     }
@@ -66,12 +61,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(WaterIntakeNotFoundException.class)
     public ResponseEntity<Object> handleWaterIntakeNotFoundException(WaterIntakeNotFoundException ex, WebRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND;
-        String title = status.getReasonPhrase();
         String detail = this.messageSource.getMessage("waterintake.not.found.detail", null, LocaleContextHolder.getLocale());
 
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
-        problemDetail.setTitle(title);
-        problemDetail.setType(URI.create(BASE_ERROR_URI + "/waterintake-not-found"));
+        problemDetail.setType(URI.create(PROBLEM_DETAILS_BASE_URL + "/waterintake-not-found"));
 
         return super.handleExceptionInternal(ex, problemDetail, new HttpHeaders(), status, request);
     }
@@ -79,12 +72,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DuplicateDateTimeException.class)
     public ResponseEntity<Object> handleDuplicateDateTimeException(DuplicateDateTimeException ex, WebRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
-        String title = status.getReasonPhrase();
         String detail = this.messageSource.getMessage("duplicate.date.time.detail", null, LocaleContextHolder.getLocale());
 
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
-        problemDetail.setTitle(title);
-        problemDetail.setType(URI.create(BASE_ERROR_URI + "/time-range-validation-error"));
+        problemDetail.setType(URI.create(PROBLEM_DETAILS_BASE_URL + "/time-range-validation-error"));
 
         return super.handleExceptionInternal(ex, problemDetail, new HttpHeaders(), status, request);
     }
@@ -95,7 +86,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         String detail = this.messageSource.getMessage("user.not.found.detail", null, LocaleContextHolder.getLocale());
 
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
-        problemDetail.setType(URI.create(BASE_ERROR_URI + "/user-not-found"));
+        problemDetail.setType(URI.create(PROBLEM_DETAILS_BASE_URL + "/user-not-found"));
 
         return super.handleExceptionInternal(ex, problemDetail, new HttpHeaders(), status, request);
     }
@@ -106,7 +97,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         String detail = this.messageSource.getMessage("user.already.exists.detail", null, LocaleContextHolder.getLocale());
 
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
-        problemDetail.setType(URI.create(BASE_ERROR_URI + "/user-already-exists"));
+        problemDetail.setType(URI.create(PROBLEM_DETAILS_BASE_URL + "/user-already-exists"));
 
         return super.handleExceptionInternal(ex, problemDetail, new HttpHeaders(), status, request);
     }
@@ -114,12 +105,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        String title = status.getReasonPhrase();
         String detail = this.messageSource.getMessage("internal.server.error.detail", null, LocaleContextHolder.getLocale());
 
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
-        problemDetail.setTitle(title);
-        problemDetail.setType(URI.create(BASE_ERROR_URI + "/internal-server-error"));
+        problemDetail.setType(URI.create(PROBLEM_DETAILS_BASE_URL + "/internal-server-error"));
 
         return super.handleExceptionInternal(ex, problemDetail, new HttpHeaders(), status, request);
     }
@@ -129,24 +118,37 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   @NonNull HttpHeaders headers,
                                                                   @NonNull HttpStatusCode statusCode,
                                                                   @NonNull WebRequest request) {
-
+        // Set basic error response properties
         HttpStatus status = HttpStatus.BAD_REQUEST;
-        String title = status.getReasonPhrase();
-        String detail = this.messageSource.getMessage("parsing.error.detail", null, LocaleContextHolder.getLocale());
+        String detail = this.messageSource.getMessage(
+                "parsing.error.detail",
+                null,
+                LocaleContextHolder.getLocale()
+        );
 
-        ProblemDetail problemDetail = createProblemDetail(ex, status, detail, null, null, request);
-        problemDetail.setTitle(title);
+        // Create problem detail with basic information
+        ProblemDetail problemDetail = this.createProblemDetail(
+                ex,
+                status,
+                detail,
+                null,
+                null,
+                request
+        );
         problemDetail.setDetail(detail);
         problemDetail.setStatus(statusCode.value());
-        problemDetail.setType(URI.create(BASE_ERROR_URI + "/parsing-error"));
+        problemDetail.setType(URI.create(PROBLEM_DETAILS_BASE_URL + "/parsing-error"));
 
+        // Check for InvalidFormatException to provide more detailed error information
         Throwable cause = ex.getCause();
         if (cause instanceof InvalidFormatException invalidFormatException) {
+            // Extract field information and rejected values from the exception
             List<Map<String, String>> errors = invalidFormatException.getPath().stream()
                     .map(ref -> {
                         String field = ref.getFieldName();
                         String rejectedValue = invalidFormatException.getValue().toString();
 
+                        // Create error detail with field name and localized message
                         Map<String, String> error = new HashMap<>();
                         error.put("field", field);
                         error.put("message", this.messageSource.getMessage(
@@ -159,6 +161,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
             problemDetail.setProperty("errors", errors);
         } else if (cause != null) {
+            // For other exceptions, just include the cause message
             problemDetail.setProperty("cause", cause.getMessage());
         }
 
@@ -167,46 +170,53 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(@NonNull MethodArgumentNotValidException ex,
-                                                                  @NonNull HttpHeaders headers,
-                                                                  @NonNull HttpStatusCode statusCode,
-                                                                  @NonNull WebRequest request) {
+                                                        @NonNull HttpHeaders headers,
+                                                        @NonNull HttpStatusCode statusCode,
+                                                        @NonNull WebRequest request) {
 
         HttpStatus status = HttpStatus.BAD_REQUEST;
-        String title = status.getReasonPhrase();
-        String detail = this.messageSource
-                .getMessage("validation.error.detail", null, LocaleContextHolder.getLocale());
+        String detail = messageSource.getMessage("validation.error.detail", null, LocaleContextHolder.getLocale());
 
+        // Get the problem detail from the exception and set basic properties
         ProblemDetail problemDetail = ex.getBody();
-        problemDetail.setTitle(title);
         problemDetail.setDetail(detail);
-        problemDetail.setStatus(statusCode.value());
-        problemDetail.setType(URI.create(BASE_ERROR_URI + "/validation-error"));
+        problemDetail.setStatus(status.value());
+        problemDetail.setType(URI.create("https://www.drinkwater.com.br/validation-error"));
 
-        BindingResult bindingResult = ex.getBindingResult();
-
-        // Collect field errors
-        List<Map<String, String>> fieldErrors = bindingResult.getFieldErrors().stream()
+        // Process field-level validation errors
+        List<Map<String, String>> fieldErrors = ex.getBindingResult().getFieldErrors().stream()
                 .map(fieldError -> {
                     Map<String, String> error = new HashMap<>();
                     error.put("field", fieldError.getField());
-                    error.put("message", messageSource.getMessage(fieldError, LocaleContextHolder.getLocale()));
 
+                    // Get localized message for the error
+                    String message = messageSource.getMessage(fieldError, LocaleContextHolder.getLocale());
+
+                    // Handle type mismatch errors (e.g., invalid date format) separately
+                    if (fieldError.getCode() != null && fieldError.getCode().contains("typeMismatch")) {
+                        message = this.messageSource.getMessage(
+                                "validation.datetime.invalid.format",
+                                null,
+                                LocaleContextHolder.getLocale()
+                        );
+                    }
+
+                    error.put("message", message);
                     return error;
                 })
                 .collect(Collectors.toList());
 
-        // Collect global errors (class level)
-        List<Map<String, String>> globalErrors = bindingResult.getGlobalErrors().stream()
+        // Process object-level (global) validation errors
+        List<Map<String, String>> globalErrors = ex.getBindingResult().getGlobalErrors().stream()
                 .map(objectError -> {
                     Map<String, String> error = new HashMap<>();
                     error.put("field", objectError.getObjectName());
-                    error.put("message", messageSource.getMessage(objectError, LocaleContextHolder.getLocale()));
-
+                    error.put("message", this.messageSource.getMessage(objectError, LocaleContextHolder.getLocale()));
                     return error;
                 })
                 .collect(Collectors.toList());
 
-        // Merge field and global errors
+        // Combine field and global errors into a single list
         fieldErrors.addAll(globalErrors);
         problemDetail.setProperty("errors", fieldErrors);
 

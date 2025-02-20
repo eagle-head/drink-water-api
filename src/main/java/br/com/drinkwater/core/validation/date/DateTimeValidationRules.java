@@ -32,7 +32,7 @@ public record DateTimeValidationRules(
                 false,
                 false,
                 true,
-                null,
+                15,
                 null,
                 Set.of("UTC"),
                 Duration.ofDays(1)
