@@ -1,8 +1,6 @@
 package br.com.drinkwater.usermanagement.controller;
 
 import br.com.drinkwater.usermanagement.config.TestMessageSourceConfig;
-import br.com.drinkwater.usermanagement.dto.AlarmSettingsDTO;
-import br.com.drinkwater.usermanagement.dto.UserDTO;
 import br.com.drinkwater.usermanagement.exception.UserAlreadyExistsException;
 import br.com.drinkwater.usermanagement.exception.UserNotFoundException;
 import br.com.drinkwater.usermanagement.service.UserService;
@@ -17,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.Locale;
 
