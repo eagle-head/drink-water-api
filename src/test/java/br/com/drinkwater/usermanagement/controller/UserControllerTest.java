@@ -1,6 +1,6 @@
 package br.com.drinkwater.usermanagement.controller;
 
-import br.com.drinkwater.usermanagement.config.TestMessageSourceConfig;
+import br.com.drinkwater.config.TestMessageSourceConfig;
 import br.com.drinkwater.usermanagement.exception.UserAlreadyExistsException;
 import br.com.drinkwater.usermanagement.exception.UserNotFoundException;
 import br.com.drinkwater.usermanagement.service.UserService;
@@ -147,10 +147,11 @@ public final class UserControllerTest {
 
     @Test
     public void givenExistingUser_whenCreateUser_thenThrowUserAlreadyExistsException() throws Exception {
-        when(this.userService.createUser(USER_UUID, USER_DTO))
-                .thenThrow(UserAlreadyExistsException.class);
 
-        mockMvc.perform(post("/users")
+        when(this.userService.createUser(USER_UUID, USER_DTO)).thenThrow(UserAlreadyExistsException.class);
+
+        mockMvc
+                .perform(post("/users")
                         .with(jwt()
                                 .jwt(builder -> builder.claim("sub", USER_UUID.toString())
                                         .build()))

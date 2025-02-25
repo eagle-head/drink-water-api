@@ -1,4 +1,4 @@
-package br.com.drinkwater.usermanagement.config;
+package br.com.drinkwater.config;
 
 import dasniko.testcontainers.keycloak.KeycloakContainer;
 import org.springframework.boot.test.context.TestConfiguration;

@@ -1,28 +1,21 @@
-package br.com.drinkwater.usermanagement.controller;
+package br.com.drinkwater.usermanagement.integration;
 
-import br.com.drinkwater.usermanagement.config.ContainersConfig;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import br.com.drinkwater.support.TestAuthProvider;
+import br.com.drinkwater.config.ContainersConfig;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
-import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -33,25 +26,21 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         @Sql(scripts = {"/data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
         @Sql(scripts = {"/reset.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 })
-public final class UserControllerIT {
-
-    static final String CLIENT_ID = "drinkwaterapp";
-    static final String USERNAME = "john.doe@test.com";
-    static final String PASSWORD = "123456";
+public final class UserApiIT {
 
     @LocalServerPort
     private int port;
 
     @Autowired
-    OAuth2ResourceServerProperties oAuth2ResourceServerProperties;
+    private TestAuthProvider authProvider;
 
     @BeforeEach
-    void setup() {
+    public void setup() {
         RestAssured.port = port;
     }
 
     @Test
-    void shouldNotGetUserInfoWithoutToken() {
+    public void givenNoToken_whenGetUserInfo_thenReturnUnauthorized() {
         when()
                 .get("/users/me")
                 .then()
@@ -59,8 +48,8 @@ public final class UserControllerIT {
     }
 
     @Test
-    void shouldGetUserInfoWithValidToken() {
-        String token = getToken();
+    public void givenValidToken_whenGetUserInfo_thenReturnUserDetails() {
+        String token = authProvider.getToken();
 
         given()
                 .header("Authorization", "Bearer " + token)
@@ -76,7 +65,7 @@ public final class UserControllerIT {
                 .body("personal.lastName", equalTo("Doe"))
                 .body("personal.birthDate", equalTo("1990-01-01T00:00:00Z"))
                 .body("personal.biologicalSex", equalTo("MALE"))
-                .body("physical.weight", equalTo((70.5F)))
+                .body("physical.weight", equalTo(70.5F))
                 .body("physical.weightUnit", equalTo("KG"))
                 .body("physical.height", equalTo(175.0F))
                 .body("physical.heightUnit", equalTo("CM"))
@@ -84,32 +73,5 @@ public final class UserControllerIT {
                 .body("settings.intervalMinutes", equalTo(60))
                 .body("settings.dailyStartTime", equalTo("2024-01-01T08:00:00Z"))
                 .body("settings.dailyEndTime", equalTo("2024-01-01T22:00:00Z"));
-    }
-
-    private String getToken() {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.put("grant_type", singletonList("password"));
-        map.put("client_id", singletonList(CLIENT_ID));
-        map.put("username", singletonList(USERNAME));
-        map.put("password", singletonList(PASSWORD));
-
-        String tokenUrl = oAuth2ResourceServerProperties.getJwt().getIssuerUri() + "/protocol/openid-connect/token";
-
-        var request = new HttpEntity<>(map, headers);
-        KeyCloakToken token = restTemplate.postForObject(
-                tokenUrl,
-                request,
-                KeyCloakToken.class
-        );
-
-        assert token != null;
-        return token.accessToken();
-    }
-
-    record KeyCloakToken(@JsonProperty("access_token") String accessToken) {
     }
 }
