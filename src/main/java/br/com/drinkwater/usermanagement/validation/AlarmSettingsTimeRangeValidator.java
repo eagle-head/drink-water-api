@@ -14,8 +14,8 @@ import java.time.OffsetDateTime;
 @Component
 public class AlarmSettingsTimeRangeValidator extends BaseTimeRangeValidator<AlarmSettingsDTO> {
 
-    private static final int BUSINESS_HOURS_START = 6;
-    private static final int BUSINESS_HOURS_END = 22;
+    public static final int BUSINESS_HOURS_START = 6;
+    public static final int BUSINESS_HOURS_END = 22;
 
     public AlarmSettingsTimeRangeValidator(MessageSource messageSource) {
         super(messageSource);
