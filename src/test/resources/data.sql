@@ -2,8 +2,8 @@
 INSERT INTO users (id, public_id, email, first_name, last_name, birth_date, biological_sex, weight, weight_unit, height, height_unit, created_at, updated_at)
 VALUES
     (1, 'fbc58717-5d48-4041-9f1c-257e8052428f', 'john.doe@test.com', 'John', 'Doe', '1990-01-01T00:00:00+00:00', 1, 70.5, 1, 175, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (2, 'bb590732-97c6-4471-ae03-612235d8db56', 'jane.smith@test.com', 'Jane', 'Smith', '1985-05-15T00:00:00+00:00', 2, 60.0, 1, 165, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (3, '4eb296af-9307-4a7c-b319-aaca98b43466', 'alex.jones@test.com', 'Alex', 'Jones', '1992-10-10T00:00:00+00:00', 1, 80.0, 1, 180, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    (2, '571cff71-0db3-445e-9a9a-b542f3125a95', 'jane.smith@test.com', 'Jane', 'Smith', '1985-05-15T00:00:00+00:00', 2, 60.0, 1, 165, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (3, 'ac2539e8-03e8-4daf-a456-70ca641ec19d', 'alex.jones@test.com', 'Alex', 'Jones', '1992-10-10T00:00:00+00:00', 1, 80.0, 1, 180, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Insert alarm settings for each user
 INSERT INTO alarm_settings (goal, interval_minutes, daily_start_time, daily_end_time, user_id, created_at, updated_at)
