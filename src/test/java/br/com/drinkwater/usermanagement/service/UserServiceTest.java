@@ -30,14 +30,10 @@ public final class UserServiceTest {
 
     @Test
     public void givenValidUserData_WhenCreateUser_ThenReturnsUserResponseDTO() {
-        when(this.userRepository.existsByPublicId(USER_UUID))
-                .thenReturn(false);
-        when(this.userMapper.toEntity(USER_DTO, USER_UUID))
-                .thenReturn(USER);
-        when(this.userRepository.save(USER))
-                .thenReturn(USER);
-        when(this.userMapper.toDto(USER))
-                .thenReturn(USER_RESPONSE_DTO);
+        when(this.userRepository.existsByPublicId(USER_UUID)).thenReturn(false);
+        when(this.userMapper.toEntity(USER_DTO, USER_UUID)).thenReturn(USER);
+        when(this.userRepository.save(USER)).thenReturn(USER);
+        when(this.userMapper.toDto(USER)).thenReturn(USER_RESPONSE_DTO);
 
         var sut = this.userService.createUser(USER_UUID, USER_DTO);
 
@@ -51,8 +47,7 @@ public final class UserServiceTest {
 
     @Test
     public void givenExistingPublicId_whenCreateUser_thenThrowEmailAlreadyUsedException() {
-        when(this.userRepository.existsByPublicId(USER_UUID))
-                .thenReturn(true);
+        when(this.userRepository.existsByPublicId(USER_UUID)).thenReturn(true);
 
         assertThatThrownBy(() -> this.userService.createUser(USER_UUID, USER_DTO))
                 .isInstanceOf(UserAlreadyExistsException.class);

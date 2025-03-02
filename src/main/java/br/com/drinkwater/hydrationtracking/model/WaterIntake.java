@@ -3,14 +3,13 @@ package br.com.drinkwater.hydrationtracking.model;
 import br.com.drinkwater.usermanagement.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.OffsetDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "water_intakes", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"user_id", "date_time_utc"})
+        @UniqueConstraint(columnNames = {"user_id", "date_time_utc"})
 })
 public class WaterIntake {
 
@@ -33,15 +32,70 @@ public class WaterIntake {
     @JsonIgnore
     private User user;
 
-    @JsonIgnore
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
+    /**
+     * Default constructor required by JPA/Hibernate
+     */
+    protected WaterIntake() {
+        // Empty constructor needed for JPA
+    }
 
-    @JsonIgnore
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private OffsetDateTime updatedAt;
+    /**
+     * Constructor with validations to create a valid WaterIntake instance
+     *
+     * @param dateTimeUTC time when the hydration was recorded (required)
+     * @param volume      amount of water consumed (must be positive)
+     * @param volumeUnit  measurement unit for volume (required)
+     * @param user        user associated with this record (required)
+     * @throws IllegalArgumentException if any parameter fails validation
+     */
+    public WaterIntake(OffsetDateTime dateTimeUTC, int volume, VolumeUnit volumeUnit, User user) {
+
+        if (dateTimeUTC == null) {
+            throw new IllegalArgumentException("Date and time cannot be null");
+        }
+
+        if (volume <= 0) {
+            throw new IllegalArgumentException("Volume must be greater than zero");
+        }
+
+        if (volumeUnit == null) {
+            throw new IllegalArgumentException("Volume unit cannot be null");
+        }
+
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+
+        this.dateTimeUTC = dateTimeUTC;
+        this.volume = volume;
+        this.volumeUnit = volumeUnit;
+        this.user = user;
+    }
+
+    /**
+     * Constructor for existing entities (usually for updates or test fixtures)
+     *
+     * @param id          identifier of the existing water intake (must be positive)
+     * @param dateTimeUTC time when the hydration was recorded
+     * @param volume      amount of water consumed
+     * @param volumeUnit  measurement unit for volume
+     * @param user        user associated with this record
+     * @throws IllegalArgumentException if any parameter fails validation
+     */
+    public WaterIntake(Long id, OffsetDateTime dateTimeUTC, int volume, VolumeUnit volumeUnit, User user) {
+
+        this(dateTimeUTC, volume, volumeUnit, user);
+
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null for existing entity");
+        }
+
+        if (id <= 0) {
+            throw new IllegalArgumentException("ID must be greater than zero");
+        }
+
+        this.id = id;
+    }
 
     public Long getId() {
         return id;
@@ -83,19 +137,31 @@ public class WaterIntake {
         this.user = user;
     }
 
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof WaterIntake that)) return false;
+
+        return volume == that.volume &&
+                Objects.equals(id, that.id) &&
+                Objects.equals(dateTimeUTC, that.dateTimeUTC) &&
+                volumeUnit == that.volumeUnit &&
+                Objects.equals(user, that.user);
     }
 
-    public void setCreatedAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, dateTimeUTC, volume, volumeUnit, user.getId());
     }
 
-    public OffsetDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(OffsetDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    @Override
+    public String toString() {
+        return "WaterIntake{" +
+                "id=" + id +
+                ", dateTimeUTC=" + dateTimeUTC +
+                ", volume=" + volume +
+                ", volumeUnit=" + volumeUnit +
+                ", userId=" + (user != null ? user.getId() : "null") +
+                '}';
     }
 }

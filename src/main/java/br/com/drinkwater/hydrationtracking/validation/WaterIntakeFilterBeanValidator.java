@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class WaterIntakeFilterBeanValidator implements ConstraintValidator<ValidWaterIntakeFilter, WaterIntakeFilterDTO> {
 
-    private static final Set<String> VALID_SORT_FIELDS = Set.of("dateTimeUTC", "volume", "createdAt", "updatedAt");
+    private static final Set<String> VALID_SORT_FIELDS = Set.of("dateTimeUTC", "volume");
     private static final Set<String> VALID_SORT_DIRECTIONS = Set.of("ASC", "DESC");
 
     @Override

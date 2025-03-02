@@ -35,6 +35,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         this.messageSource = messageSource;
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        String detail = this.messageSource.getMessage("illegal.argument.detail", null, LocaleContextHolder.getLocale());
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
+        problemDetail.setType(URI.create(PROBLEM_DETAILS_BASE_URL + "/invalid-argument"));
+
+        return super.handleExceptionInternal(ex, problemDetail, new HttpHeaders(), status, request);
+    }
+
     @ExceptionHandler(InvalidFilterException.class)
     public ResponseEntity<Object> handleInvalidFilterException(InvalidFilterException ex, WebRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;

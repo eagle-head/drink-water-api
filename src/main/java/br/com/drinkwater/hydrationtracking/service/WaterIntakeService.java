@@ -29,27 +29,26 @@ public class WaterIntakeService {
 
     @Transactional
     public ResponseWaterIntakeDTO create(WaterIntakeDTO dto, User user) {
-        var waterIntake = waterIntakeMapper.toEntity(dto, user);
-        validateDuplicateDateTime(waterIntake);
-        var savedWaterIntake = waterIntakeRepository.save(waterIntake);
+        var waterIntake = this.waterIntakeMapper.toEntity(dto, user);
+        this.validateDuplicateDateTime(waterIntake);
+        var savedWaterIntake = this.waterIntakeRepository.save(waterIntake);
 
-        return waterIntakeMapper.toResponseDTO(savedWaterIntake);
+        return this.waterIntakeMapper.toResponseDTO(savedWaterIntake);
     }
 
     @Transactional
-    public ResponseWaterIntakeDTO update(Long id, WaterIntakeDTO dto, User user) {
-        findByIdAndUserId(id, user.getId());
-        var waterIntake = waterIntakeMapper.toEntity(dto, user);
-        waterIntake.setId(id);
-        validateDuplicateDateTime(waterIntake);
-        var savedWaterIntake = waterIntakeRepository.save(waterIntake);
+    public ResponseWaterIntakeDTO update(Long waterIntakeId, WaterIntakeDTO dto, User user) {
+        this.findByIdAndUserId(waterIntakeId, user.getId());
+        var waterIntake = this.waterIntakeMapper.toEntity(dto, user, waterIntakeId);
+        this.validateDuplicateDateTime(waterIntake);
+        var savedWaterIntake = this.waterIntakeRepository.save(waterIntake);
 
-        return waterIntakeMapper.toResponseDTO(savedWaterIntake);
+        return this.waterIntakeMapper.toResponseDTO(savedWaterIntake);
     }
 
     @Transactional(readOnly = true)
     public ResponseWaterIntakeDTO findByIdAndUserId(Long requestedId, Long userId) {
-        return waterIntakeRepository.findByIdAndUser_Id(requestedId, userId)
+        return this.waterIntakeRepository.findByIdAndUser_Id(requestedId, userId)
                 .map(waterIntakeMapper::toResponseDTO)
                 .orElseThrow(() -> new WaterIntakeNotFoundException("Water intake with ID " + requestedId
                         + " not found for the user."));
@@ -58,18 +57,6 @@ public class WaterIntakeService {
     @Transactional
     public void deleteByIdAndUserId(Long id, Long userId) {
         this.waterIntakeRepository.deleteByIdAndUser_Id(id, userId);
-    }
-
-    private void validateDuplicateDateTime(WaterIntake waterIntake) {
-        boolean exists = waterIntakeRepository.existsByDateTimeUTCAndUser_IdAndIdIsNot(
-                waterIntake.getDateTimeUTC(),
-                waterIntake.getUser().getId(),
-                waterIntake.getId() == null ? -1L : waterIntake.getId()
-        );
-
-        if (exists) {
-            throw new DuplicateDateTimeException();
-        }
     }
 
     @Transactional(readOnly = true)
@@ -83,9 +70,21 @@ public class WaterIntakeService {
         );
 
         var specification = WaterIntakeSpecification.withFilters(filter, user.getId());
-        var result = waterIntakeRepository.findAll(specification, pageable)
+        var result = this.waterIntakeRepository.findAll(specification, pageable)
                 .map(waterIntakeMapper::toResponseDTO);
 
         return PageResponse.of(result);
+    }
+
+    private void validateDuplicateDateTime(WaterIntake waterIntake) {
+        boolean exists = waterIntakeRepository.existsByDateTimeUTCAndUser_IdAndIdIsNot(
+                waterIntake.getDateTimeUTC(),
+                waterIntake.getUser().getId(),
+                waterIntake.getId() == null ? -1L : waterIntake.getId()
+        );
+
+        if (exists) {
+            throw new DuplicateDateTimeException();
+        }
     }
 }
