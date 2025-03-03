@@ -39,16 +39,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<WaterIntake> waterIntakes = new HashSet<>();
 
-    @JsonIgnore
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
-
-    @JsonIgnore
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private OffsetDateTime updatedAt;
-
     public Long getId() {
         return id;
     }

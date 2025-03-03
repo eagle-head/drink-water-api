@@ -24,6 +24,45 @@ public class Personal {
     @Column(name = "biological_sex", nullable = false)
     private BiologicalSex biologicalSex;
 
+    /**
+     * Default constructor required by JPA/Hibernate
+     */
+    protected Personal() {
+        // Empty constructor needed for JPA
+    }
+
+    /**
+     * Constructor with validations to create a valid Personal instance
+     *
+     * @param firstName     first name of the person (required)
+     * @param lastName      last name of the person (required)
+     * @param birthDate     birthdate of the person (required)
+     * @param biologicalSex biological sex of the person (required)
+     * @throws IllegalArgumentException if any parameter fails validation
+     */
+    public Personal(String firstName, String lastName, OffsetDateTime birthDate, BiologicalSex biologicalSex) {
+        if (firstName == null || firstName.trim().isEmpty()) {
+            throw new IllegalArgumentException("First name cannot be null or empty");
+        }
+
+        if (lastName == null || lastName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Last name cannot be null or empty");
+        }
+
+        if (birthDate == null) {
+            throw new IllegalArgumentException("Birth date cannot be null");
+        }
+
+        if (biologicalSex == null) {
+            throw new IllegalArgumentException("Biological sex cannot be null");
+        }
+
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthDate = birthDate;
+        this.biologicalSex = biologicalSex;
+    }
+
     public String getFirstName() {
         return firstName;
     }

@@ -17,6 +17,14 @@ public final class PersonalTestConstants {
     public static final PersonalDTO PERSONAL_DTO;
     public static final Personal PERSONAL;
 
+    // Invalid DTOs for testing
+    public static final PersonalDTO PERSONAL_DTO_NULL_FIRST_NAME;
+    public static final PersonalDTO PERSONAL_DTO_EMPTY_FIRST_NAME;
+    public static final PersonalDTO PERSONAL_DTO_NULL_LAST_NAME;
+    public static final PersonalDTO PERSONAL_DTO_EMPTY_LAST_NAME;
+    public static final PersonalDTO PERSONAL_DTO_NULL_BIRTH_DATE;
+    public static final PersonalDTO PERSONAL_DTO_NULL_BIOLOGICAL_SEX;
+
     static {
         PERSONAL_DTO = new PersonalDTO(
                 "John",
@@ -26,15 +34,57 @@ public final class PersonalTestConstants {
         );
 
         PERSONAL = createPersonalFromDTO();
+
+        // Initialize invalid DTOs for testing
+        PERSONAL_DTO_NULL_FIRST_NAME = new PersonalDTO(
+                null,
+                "Doe",
+                BIRTH_DATE,
+                BiologicalSex.MALE
+        );
+
+        PERSONAL_DTO_EMPTY_FIRST_NAME = new PersonalDTO(
+                "",
+                "Doe",
+                BIRTH_DATE,
+                BiologicalSex.MALE
+        );
+
+        PERSONAL_DTO_NULL_LAST_NAME = new PersonalDTO(
+                "John",
+                null,
+                BIRTH_DATE,
+                BiologicalSex.MALE
+        );
+
+        PERSONAL_DTO_EMPTY_LAST_NAME = new PersonalDTO(
+                "John",
+                "",
+                BIRTH_DATE,
+                BiologicalSex.MALE
+        );
+
+        PERSONAL_DTO_NULL_BIRTH_DATE = new PersonalDTO(
+                "John",
+                "Doe",
+                null,
+                BiologicalSex.MALE
+        );
+
+        PERSONAL_DTO_NULL_BIOLOGICAL_SEX = new PersonalDTO(
+                "John",
+                "Doe",
+                BIRTH_DATE,
+                null
+        );
     }
 
     private static Personal createPersonalFromDTO() {
-        var personal = new Personal();
-        personal.setFirstName(PERSONAL_DTO.firstName());
-        personal.setLastName(PERSONAL_DTO.lastName());
-        personal.setBirthDate(PERSONAL_DTO.birthDate());
-        personal.setBiologicalSex(PERSONAL_DTO.biologicalSex());
-
-        return personal;
+        return new Personal(
+                PERSONAL_DTO.firstName(),
+                PERSONAL_DTO.lastName(),
+                PERSONAL_DTO.birthDate(),
+                PERSONAL_DTO.biologicalSex()
+        );
     }
 }

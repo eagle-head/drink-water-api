@@ -27,7 +27,7 @@ public class UserMapperTest {
 
         assertThat(sut)
                 .usingRecursiveComparison()
-                .ignoringFields("waterIntakes", "createdAt", "updatedAt", "settings.user")
+                .ignoringFields("waterIntakes", "settings.user")
                 .isEqualTo(USER);
     }
 

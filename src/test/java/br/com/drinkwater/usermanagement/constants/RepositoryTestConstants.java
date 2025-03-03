@@ -16,11 +16,12 @@ public final class RepositoryTestConstants {
     // Método que cria uma nova instância de User para cada teste
     public static User createTestUser() {
         // Criando objetos necessários
-        Personal personal = new Personal();
-        personal.setFirstName("John");
-        personal.setLastName("Doe");
-        personal.setBirthDate(OffsetDateTime.of(1990, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
-        personal.setBiologicalSex(BiologicalSex.MALE);
+        Personal personal = new Personal(
+                "John",
+                "Doe",
+                OffsetDateTime.of(1990, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC),
+                BiologicalSex.MALE
+        );
 
         Physical physical = new Physical();
         physical.setWeight(BigDecimal.valueOf(70.5));

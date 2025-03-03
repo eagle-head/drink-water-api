@@ -1,175 +1,221 @@
 package br.com.drinkwater.usermanagement.model;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public final class PersonalTest {
+import java.time.OffsetDateTime;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
-    private static final String FIRST_NAME = "John";
-    private static final String NEW_FIRST_NAME = "Jane";
-    private static final String LAST_NAME = "Doe";
-    private static final String NEW_LAST_NAME = "Smith";
-    private static final OffsetDateTime BIRTH_DATE = OffsetDateTime
-            .of(1990, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC);
-    private static final OffsetDateTime NEW_BIRTH_DATE = OffsetDateTime
-            .of(1995, 5, 15, 0, 0, 0, 0, ZoneOffset.UTC);
-    private static final BiologicalSex BIOLOGICAL_SEX = BiologicalSex.MALE;
-    private static final BiologicalSex NEW_BIOLOGICAL_SEX = BiologicalSex.FEMALE;
+import static br.com.drinkwater.usermanagement.constants.PersonalTestConstants.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+public final class PersonalTest {
 
     @ParameterizedTest(name = "Testing setter/getter with value: {2}")
     @MethodSource("provideSetterGetterPairs")
     public <T> void testGetterSetter(final BiConsumer<Personal, T> setter,
                                      final Function<Personal, T> getter,
                                      final T expectedValue) {
-        Personal personal = new Personal();
-        setter.accept(personal, expectedValue);
-
-        assertThat(getter.apply(personal)).isEqualTo(expectedValue);
+        setter.accept(PERSONAL, expectedValue);
+        assertThat(getter.apply(PERSONAL)).isEqualTo(expectedValue);
     }
 
     public static Stream<Arguments> provideSetterGetterPairs() {
         return Stream.of(
                 Arguments.of((BiConsumer<Personal, String>) Personal::setFirstName,
                         (Function<Personal, String>) Personal::getFirstName,
-                        FIRST_NAME),
+                        PERSONAL_DTO.firstName()),
                 Arguments.of((BiConsumer<Personal, String>) Personal::setLastName,
                         (Function<Personal, String>) Personal::getLastName,
-                        LAST_NAME),
+                        PERSONAL_DTO.lastName()),
                 Arguments.of((BiConsumer<Personal, OffsetDateTime>) Personal::setBirthDate,
                         (Function<Personal, OffsetDateTime>) Personal::getBirthDate,
                         BIRTH_DATE),
                 Arguments.of((BiConsumer<Personal, BiologicalSex>) Personal::setBiologicalSex,
                         (Function<Personal, BiologicalSex>) Personal::getBiologicalSex,
-                        BIOLOGICAL_SEX)
+                        PERSONAL_DTO.biologicalSex())
         );
     }
 
-    private Personal createDefaultPersonal() {
-        var personal = new Personal();
-        personal.setFirstName(FIRST_NAME);
-        personal.setLastName(LAST_NAME);
-        personal.setBirthDate(BIRTH_DATE);
-        personal.setBiologicalSex(BIOLOGICAL_SEX);
-
-        return personal;
+    @Test
+    public void givenValidParameters_whenConstructor_thenShouldCreatePersonal() {
+        assertThat(PERSONAL).isNotNull();
+        assertThat(PERSONAL.getFirstName()).isEqualTo(PERSONAL_DTO.firstName());
+        assertThat(PERSONAL.getLastName()).isEqualTo(PERSONAL_DTO.lastName());
+        assertThat(PERSONAL.getBirthDate()).isEqualTo(BIRTH_DATE);
+        assertThat(PERSONAL.getBiologicalSex()).isEqualTo(PERSONAL_DTO.biologicalSex());
     }
 
     @Test
-    public void givenNewPersonal_whenInstantiated_thenShouldNotBeNull() {
-        var personal = new Personal();
+    public void givenNullFirstName_whenConstructor_thenShouldThrowException() {
+        assertThatThrownBy(() -> new Personal(
+                        null,
+                        PERSONAL_DTO.lastName(),
+                        BIRTH_DATE,
+                        PERSONAL_DTO.biologicalSex()
+                ))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("First name cannot be null or empty");
+    }
 
-        assertThat(personal).isNotNull();
+    @Test
+    public void givenEmptyFirstName_whenConstructor_thenShouldThrowException() {
+        assertThatThrownBy(() -> new Personal(
+                        "",
+                        PERSONAL_DTO.lastName(),
+                        BIRTH_DATE,
+                        PERSONAL_DTO.biologicalSex()
+                ))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("First name cannot be null or empty");
+    }
+
+    @Test
+    public void givenNullLastName_whenConstructor_thenShouldThrowException() {
+        assertThatThrownBy(() -> new Personal(
+                        PERSONAL_DTO.firstName(),
+                        null,
+                        BIRTH_DATE,
+                        PERSONAL_DTO.biologicalSex()
+                ))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Last name cannot be null or empty");
+    }
+
+    @Test
+    public void givenEmptyLastName_whenConstructor_thenShouldThrowException() {
+        assertThatThrownBy(() -> new Personal(
+                        PERSONAL_DTO.firstName(),
+                        "",
+                        BIRTH_DATE,
+                        PERSONAL_DTO.biologicalSex()
+                ))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Last name cannot be null or empty");
+    }
+
+    @Test
+    public void givenNullBirthDate_whenConstructor_thenShouldThrowException() {
+        assertThatThrownBy(() -> new Personal(
+                        PERSONAL_DTO.firstName(),
+                        PERSONAL_DTO.lastName(),
+                        null,
+                        PERSONAL_DTO.biologicalSex()
+                ))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Birth date cannot be null");
+    }
+
+    @Test
+    public void givenNullBiologicalSex_whenConstructor_thenShouldThrowException() {
+        assertThatThrownBy(() -> new Personal(
+                        PERSONAL_DTO.firstName(),
+                        PERSONAL_DTO.lastName(),
+                        BIRTH_DATE,
+                        null
+                ))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Biological sex cannot be null");
     }
 
     @Test
     public void givenSameInstance_whenEquals_thenShouldReturnTrue() {
-        var personal = createDefaultPersonal();
-
-        assertThat(personal.equals(personal)).isTrue();
+        assertThat(PERSONAL.equals(PERSONAL)).isTrue();
     }
 
     @Test
     public void givenTwoEqualPersonalObjects_whenEquals_thenShouldReturnTrue() {
-        var personal1 = createDefaultPersonal();
-        var personal2 = createDefaultPersonal();
+        Personal personal2 = new Personal(
+                PERSONAL_DTO.firstName(),
+                PERSONAL_DTO.lastName(),
+                BIRTH_DATE,
+                PERSONAL_DTO.biologicalSex()
+        );
 
-        assertThat(personal1).isEqualTo(personal2);
-        assertThat(personal1.hashCode()).isEqualTo(personal2.hashCode());
+        assertThat(PERSONAL).isEqualTo(personal2);
+        assertThat(PERSONAL.hashCode()).isEqualTo(personal2.hashCode());
     }
 
     @Test
     public void givenPersonalAndNull_whenEquals_thenShouldReturnFalse() {
-        var personal = createDefaultPersonal();
-
-        assertThat(personal.equals(null)).isFalse();
+        assertThat(PERSONAL.equals(null)).isFalse();
     }
 
     @Test
     public void givenDifferentObjectType_whenEquals_thenShouldReturnFalse() {
-        var personal = createDefaultPersonal();
-        var differentType = "Not a Personal instance";
-
-        assertThat(personal.equals(differentType)).isFalse();
+        assertThat(PERSONAL.equals("Not a Personal instance")).isFalse();
     }
 
     @Test
     public void givenDifferentFirstName_whenEquals_thenShouldReturnFalse() {
-        var personal1 = createDefaultPersonal();
-        var personal2 = createDefaultPersonal();
-        personal2.setFirstName(NEW_FIRST_NAME);
+        Personal personal2 = new Personal(
+                "Jane",
+                PERSONAL_DTO.lastName(),
+                BIRTH_DATE,
+                PERSONAL_DTO.biologicalSex()
+        );
 
-        assertThat(personal1.equals(personal2)).isFalse();
+        assertThat(PERSONAL.equals(personal2)).isFalse();
     }
 
     @Test
     public void givenDifferentLastName_whenEquals_thenShouldReturnFalse() {
-        var personal1 = createDefaultPersonal();
-        var personal2 = createDefaultPersonal();
-        personal2.setLastName(NEW_LAST_NAME);
+        Personal personal2 = new Personal(
+                PERSONAL_DTO.firstName(),
+                "Smith",
+                BIRTH_DATE,
+                PERSONAL_DTO.biologicalSex()
+        );
 
-        assertThat(personal1.equals(personal2)).isFalse();
+        assertThat(PERSONAL.equals(personal2)).isFalse();
     }
 
     @Test
     public void givenDifferentBirthDate_whenEquals_thenShouldReturnFalse() {
-        var personal1 = createDefaultPersonal();
-        var personal2 = createDefaultPersonal();
-        personal2.setBirthDate(NEW_BIRTH_DATE);
+        Personal personal2 = new Personal(
+                PERSONAL_DTO.firstName(),
+                PERSONAL_DTO.lastName(),
+                BIRTH_DATE.plusYears(5),
+                PERSONAL_DTO.biologicalSex()
+        );
 
-        assertThat(personal1.equals(personal2)).isFalse();
+        assertThat(PERSONAL.equals(personal2)).isFalse();
     }
 
     @Test
     public void givenDifferentBiologicalSex_whenEquals_thenShouldReturnFalse() {
-        var personal1 = createDefaultPersonal();
-        var personal2 = createDefaultPersonal();
-        personal2.setBiologicalSex(NEW_BIOLOGICAL_SEX);
+        Personal personal2 = new Personal(
+                PERSONAL_DTO.firstName(),
+                PERSONAL_DTO.lastName(),
+                BIRTH_DATE,
+                BiologicalSex.FEMALE
+        );
 
-        assertThat(personal1.equals(personal2)).isFalse();
+        assertThat(PERSONAL.equals(personal2)).isFalse();
     }
 
     @Test
     public void givenPersonal_whenToString_thenShouldContainAllFields() {
-        var personal = createDefaultPersonal();
-        var toString = personal.toString();
-
-        assertThat(toString).contains("firstName='" + FIRST_NAME + "'")
-                .contains("lastName='" + LAST_NAME + "'")
+        assertThat(PERSONAL.toString()).contains("firstName='" + PERSONAL_DTO.firstName() + "'")
+                .contains("lastName='" + PERSONAL_DTO.lastName() + "'")
                 .contains("birthDate=" + BIRTH_DATE)
-                .contains("biologicalSex=" + BIOLOGICAL_SEX);
-    }
-
-    @Test
-    public void givenPersonalWithNullFields_whenToString_thenShouldHandleNull() {
-        var personal = new Personal();
-        personal.setFirstName(null);
-        personal.setLastName(null);
-        personal.setBirthDate(null);
-        personal.setBiologicalSex(null);
-        var toString = personal.toString();
-
-        assertThat(toString).contains("firstName='null'")
-                .contains("lastName='null'")
-                .contains("birthDate=null")
-                .contains("biologicalSex=null");
+                .contains("biologicalSex=" + PERSONAL_DTO.biologicalSex());
     }
 
     @Test
     public void givenDifferentPersonalObjects_whenHashCode_thenShouldReturnDifferentValues() {
-        var personal1 = createDefaultPersonal();
-        var personal2 = createDefaultPersonal();
-        personal2.setFirstName(NEW_FIRST_NAME);
+        Personal personal2 = new Personal(
+                "Jane",
+                PERSONAL_DTO.lastName(),
+                BIRTH_DATE,
+                PERSONAL_DTO.biologicalSex()
+        );
 
-        assertThat(personal1.hashCode()).isNotEqualTo(personal2.hashCode());
+        assertThat(PERSONAL.hashCode()).isNotEqualTo(personal2.hashCode());
     }
 }

@@ -23,14 +23,14 @@ public final class WaterIntakeMapperTest {
     void givenNullDTO_whenToEntity_thenShouldThrowException() {
         assertThatThrownBy(() -> this.mapper.toEntity(null, USER))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Water intake DTO cannot be null");
+                .hasMessage("Water intake DTO cannot be null.");
     }
 
     @Test
     void givenNullUser_whenToEntity_thenShouldThrowException() {
         assertThatThrownBy(() -> this.mapper.toEntity(WATER_INTAKE_DTO, null))
                 .isInstanceOf(WaterIntakeMapperIllegalArgumentException.class)
-                .hasMessage("User cannot be null");
+                .hasMessage("User cannot be null.");
     }
 
     @ParameterizedTest
@@ -38,7 +38,7 @@ public final class WaterIntakeMapperTest {
     void givenInvalidId_whenToEntity_thenShouldThrowException(Long invalidId) {
         assertThatThrownBy(() -> this.mapper.toEntity(WATER_INTAKE_DTO, USER, invalidId))
                 .isInstanceOf(WaterIntakeMapperIllegalArgumentException.class)
-                .hasMessage("ID must be greater than zero");
+                .hasMessage("ID must be greater than zero.");
     }
 
     @Test
@@ -71,7 +71,7 @@ public final class WaterIntakeMapperTest {
     void givenNullWaterIntake_whenToResponseDTO_thenShouldThrowException() {
         assertThatThrownBy(() -> mapper.toResponseDTO(null))
                 .isInstanceOf(WaterIntakeMapperIllegalArgumentException.class)
-                .hasMessage("Water intake entity cannot be null");
+                .hasMessage("Water intake entity cannot be null.");
     }
 
     @Test

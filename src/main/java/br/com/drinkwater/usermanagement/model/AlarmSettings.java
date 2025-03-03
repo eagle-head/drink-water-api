@@ -2,8 +2,6 @@ package br.com.drinkwater.usermanagement.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
@@ -31,16 +29,6 @@ public class AlarmSettings {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     @JsonIgnore
     private User user;
-
-    @JsonIgnore
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
-
-    @JsonIgnore
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private OffsetDateTime updatedAt;
 
     public Long getId() {
         return id;
