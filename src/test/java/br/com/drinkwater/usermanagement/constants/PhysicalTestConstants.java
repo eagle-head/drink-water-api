@@ -27,12 +27,11 @@ public final class PhysicalTestConstants {
     }
 
     private static Physical createPhysicalFromDTO() {
-        var physical = new Physical();
-        physical.setWeight(PHYSICAL_DTO.weight());
-        physical.setWeightUnit(PHYSICAL_DTO.weightUnit());
-        physical.setHeight(PHYSICAL_DTO.height());
-        physical.setHeightUnit(PHYSICAL_DTO.heightUnit());
-
-        return physical;
+        return new Physical(
+                PHYSICAL_DTO.weight(),
+                PHYSICAL_DTO.weightUnit(),
+                PHYSICAL_DTO.height(),
+                PHYSICAL_DTO.heightUnit()
+        );
     }
 }

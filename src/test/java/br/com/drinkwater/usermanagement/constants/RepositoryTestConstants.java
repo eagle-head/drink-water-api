@@ -23,11 +23,12 @@ public final class RepositoryTestConstants {
                 BiologicalSex.MALE
         );
 
-        Physical physical = new Physical();
-        physical.setWeight(BigDecimal.valueOf(70.5));
-        physical.setWeightUnit(WeightUnit.KG);
-        physical.setHeight(BigDecimal.valueOf(175));
-        physical.setHeightUnit(HeightUnit.CM);
+        Physical physical = new Physical(
+                BigDecimal.valueOf(70.5),
+                WeightUnit.KG,
+                BigDecimal.valueOf(175),
+                HeightUnit.CM
+        );
 
         AlarmSettings settings = new AlarmSettings();
         settings.setGoal(2000);

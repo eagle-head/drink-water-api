@@ -26,6 +26,45 @@ public class Physical {
     @Column(name = "height_unit", nullable = false)
     private HeightUnit heightUnit;
 
+    /**
+     * Default constructor required by JPA/Hibernate
+     */
+    protected Physical() {
+        // Empty constructor needed for JPA
+    }
+
+    /**
+     * Constructor with validations to create a valid Physical instance
+     *
+     * @param weight     weight of the person (required)
+     * @param weightUnit weight unit of measurement (required)
+     * @param height     height of the person (required)
+     * @param heightUnit height unit of measurement (required)
+     * @throws IllegalArgumentException if any parameter fails validation
+     */
+    public Physical(BigDecimal weight, WeightUnit weightUnit, BigDecimal height, HeightUnit heightUnit) {
+        if (weight == null) {
+            throw new IllegalArgumentException("Weight cannot be null");
+        }
+
+        if (weightUnit == null) {
+            throw new IllegalArgumentException("Weight unit cannot be null");
+        }
+
+        if (height == null) {
+            throw new IllegalArgumentException("Height cannot be null");
+        }
+
+        if (heightUnit == null) {
+            throw new IllegalArgumentException("Height unit cannot be null");
+        }
+
+        this.weight = weight;
+        this.weightUnit = weightUnit;
+        this.height = height;
+        this.heightUnit = heightUnit;
+    }
+
     public BigDecimal getWeight() {
         return weight;
     }
