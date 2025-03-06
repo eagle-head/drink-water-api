@@ -128,12 +128,12 @@ public final class UserTestConstants {
                 ALARM_SETTINGS_RESPONSE_DTO
         );
 
-        // Initialize EXISTING_ALARM_SETTINGS
-        EXISTING_ALARM_SETTINGS = new AlarmSettings();
-        EXISTING_ALARM_SETTINGS.setGoal(1000);
-        EXISTING_ALARM_SETTINGS.setIntervalMinutes(20);
-        EXISTING_ALARM_SETTINGS.setDailyStartTime(UPDATE_NOW.withHour(7).withMinute(0));
-        EXISTING_ALARM_SETTINGS.setDailyEndTime(UPDATE_NOW.withHour(21).withMinute(0));
+        EXISTING_ALARM_SETTINGS = new AlarmSettings(
+                1000,  // goal
+                20,    // intervalMinutes
+                UPDATE_NOW.withHour(7).withMinute(0),  // dailyStartTime
+                UPDATE_NOW.withHour(21).withMinute(0)  // dailyEndTime
+        );
     }
 
     private static User createUserFromDTO() {

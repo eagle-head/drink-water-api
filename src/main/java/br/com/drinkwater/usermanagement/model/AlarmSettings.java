@@ -30,6 +30,49 @@ public class AlarmSettings {
     @JsonIgnore
     private User user;
 
+    /**
+     * Default constructor required by JPA/Hibernate
+     */
+    protected AlarmSettings() {
+        // Empty constructor needed for JPA
+    }
+
+    /**
+     * Constructor with validations to create a valid AlarmSettings instance
+     *
+     * @param goal            daily water consumption goal (required)
+     * @param intervalMinutes interval in minutes between alarms (required)
+     * @param dailyStartTime  time to start reminders during the day (required)
+     * @param dailyEndTime    time to stop reminders during the day (required)
+     * @throws IllegalArgumentException if any parameter fails validation
+     */
+    public AlarmSettings(int goal, int intervalMinutes, OffsetDateTime dailyStartTime, OffsetDateTime dailyEndTime) {
+        if (goal <= 0) {
+            throw new IllegalArgumentException("Goal must be greater than zero");
+        }
+
+        if (intervalMinutes <= 0) {
+            throw new IllegalArgumentException("Interval minutes must be greater than zero");
+        }
+
+        if (dailyStartTime == null) {
+            throw new IllegalArgumentException("Daily start time cannot be null");
+        }
+
+        if (dailyEndTime == null) {
+            throw new IllegalArgumentException("Daily end time cannot be null");
+        }
+
+        if (dailyEndTime.isBefore(dailyStartTime)) {
+            throw new IllegalArgumentException("Daily end time cannot be before daily start time");
+        }
+
+        this.goal = goal;
+        this.intervalMinutes = intervalMinutes;
+        this.dailyStartTime = dailyStartTime;
+        this.dailyEndTime = dailyEndTime;
+    }
+
     public Long getId() {
         return id;
     }

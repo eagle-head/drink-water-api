@@ -20,6 +20,9 @@ public final class AlarmSettingsTestConstants {
     public static final AlarmSettings ALARM_SETTINGS;
     public static final AlarmSettingsResponseDTO ALARM_SETTINGS_RESPONSE_DTO;
 
+    // Nova constante para testes
+    public static final AlarmSettings EXISTING_ALARM_SETTINGS_FOR_TEST;
+
     static {
         ALARM_SETTINGS_DTO = new AlarmSettingsDTO(
                 2000,
@@ -30,6 +33,13 @@ public final class AlarmSettingsTestConstants {
 
         ALARM_SETTINGS = createAlarmSettingsFromDTO();
 
+        EXISTING_ALARM_SETTINGS_FOR_TEST = new AlarmSettings(
+                500,  // goal
+                60,   // intervalMinutes
+                START_TIME,
+                END_TIME
+        );
+
         ALARM_SETTINGS_RESPONSE_DTO = new AlarmSettingsResponseDTO(
                 ALARM_SETTINGS_DTO.goal(),
                 ALARM_SETTINGS_DTO.intervalMinutes(),
@@ -39,12 +49,11 @@ public final class AlarmSettingsTestConstants {
     }
 
     private static AlarmSettings createAlarmSettingsFromDTO() {
-        var alarmSettings = new AlarmSettings();
-        alarmSettings.setGoal(ALARM_SETTINGS_DTO.goal());
-        alarmSettings.setIntervalMinutes(ALARM_SETTINGS_DTO.intervalMinutes());
-        alarmSettings.setDailyStartTime(ALARM_SETTINGS_DTO.dailyStartTime());
-        alarmSettings.setDailyEndTime(ALARM_SETTINGS_DTO.dailyEndTime());
-
-        return alarmSettings;
+        return new AlarmSettings(
+                ALARM_SETTINGS_DTO.goal(),
+                ALARM_SETTINGS_DTO.intervalMinutes(),
+                ALARM_SETTINGS_DTO.dailyStartTime(),
+                ALARM_SETTINGS_DTO.dailyEndTime()
+        );
     }
 }

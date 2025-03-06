@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 
 import static br.com.drinkwater.usermanagement.constants.UserTestConstants.*;
+import static br.com.drinkwater.usermanagement.constants.AlarmSettingsTestConstants.EXISTING_ALARM_SETTINGS_FOR_TEST;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserMapperTest {
@@ -102,9 +103,9 @@ public class UserMapperTest {
         User user = new User();
         user.setEmail("old.email@example.com");
 
-        // Set existing settings to ensure they are cleared
-        AlarmSettings existingSettings = new AlarmSettings();
-        existingSettings.setGoal(500);
+        // Set existing settings to ensure they are cleared - usando a constante
+        AlarmSettings existingSettings = EXISTING_ALARM_SETTINGS_FOR_TEST;
+        existingSettings.setUser(user);
         user.setSettings(existingSettings);
 
         // Act
@@ -166,7 +167,6 @@ public class UserMapperTest {
 
         User user = new User();
 
-        // Act & Assert - todos os casos devem retornar sem exceção
         userMapper.updateUserFromDTO(null, null);
         userMapper.updateUserFromDTO(null, UPDATE_USER_DTO);
         userMapper.updateUserFromDTO(user, null);

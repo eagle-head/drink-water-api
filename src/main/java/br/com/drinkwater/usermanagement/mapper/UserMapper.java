@@ -31,7 +31,7 @@ public class UserMapper {
 
         User user = new User();
         user.setPublicId(publicId);
-        updateUserFromDTO(user, dto);
+        this.updateUserFromDTO(user, dto);
 
         return user;
     }
@@ -69,11 +69,11 @@ public class UserMapper {
         }
 
         if (user.getSettings() != null) {
-            alarmSettingsMapper.updateEntity(user.getSettings(), userDTO.settings());
+            this.alarmSettingsMapper.updateEntity(user.getSettings(), userDTO.settings());
             return;
         }
 
-        AlarmSettings alarmSettings = alarmSettingsMapper.toEntity(userDTO.settings());
+        AlarmSettings alarmSettings = this.alarmSettingsMapper.toEntity(userDTO.settings());
         alarmSettings.setUser(user);
         user.setSettings(alarmSettings);
     }
