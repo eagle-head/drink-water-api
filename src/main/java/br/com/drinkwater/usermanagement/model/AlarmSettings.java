@@ -122,31 +122,45 @@ public class AlarmSettings {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof AlarmSettings that)) return false;
+        if (!Objects.equals(getId(), that.getId())) return false;
+        if (!Objects.equals(getGoal(), that.getGoal())) return false;
+        if (!Objects.equals(getIntervalMinutes(), that.getIntervalMinutes())) return false;
+        if (!Objects.equals(getDailyStartTime(), that.getDailyStartTime())) return false;
+        if (!Objects.equals(getDailyEndTime(), that.getDailyEndTime())) return false;
 
-        return goal == that.goal &&
-                intervalMinutes == that.intervalMinutes &&
-                Objects.equals(id, that.id) &&
-                Objects.equals(dailyStartTime, that.dailyStartTime) &&
-                Objects.equals(dailyEndTime, that.dailyEndTime) &&
-                Objects.equals(user, that.user);
+        // Comparação do usuário sem recursão - usando apenas o publicId
+        var thisUser = getUser();
+        var thatUser = that.getUser();
+
+        if (thisUser == null && thatUser == null) return true;
+        if (thisUser == null || thatUser == null) return false;
+
+        return Objects.equals(thisUser.getPublicId(), thatUser.getPublicId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, goal, intervalMinutes, dailyStartTime, dailyEndTime, user);
+        return Objects.hash(
+                getId(),
+                getGoal(),
+                getIntervalMinutes(),
+                getDailyStartTime(),
+                getDailyEndTime(),
+                getUser() != null ? getUser().getPublicId() : null
+        );
     }
 
     @Override
     public String toString() {
         return "AlarmSettings{" +
-                "id=" + id +
-                ", goal=" + goal +
-                ", intervalMinutes=" + intervalMinutes +
-                ", dailyStartTime=" + dailyStartTime +
-                ", dailyEndTime=" + dailyEndTime +
+                "id=" + getId() +
+                ", goal=" + getGoal() +
+                ", intervalMinutes=" + getIntervalMinutes() +
+                ", dailyStartTime=" + getDailyStartTime() +
+                ", dailyEndTime=" + getDailyEndTime() +
                 ", user=" + (user != null ? user.getId() : "null") +
                 '}';
     }

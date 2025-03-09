@@ -17,7 +17,7 @@ public final class RepositoryTestConstants {
 
     // Método que cria uma nova instância de User para cada teste
     public static User createTestUser() {
-        // Criando objetos necessários
+        // Creating required objects
         Personal personal = new Personal(
                 "John",
                 "Doe",
@@ -33,23 +33,20 @@ public final class RepositoryTestConstants {
         );
 
         AlarmSettings settings = new AlarmSettings(
-                2000,
-                30,
+                2000, // goal
+                30,   // intervalMinutes
                 OffsetDateTime.now().withHour(8).withMinute(0).withSecond(0).withNano(0),
                 OffsetDateTime.now().withHour(22).withMinute(0).withSecond(0).withNano(0)
         );
 
-        // Criando e configurando o usuário
-        User user = new User();
-        user.setPublicId(REPOSITORY_USER_UUID);
-        user.setEmail("john.repository@example.com");
-        user.setPersonal(personal);
-        user.setPhysical(physical);
-
-        // Configurando a relação bidirecional
-        settings.setUser(user);
-        user.setSettings(settings);
-
-        return user;
+        // Using the custom public constructor of User which configures the bidirectional relationship automatically.
+        return new User(
+                REPOSITORY_USER_UUID,
+                "john.repository@example.com",
+                personal,
+                physical,
+                settings
+        );
     }
+
 }

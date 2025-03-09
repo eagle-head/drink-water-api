@@ -23,10 +23,10 @@ public final class AlarmSettingsMapperTest {
         var sut = this.mapper.toEntity(ALARM_SETTINGS_DTO);
 
         assertThat(sut).isNotNull();
-        assertThat(sut.getGoal()).isEqualTo(ALARM_SETTINGS.getGoal());
-        assertThat(sut.getIntervalMinutes()).isEqualTo(ALARM_SETTINGS.getIntervalMinutes());
-        assertThat(sut.getDailyStartTime()).isEqualTo(ALARM_SETTINGS.getDailyStartTime());
-        assertThat(sut.getDailyEndTime()).isEqualTo(ALARM_SETTINGS.getDailyEndTime());
+        assertThat(sut.getGoal()).isEqualTo(EXPECTED_ALARM_SETTINGS.getGoal());
+        assertThat(sut.getIntervalMinutes()).isEqualTo(EXPECTED_ALARM_SETTINGS.getIntervalMinutes());
+        assertThat(sut.getDailyStartTime()).isEqualTo(EXPECTED_ALARM_SETTINGS.getDailyStartTime());
+        assertThat(sut.getDailyEndTime()).isEqualTo(EXPECTED_ALARM_SETTINGS.getDailyEndTime());
     }
 
     @Test

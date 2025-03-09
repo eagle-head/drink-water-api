@@ -137,12 +137,13 @@ public final class UserTestConstants {
     }
 
     private static User createUserFromDTO() {
-        User user = new User();
-        user.setEmail(USER_DTO.email());
-        user.setPersonal(PERSONAL);
-        user.setPhysical(PHYSICAL);
-        user.setSettings(ALARM_SETTINGS);
-
-        return user;
+        return new User(
+                USER_UUID,
+                USER_DTO.email(),
+                PERSONAL,
+                PHYSICAL,
+                ALARM_SETTINGS
+        );
     }
+
 }

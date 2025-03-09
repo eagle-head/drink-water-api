@@ -128,8 +128,8 @@ public final class WaterIntakeTest {
     @ValueSource(strings = {"id", "dateTimeUTC", "volume", "volumeUnit", "user"})
     public void givenDifferentField_whenEquals_thenReturnsFalse(String fieldToChange) {
         // Given
-        WaterIntake waterIntake1 = new WaterIntake(WATER_INTAKE_ID, DATE_TIME_UTC, VOLUME, VOLUME_UNIT, USER);
-        WaterIntake waterIntake2 = new WaterIntake(WATER_INTAKE_ID, DATE_TIME_UTC, VOLUME, VOLUME_UNIT, USER);
+        var waterIntake1 = new WaterIntake(WATER_INTAKE_ID, DATE_TIME_UTC, VOLUME, VOLUME_UNIT, USER);
+        var waterIntake2 = new WaterIntake(WATER_INTAKE_ID, DATE_TIME_UTC, VOLUME, VOLUME_UNIT, USER);
 
         // When we change one field in the second object
         switch (fieldToChange) {
@@ -146,13 +146,14 @@ public final class WaterIntakeTest {
                 waterIntake2.setVolumeUnit(null);
                 break;
             case "user":
-                User differentUser = new User();
+                // Cria um usuário diferente utilizando o construtor de 5 argumentos e define o ID posteriormente
+                User differentUser = new User(USER.getPublicId(), USER.getEmail(), USER.getPersonal(), USER.getPhysical(), USER.getSettings());
                 differentUser.setId(999L);
                 waterIntake2.setUser(differentUser);
                 break;
         }
 
-        // Then they should not be equal
+        // Then
         assertThat(waterIntake1).isNotEqualTo(waterIntake2);
         assertThat(waterIntake1.hashCode()).isNotEqualTo(waterIntake2.hashCode());
     }
@@ -198,9 +199,8 @@ public final class WaterIntakeTest {
     @Test
     public void givenUserPresent_whenToString_thenUsesUserGetId() {
         // Given
-        User user = new User();
+        User user = new User(USER.getPublicId(), USER.getEmail(), USER.getPersonal(), USER.getPhysical(), USER.getSettings());
         user.setId(101L);
-
         WaterIntake waterIntake = new WaterIntake(WATER_INTAKE_ID, DATE_TIME_UTC, VOLUME, VOLUME_UNIT, user);
 
         // When

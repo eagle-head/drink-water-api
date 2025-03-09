@@ -3,10 +3,7 @@ package br.com.drinkwater.usermanagement.model;
 import br.com.drinkwater.hydrationtracking.model.WaterIntake;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -38,6 +35,58 @@ public class User {
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<WaterIntake> waterIntakes = new HashSet<>();
+
+    /**
+     * Protected default constructor required by JPA/Hibernate.
+     * This constructor is used by the JPA provider to instantiate the entity.
+     */
+    protected User() {
+        // Default constructor for JPA
+    }
+
+    /**
+     * Constructor with validations to create a new User instance.
+     *
+     * @param publicId the unique public identifier for the user (required)
+     * @param email    the user's email address (required, must not be null or blank)
+     * @param personal the user's personal data (required)
+     * @param physical the user's physical data (required)
+     * @param settings the user's alarm settings (required)
+     * @throws IllegalArgumentException if any parameter is invalid or null
+     */
+    public User(UUID publicId, String email, Personal personal, Physical physical, AlarmSettings settings) {
+        if (publicId == null) {
+            throw new IllegalArgumentException("Public ID cannot be null");
+        }
+
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Email cannot be null or blank");
+        }
+
+        if (personal == null) {
+            throw new IllegalArgumentException("Personal information is required");
+        }
+
+        if (physical == null) {
+            throw new IllegalArgumentException("Physical information is required");
+        }
+
+        if (settings == null) {
+            throw new IllegalArgumentException("Alarm settings are required");
+        }
+
+        this.publicId = publicId;
+        this.email = email;
+        this.personal = personal;
+        this.physical = physical;
+        this.settings = settings;
+
+        // Ensure bidirectional association
+        settings.setUser(this);
+
+        // Initialize waterIntakes collection to avoid NullPointerException
+        this.waterIntakes = new HashSet<>();
+    }
 
     public Long getId() {
         return id;

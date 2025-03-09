@@ -41,7 +41,7 @@ public class UserService {
     @Transactional
     public UserResponseDTO updateUser(UUID publicId, UserDTO updateUserDTO) {
         User existingUser = this.findByPublicId(publicId);
-        this.userMapper.updateUserFromDTO(existingUser, updateUserDTO);
+        this.userMapper.updateUser(existingUser, updateUserDTO);
         User updatedUser = this.userRepository.save(existingUser);
 
         return this.userMapper.toDto(updatedUser);

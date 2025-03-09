@@ -9,7 +9,6 @@ import java.time.OffsetDateTime;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -19,57 +18,39 @@ public final class AlarmSettingsTest {
 
     private static final Long ID = 1L;
     private static final int INVALID_GOAL = -1;
-    private static final int INVALID_INTERVAL = 0;
-    private static final OffsetDateTime INVALID_END_TIME = START_TIME.minusHours(1);
 
-    @ParameterizedTest(name = "Testing setter/getter with value: {2}")
+    @ParameterizedTest(name = "Test setter/getter with value: {2}")
     @MethodSource("provideSetterGetterPairs")
-    public <T> void testGetterSetter(final BiConsumer<AlarmSettings, T> setter,
-                                     final Function<AlarmSettings, T> getter,
-                                     final T expectedValue) {
-        var alarmSettings = new AlarmSettings(
+    public <T> void givenSetterGetterPair_whenSetting_thenValueIsRetrieved(BiConsumer<AlarmSettings, T> setter,
+                                                                           Function<AlarmSettings, T> getter,
+                                                                           T expectedValue) {
+        AlarmSettings settings = new AlarmSettings(
                 ALARM_SETTINGS.getGoal(),
                 ALARM_SETTINGS.getIntervalMinutes(),
                 ALARM_SETTINGS.getDailyStartTime(),
                 ALARM_SETTINGS.getDailyEndTime()
         );
-        setter.accept(alarmSettings, expectedValue);
-
-        assertThat(getter.apply(alarmSettings)).isEqualTo(expectedValue);
+        setter.accept(settings, expectedValue);
+        assertThat(getter.apply(settings)).isEqualTo(expectedValue);
     }
 
-    public static Stream<Arguments> provideSetterGetterPairs() {
+    private static Stream<Arguments> provideSetterGetterPairs() {
         return Stream.of(
-                // Test for the 'id' property
                 Arguments.of((BiConsumer<AlarmSettings, Long>) AlarmSettings::setId,
                         (Function<AlarmSettings, Long>) AlarmSettings::getId,
                         ID),
-                // Tests for the 'goal' property
                 Arguments.of((BiConsumer<AlarmSettings, Integer>) AlarmSettings::setGoal,
                         (Function<AlarmSettings, Integer>) AlarmSettings::getGoal,
                         ALARM_SETTINGS.getGoal()),
-                Arguments.of((BiConsumer<AlarmSettings, Integer>) AlarmSettings::setGoal,
-                        (Function<AlarmSettings, Integer>) AlarmSettings::getGoal,
-                        INVALID_GOAL),
-                // Tests for the 'intervalMinutes' property
                 Arguments.of((BiConsumer<AlarmSettings, Integer>) AlarmSettings::setIntervalMinutes,
                         (Function<AlarmSettings, Integer>) AlarmSettings::getIntervalMinutes,
                         ALARM_SETTINGS.getIntervalMinutes()),
-                Arguments.of((BiConsumer<AlarmSettings, Integer>) AlarmSettings::setIntervalMinutes,
-                        (Function<AlarmSettings, Integer>) AlarmSettings::getIntervalMinutes,
-                        INVALID_INTERVAL),
-                // Test for the 'dailyStartTime' property
                 Arguments.of((BiConsumer<AlarmSettings, OffsetDateTime>) AlarmSettings::setDailyStartTime,
                         (Function<AlarmSettings, OffsetDateTime>) AlarmSettings::getDailyStartTime,
                         START_TIME),
-                // Tests for the 'dailyEndTime' property
                 Arguments.of((BiConsumer<AlarmSettings, OffsetDateTime>) AlarmSettings::setDailyEndTime,
                         (Function<AlarmSettings, OffsetDateTime>) AlarmSettings::getDailyEndTime,
                         END_TIME),
-                Arguments.of((BiConsumer<AlarmSettings, OffsetDateTime>) AlarmSettings::setDailyEndTime,
-                        (Function<AlarmSettings, OffsetDateTime>) AlarmSettings::getDailyEndTime,
-                        INVALID_END_TIME),
-                // Test for the 'user' property
                 Arguments.of((BiConsumer<AlarmSettings, User>) AlarmSettings::setUser,
                         (Function<AlarmSettings, User>) AlarmSettings::getUser,
                         USER)
@@ -78,319 +59,298 @@ public final class AlarmSettingsTest {
 
     @Test
     public void givenValidArguments_whenInstantiatedWithConstructor_thenShouldCreateValidInstance() {
-        var alarmSettings = new AlarmSettings(
+        AlarmSettings settings = new AlarmSettings(
                 ALARM_SETTINGS.getGoal(),
                 ALARM_SETTINGS.getIntervalMinutes(),
                 ALARM_SETTINGS.getDailyStartTime(),
                 ALARM_SETTINGS.getDailyEndTime()
         );
-
-        assertThat(alarmSettings).isNotNull();
-        assertThat(alarmSettings.getGoal()).isEqualTo(ALARM_SETTINGS.getGoal());
-        assertThat(alarmSettings.getIntervalMinutes()).isEqualTo(ALARM_SETTINGS.getIntervalMinutes());
-        assertThat(alarmSettings.getDailyStartTime()).isEqualTo(ALARM_SETTINGS.getDailyStartTime());
-        assertThat(alarmSettings.getDailyEndTime()).isEqualTo(ALARM_SETTINGS.getDailyEndTime());
+        assertThat(settings).isNotNull();
+        assertThat(settings.getGoal()).isEqualTo(ALARM_SETTINGS.getGoal());
+        assertThat(settings.getIntervalMinutes()).isEqualTo(ALARM_SETTINGS.getIntervalMinutes());
+        assertThat(settings.getDailyStartTime()).isEqualTo(ALARM_SETTINGS.getDailyStartTime());
+        assertThat(settings.getDailyEndTime()).isEqualTo(ALARM_SETTINGS.getDailyEndTime());
     }
 
     @Test
     public void givenNegativeGoal_whenInstantiatedWithConstructor_thenShouldThrowException() {
-        assertThatThrownBy(() -> new AlarmSettings(
-                INVALID_GOAL,
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        )).isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> new AlarmSettings(INVALID_GOAL, ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime()))
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Goal must be greater than zero");
     }
 
     @Test
     public void givenZeroGoal_whenInstantiatedWithConstructor_thenShouldThrowException() {
-        assertThatThrownBy(() -> new AlarmSettings(
-                0,
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        )).isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> new AlarmSettings(0, ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime()))
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Goal must be greater than zero");
     }
 
     @Test
     public void givenNegativeInterval_whenInstantiatedWithConstructor_thenShouldThrowException() {
-        assertThatThrownBy(() -> new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                -1,
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        )).isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> new AlarmSettings(ALARM_SETTINGS.getGoal(), -1,
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime()))
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Interval minutes must be greater than zero");
     }
 
     @Test
     public void givenZeroInterval_whenInstantiatedWithConstructor_thenShouldThrowException() {
-        assertThatThrownBy(() -> new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                0,
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        )).isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> new AlarmSettings(ALARM_SETTINGS.getGoal(), 0,
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime()))
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Interval minutes must be greater than zero");
     }
 
     @Test
     public void givenNullStartTime_whenInstantiatedWithConstructor_thenShouldThrowException() {
-        assertThatThrownBy(() -> new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                null,
-                ALARM_SETTINGS.getDailyEndTime()
-        )).isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                null, ALARM_SETTINGS.getDailyEndTime()))
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Daily start time cannot be null");
     }
 
     @Test
     public void givenNullEndTime_whenInstantiatedWithConstructor_thenShouldThrowException() {
-        assertThatThrownBy(() -> new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                null
-        )).isInstanceOf(IllegalArgumentException.class)
+        assertThatThrownBy(() -> new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), null))
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Daily end time cannot be null");
     }
 
     @Test
     public void givenEndTimeBeforeStartTime_whenInstantiatedWithConstructor_thenShouldThrowException() {
-        assertThatThrownBy(() -> new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                INVALID_END_TIME
-        )).isInstanceOf(IllegalArgumentException.class)
+        OffsetDateTime invalidEnd = START_TIME.minusHours(1);
+        assertThatThrownBy(() -> new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                START_TIME, invalidEnd))
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Daily end time cannot be before daily start time");
     }
 
     @Test
     public void givenSameInstance_whenEquals_thenShouldBeTrue() {
-        var settings = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
+        AlarmSettings settings = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
         settings.setId(ID);
         settings.setUser(USER);
-
         assertThat(settings.equals(settings)).isTrue();
     }
 
     @Test
     public void givenTwoEqualAlarmSettings_whenCompared_thenShouldBeEqual() {
-        var settings1 = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
-        settings1.setId(ID);
-        settings1.setUser(USER);
+        AlarmSettings as1 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as1.setId(ID);
+        as1.setUser(USER);
 
-        var settings2 = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
-        settings2.setId(ID);
-        settings2.setUser(USER);
+        AlarmSettings as2 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as2.setId(ID);
+        as2.setUser(USER);
 
-        assertThat(settings1).isEqualTo(settings2);
-        assertThat(settings1.hashCode()).isEqualTo(settings2.hashCode());
+        assertThat(as1).isEqualTo(as2);
+        assertThat(as1.hashCode()).isEqualTo(as2.hashCode());
     }
 
     @Test
-    public void givenAlarmSettingsAndNull_whenEquals_thenShouldBeFalse() {
-        var settings = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
+    public void givenAlarmSettingsAndNull_whenEquals_thenShouldReturnFalse() {
+        AlarmSettings settings = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
         settings.setId(ID);
         settings.setUser(USER);
-
         assertThat(settings.equals(null)).isFalse();
     }
 
     @Test
-    public void givenDifferentObjectType_whenEquals_thenShouldBeFalse() {
-        var settings = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
+    public void givenDifferentObjectType_whenEquals_thenShouldReturnFalse() {
+        AlarmSettings settings = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
         settings.setId(ID);
         settings.setUser(USER);
-
-        final String differentType = "Not an AlarmSettings instance";
-
-        assertThat(settings.equals(differentType)).isFalse();
+        String notAnAlarmSettings = "Not an AlarmSettings instance";
+        assertThat(settings.equals(notAnAlarmSettings)).isFalse();
     }
 
     @Test
     public void givenDifferentGoal_whenEquals_thenShouldReturnFalse() {
-        var settings1 = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
-        settings1.setId(ID);
-        settings1.setUser(USER);
+        AlarmSettings as1 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as1.setId(ID);
+        as1.setUser(USER);
 
-        var settings2 = new AlarmSettings(
-                ALARM_SETTINGS.getGoal() + 1,
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
-        settings2.setId(ID);
-        settings2.setUser(USER);
+        AlarmSettings as2 = new AlarmSettings(ALARM_SETTINGS.getGoal() + 1, ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as2.setId(ID);
+        as2.setUser(USER);
 
-        assertThat(settings1.equals(settings2)).isFalse();
+        assertThat(as1).isNotEqualTo(as2);
     }
 
     @Test
     public void givenDifferentIntervalMinutes_whenEquals_thenShouldReturnFalse() {
-        var settings1 = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
-        settings1.setId(ID);
-        settings1.setUser(USER);
+        AlarmSettings as1 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as1.setId(ID);
+        as1.setUser(USER);
 
-        var settings2 = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes() + 10,
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
-        settings2.setId(ID);
-        settings2.setUser(USER);
+        AlarmSettings as2 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes() + 10,
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as2.setId(ID);
+        as2.setUser(USER);
 
-        assertThat(settings1.equals(settings2)).isFalse();
+        assertThat(as1).isNotEqualTo(as2);
     }
 
     @Test
     public void givenDifferentId_whenEquals_thenShouldReturnFalse() {
-        var settings1 = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
-        settings1.setId(ID);
-        settings1.setUser(USER);
+        AlarmSettings as1 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as1.setId(ID);
+        as1.setUser(USER);
 
-        var settings2 = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
-        settings2.setId(999L);
-        settings2.setUser(USER);
+        AlarmSettings as2 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as2.setId(999L);
+        as2.setUser(USER);
 
-        assertThat(settings1.equals(settings2)).isFalse();
+        assertThat(as1).isNotEqualTo(as2);
     }
 
     @Test
     public void givenDifferentDailyStartTime_whenEquals_thenShouldReturnFalse() {
-        var settings1 = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
-        settings1.setId(ID);
-        settings1.setUser(USER);
+        AlarmSettings as1 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as1.setId(ID);
+        as1.setUser(USER);
 
-        var settings2 = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime().plusHours(1),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
-        settings2.setId(ID);
-        settings2.setUser(USER);
+        AlarmSettings as2 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime().plusHours(1), ALARM_SETTINGS.getDailyEndTime());
+        as2.setId(ID);
+        as2.setUser(USER);
 
-        assertThat(settings1.equals(settings2)).isFalse();
+        assertThat(as1).isNotEqualTo(as2);
     }
 
     @Test
     public void givenDifferentDailyEndTime_whenEquals_thenShouldReturnFalse() {
-        var settings1 = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
-        settings1.setId(ID);
-        settings1.setUser(USER);
+        AlarmSettings as1 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as1.setId(ID);
+        as1.setUser(USER);
 
-        var settings2 = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime().plusHours(1)
-        );
-        settings2.setId(ID);
-        settings2.setUser(USER);
+        AlarmSettings as2 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime().plusHours(1));
+        as2.setId(ID);
+        as2.setUser(USER);
 
-        assertThat(settings1.equals(settings2)).isFalse();
+        assertThat(as1).isNotEqualTo(as2);
     }
 
     @Test
     public void givenDifferentUser_whenEquals_thenShouldReturnFalse() {
-        var settings1 = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
-        settings1.setId(ID);
-        settings1.setUser(USER);
+        AlarmSettings as1 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as1.setId(ID);
+        as1.setUser(USER);
 
-        var settings2 = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
-        settings2.setId(ID);
-        var differentUser = new User();
-        differentUser.setId(12345L);
-        settings2.setUser(differentUser);
+        AlarmSettings as2 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as2.setId(ID);
+        User differentUser = new User();
+        differentUser.setPublicId(java.util.UUID.randomUUID());
+        as2.setUser(differentUser);
 
-        assertThat(settings1.equals(settings2)).isFalse();
+        assertThat(as1).isNotEqualTo(as2);
+    }
+
+    // Additional tests for hashCode differences
+    @Test
+    public void givenDifferentGoal_whenHashCode_thenShouldReturnDifferentValue() {
+        AlarmSettings as1 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as1.setId(ID);
+        as1.setUser(USER);
+
+        AlarmSettings as2 = new AlarmSettings(ALARM_SETTINGS.getGoal() + 1, ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as2.setId(ID);
+        as2.setUser(USER);
+
+        assertThat(as1.hashCode()).isNotEqualTo(as2.hashCode());
+    }
+
+    @Test
+    public void givenDifferentInterval_whenHashCode_thenShouldReturnDifferentValue() {
+        AlarmSettings as1 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as1.setId(ID);
+        as1.setUser(USER);
+
+        AlarmSettings as2 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes() + 10,
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as2.setId(ID);
+        as2.setUser(USER);
+
+        assertThat(as1.hashCode()).isNotEqualTo(as2.hashCode());
+    }
+
+    @Test
+    public void givenDifferentDailyStartTime_whenHashCode_thenShouldReturnDifferentValue() {
+        AlarmSettings as1 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as1.setId(ID);
+        as1.setUser(USER);
+
+        AlarmSettings as2 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime().plusMinutes(30), ALARM_SETTINGS.getDailyEndTime());
+        as2.setId(ID);
+        as2.setUser(USER);
+
+        assertThat(as1.hashCode()).isNotEqualTo(as2.hashCode());
+    }
+
+    @Test
+    public void givenDifferentDailyEndTime_whenHashCode_thenShouldReturnDifferentValue() {
+        AlarmSettings as1 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as1.setId(ID);
+        as1.setUser(USER);
+
+        AlarmSettings as2 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime().plusMinutes(30));
+        as2.setId(ID);
+        as2.setUser(USER);
+
+        assertThat(as1.hashCode()).isNotEqualTo(as2.hashCode());
+    }
+
+    @Test
+    public void givenDifferentUserPublicId_whenHashCode_thenShouldReturnDifferentValue() {
+        AlarmSettings as1 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as1.setId(ID);
+        as1.setUser(USER);
+
+        AlarmSettings as2 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as2.setId(ID);
+        User differentUser = new User();
+        differentUser.setPublicId(java.util.UUID.randomUUID());
+        as2.setUser(differentUser);
+
+        assertThat(as1.hashCode()).isNotEqualTo(as2.hashCode());
     }
 
     @Test
     public void givenAlarmSettings_whenToString_thenShouldContainAllFields() {
-        var settings = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
-        settings.setId(ID);
-        settings.setUser(USER);
-
-        var toString = settings.toString();
-
-        assertThat(toString)
+        AlarmSettings as = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as.setId(ID);
+        as.setUser(USER);
+        String str = as.toString();
+        assertThat(str)
                 .contains(String.valueOf(ID))
                 .contains(String.valueOf(ALARM_SETTINGS.getGoal()))
                 .contains(String.valueOf(ALARM_SETTINGS.getIntervalMinutes()))
@@ -400,60 +360,55 @@ public final class AlarmSettingsTest {
 
     @Test
     public void givenNullUser_whenToString_thenShouldHandleNull() {
-        var settings = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
-        settings.setId(ID);
-        settings.setUser(null);
-
-        var toString = settings.toString();
-
-        assertThat(toString)
-                .contains("user=null")
-                .doesNotContain("user.getId()");
+        AlarmSettings as = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as.setId(ID);
+        as.setUser(null);
+        String str = as.toString();
+        assertThat(str).contains("user=null").doesNotContain("user.getId()");
     }
 
     @Test
     public void givenUserWithId_whenToString_thenShouldShowUserId() {
-        var settings = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
-        settings.setId(ID);
-        var user = new User();
+        AlarmSettings as = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as.setId(ID);
+        User user = new User();
         user.setId(1L);
-        settings.setUser(user);
-
-        var toString = settings.toString();
-
-        assertThat(toString).contains("user=1");
+        as.setUser(user);
+        String str = as.toString();
+        assertThat(str).contains("user=1");
     }
 
     @Test
-    public void givenDifferentFieldValues_whenHashCode_thenShouldReturnDifferentValues() {
-        var settings1 = new AlarmSettings(
-                ALARM_SETTINGS.getGoal(),
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
-        settings1.setId(ID);
-        settings1.setUser(USER);
+    public void givenBothUsersNull_whenEquals_thenShouldReturnTrue() {
+        AlarmSettings as1 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as1.setId(ID);
+        as1.setUser(null);
 
-        var settings2 = new AlarmSettings(
-                ALARM_SETTINGS.getGoal() + 1,
-                ALARM_SETTINGS.getIntervalMinutes(),
-                ALARM_SETTINGS.getDailyStartTime(),
-                ALARM_SETTINGS.getDailyEndTime()
-        );
-        settings2.setId(ID);
-        settings2.setUser(USER);
+        AlarmSettings as2 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as2.setId(ID);
+        as2.setUser(null);
 
-        assertThat(settings1.hashCode()).isNotEqualTo(settings2.hashCode());
+        assertThat(as1).isEqualTo(as2);
+        assertThat(as1.hashCode()).isEqualTo(as2.hashCode());
+    }
+
+    @Test
+    public void givenOneUserNull_whenEquals_thenShouldReturnFalse() {
+        AlarmSettings as1 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as1.setId(ID);
+        as1.setUser(null);
+
+        AlarmSettings as2 = new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
+                ALARM_SETTINGS.getDailyStartTime(), ALARM_SETTINGS.getDailyEndTime());
+        as2.setId(ID);
+        as2.setUser(USER);
+
+        assertThat(as1).isNotEqualTo(as2);
+        assertThat(as2).isNotEqualTo(as1);
     }
 }

@@ -100,7 +100,7 @@ public final class UserServiceTest {
 
         assertThat(sut).isEqualTo(USER_RESPONSE_DTO);
         verify(this.userRepository).findByPublicId(USER_UUID);
-        verify(this.userMapper).updateUserFromDTO(USER, USER_DTO);
+        verify(this.userMapper).updateUser(USER, USER_DTO);
         verify(this.userRepository).save(USER);
         verify(this.userMapper).toDto(USER);
         verifyNoMoreInteractions(this.userRepository, this.userMapper);
@@ -115,7 +115,7 @@ public final class UserServiceTest {
                 .isInstanceOf(UserNotFoundException.class);
 
         verify(this.userRepository).findByPublicId(USER_UUID);
-        verify(this.userMapper, never()).updateUserFromDTO(any(), any());
+        verify(this.userMapper, never()).updateUser(any(), any());
         verify(this.userRepository, never()).save(any());
         verify(this.userMapper, never()).toDto(any());
         verifyNoMoreInteractions(this.userRepository, this.userMapper);

@@ -1,7 +1,10 @@
 package br.com.drinkwater.usermanagement.model;
 
+import static br.com.drinkwater.usermanagement.constants.AlarmSettingsTestConstants.ALARM_SETTINGS;
 import static br.com.drinkwater.usermanagement.constants.UserTestConstants.USER;
+import static br.com.drinkwater.usermanagement.constants.UserTestConstants.USER_UUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import br.com.drinkwater.hydrationtracking.model.WaterIntake;
 import org.junit.jupiter.api.Test;
@@ -218,6 +221,48 @@ public final class UserTest {
         user2.setEmail("different@email.com");
 
         assertThat(user1.hashCode()).isNotEqualTo(user2.hashCode());
+    }
+
+    @Test
+    public void givenNullPublicId_whenCreatingUser_thenThrowsIllegalArgumentException() {
+        assertThatThrownBy(() -> new User(null, USER.getEmail(), PERSONAL, PHYSICAL, ALARM_SETTINGS))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Public ID cannot be null");
+    }
+
+    @Test
+    public void givenNullEmail_whenCreatingUser_thenThrowsIllegalArgumentException() {
+        assertThatThrownBy(() -> new User(USER_UUID, null, PERSONAL, PHYSICAL, ALARM_SETTINGS))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Email cannot be null or blank");
+    }
+
+    @Test
+    public void givenBlankEmail_whenCreatingUser_thenThrowsIllegalArgumentException() {
+        assertThatThrownBy(() -> new User(USER_UUID, "", PERSONAL, PHYSICAL, ALARM_SETTINGS))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Email cannot be null or blank");
+    }
+
+    @Test
+    public void givenNullPersonal_whenCreatingUser_thenThrowsIllegalArgumentException() {
+        assertThatThrownBy(() -> new User(USER_UUID, USER.getEmail(), null, PHYSICAL, ALARM_SETTINGS))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Personal information is required");
+    }
+
+    @Test
+    public void givenNullPhysical_whenCreatingUser_thenThrowsIllegalArgumentException() {
+        assertThatThrownBy(() -> new User(USER_UUID, USER.getEmail(), PERSONAL, null, ALARM_SETTINGS))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Physical information is required");
+    }
+
+    @Test
+    public void givenNullSettings_whenCreatingUser_thenThrowsIllegalArgumentException() {
+        assertThatThrownBy(() -> new User(USER_UUID, USER.getEmail(), PERSONAL, PHYSICAL, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Alarm settings are required");
     }
 
     private User createDefaultUser() {
