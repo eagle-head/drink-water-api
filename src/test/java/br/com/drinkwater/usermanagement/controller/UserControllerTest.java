@@ -53,7 +53,9 @@ public final class UserControllerTest {
                 .perform(get("/users/me")
                         .with(jwt()
                                 .jwt(builder -> builder.claim("sub", USER_UUID.toString())
-                                        .build())))
+                                        .build()))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Accept-Language", "en-US"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.publicId")
                         .value(USER_UUID.toString()))
@@ -84,7 +86,9 @@ public final class UserControllerTest {
                                 .jwt(builder -> builder.claim("sub", USER_UUID.toString())
                                         .build()))
                         .content(this.objectMapper.writeValueAsString(USER_DTO))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Accept-Language", "en-US"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.publicId")
                         .value(USER_UUID.toString()))
@@ -115,7 +119,9 @@ public final class UserControllerTest {
                                 .jwt(builder -> builder.claim("sub", USER_UUID.toString())
                                         .build()))
                         .content(this.objectMapper.writeValueAsString(UPDATE_USER_DTO))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Accept-Language", "en-US"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.publicId")
                         .value(USER_UUID.toString()))
@@ -142,7 +148,9 @@ public final class UserControllerTest {
 
         mockMvc
                 .perform(delete("/users")
-                        .with(jwt().jwt(builder -> builder.claim("sub", USER_UUID.toString()).build())))
+                        .with(jwt().jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .header("Accept-Language", "en-US"))
                 .andExpect(status().isNoContent());
 
         verify(this.userService, times(1)).deleteByPublicId(USER_UUID);

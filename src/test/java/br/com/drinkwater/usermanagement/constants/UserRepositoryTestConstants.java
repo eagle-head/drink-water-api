@@ -7,9 +7,9 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
 
-public final class RepositoryTestConstants {
+public final class UserRepositoryTestConstants {
 
-    private RepositoryTestConstants() {
+    private UserRepositoryTestConstants() {
     }
 
     // UUID fixo para garantir consistência nos testes

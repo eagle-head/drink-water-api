@@ -20,7 +20,7 @@ public final class WaterIntakeTestConstants {
 
     public static final OffsetDateTime DATE_TIME_UTC = OffsetDateTime.now()
             .withOffsetSameInstant(ZoneOffset.UTC)
-            .withSecond(0)
+            .withSecond(10)
             .withNano(0);
 
     public static final int VOLUME = 250;
@@ -41,8 +41,8 @@ public final class WaterIntakeTestConstants {
     );
 
     public static final WaterIntakeFilterDTO FILTER_DTO = new WaterIntakeFilterDTO(
-            OffsetDateTime.now().minusDays(7),
-            OffsetDateTime.now(),
+            OffsetDateTime.now().minusDays(7).withOffsetSameInstant(ZoneOffset.UTC),
+            OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC),
             100,
             2000,
             0,

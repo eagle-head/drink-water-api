@@ -10,8 +10,8 @@ import org.springframework.test.context.TestPropertySource;
 
 import java.util.Optional;
 
-import static br.com.drinkwater.usermanagement.constants.RepositoryTestConstants.REPOSITORY_USER_UUID;
-import static br.com.drinkwater.usermanagement.constants.RepositoryTestConstants.createTestUser;
+import static br.com.drinkwater.usermanagement.constants.UserRepositoryTestConstants.REPOSITORY_USER_UUID;
+import static br.com.drinkwater.usermanagement.constants.UserRepositoryTestConstants.createTestUser;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
