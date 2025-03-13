@@ -2,7 +2,6 @@ package br.com.drinkwater.hydrationtracking.controller;
 
 import br.com.drinkwater.config.TestMessageSourceConfig;
 import br.com.drinkwater.core.PageResponse;
-import br.com.drinkwater.hydrationtracking.dto.WaterIntakeDTO;
 import br.com.drinkwater.hydrationtracking.dto.WaterIntakeFilterDTO;
 import br.com.drinkwater.hydrationtracking.service.WaterIntakeService;
 import br.com.drinkwater.usermanagement.service.UserService;
@@ -154,7 +153,7 @@ public final class WaterIntakeControllerTest {
                 .withOffsetSameInstant(ZoneOffset.UTC)
                 .withNano(0);
 
-        WaterIntakeFilterDTO filterDTO = new WaterIntakeFilterDTO(
+        var filterDTO = new WaterIntakeFilterDTO(
                 startDate,
                 endDate,
                 100,
@@ -198,7 +197,8 @@ public final class WaterIntakeControllerTest {
                 .andExpect(jsonPath("$.content[0].id").value(RESPONSE_WATER_INTAKE_DTO.id()))
                 .andExpect(jsonPath("$.content[0].dateTimeUTC").value(DATE_TIME_UTC.toString()))
                 .andExpect(jsonPath("$.content[0].volume").value(RESPONSE_WATER_INTAKE_DTO.volume()))
-                .andExpect(jsonPath("$.content[0].volumeUnit").value(RESPONSE_WATER_INTAKE_DTO.volumeUnit().toString()))
+                .andExpect(jsonPath("$.content[0].volumeUnit")
+                        .value(RESPONSE_WATER_INTAKE_DTO.volumeUnit().toString()))
                 .andExpect(jsonPath("$.totalPages").value(1))
                 .andExpect(jsonPath("$.pageNumber").value(0))
                 .andExpect(jsonPath("$.totalElements").value(1))

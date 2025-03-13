@@ -10,7 +10,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
-//"directAccessGrantsEnabled" : true,
 @RestController
 @RequestMapping("/users")
 public class UserController {
