@@ -1,7 +1,7 @@
 package br.com.drinkwater.core.validation;
 
 import br.com.drinkwater.hydrationtracking.validation.WaterIntakeFilterTimeRangeValidator;
-import br.com.drinkwater.usermanagement.validation.AlarmSettingsTimeRangeValidator;
+import br.com.drinkwater.usermanagement.validation.OldAlarmSettingsTimeRangeValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import java.lang.annotation.*;
@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Documented
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {WaterIntakeFilterTimeRangeValidator.class, AlarmSettingsTimeRangeValidator.class})
+@Constraint(validatedBy = {WaterIntakeFilterTimeRangeValidator.class, OldAlarmSettingsTimeRangeValidator.class})
 public @interface TimeRangeConstraint {
 
     String message() default "{validation.timerange.constraint.default}";

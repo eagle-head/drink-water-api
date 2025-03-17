@@ -4,6 +4,7 @@ import br.com.drinkwater.usermanagement.dto.*;
 import br.com.drinkwater.usermanagement.model.*;
 
 import java.math.BigDecimal;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.HashSet;
@@ -47,8 +48,8 @@ public final class UserTestConstants {
     public static final AlarmSettingsDTO UPDATE_SETTINGS_DTO = new AlarmSettingsDTO(
             2000,
             30,
-            UPDATE_NOW.withHour(8).withMinute(0).withSecond(0),
-            UPDATE_NOW.withHour(22).withMinute(0).withSecond(0)
+            LocalTime.of(8, 0),
+            LocalTime.of(22, 0)
     );
 
     public static final UserDTO UPDATE_USER_DTO = new UserDTO(
@@ -68,27 +69,20 @@ public final class UserTestConstants {
 
     public static final AlarmSettings EXISTING_ALARM_SETTINGS;
 
-    public static final OffsetDateTime INVALID_EARLY_START_TIME = UPDATE_NOW
-            .withHour(5)
-            .withMinute(0)
-            .withSecond(0);
-
-    public static final OffsetDateTime INVALID_LATE_END_TIME = UPDATE_NOW
-            .withHour(23)
-            .withMinute(0)
-            .withSecond(0);
+    public static final LocalTime INVALID_EARLY_START_TIME = LocalTime.of(5, 0);
+    public static final LocalTime INVALID_LATE_END_TIME = LocalTime.of(23, 0);
 
     public static final AlarmSettingsDTO INVALID_EARLY_TIME_SETTINGS_DTO = new AlarmSettingsDTO(
             2000,
             30,
             INVALID_EARLY_START_TIME,
-            UPDATE_NOW.withHour(17).withMinute(0).withSecond(0)
+            LocalTime.of(17, 0)
     );
 
     public static final AlarmSettingsDTO INVALID_LATE_TIME_SETTINGS_DTO = new AlarmSettingsDTO(
             2000,
             30,
-            UPDATE_NOW.withHour(8).withMinute(0).withSecond(0),
+            LocalTime.of(8, 0),
             INVALID_LATE_END_TIME
     );
 
@@ -130,8 +124,8 @@ public final class UserTestConstants {
         EXISTING_ALARM_SETTINGS = new AlarmSettings(
                 1000,  // goal
                 20,    // intervalMinutes
-                UPDATE_NOW.withHour(7).withMinute(0),  // dailyStartTime
-                UPDATE_NOW.withHour(21).withMinute(0)  // dailyEndTime
+                LocalTime.of(7, 0),  // dailyStartTime
+                LocalTime.of(21, 0)  // dailyEndTime
         );
     }
 
@@ -144,5 +138,4 @@ public final class UserTestConstants {
                 ALARM_SETTINGS
         );
     }
-
 }

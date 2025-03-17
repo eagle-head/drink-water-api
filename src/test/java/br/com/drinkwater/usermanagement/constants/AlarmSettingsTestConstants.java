@@ -4,24 +4,18 @@ import br.com.drinkwater.usermanagement.dto.AlarmSettingsDTO;
 import br.com.drinkwater.usermanagement.dto.AlarmSettingsResponseDTO;
 import br.com.drinkwater.usermanagement.model.AlarmSettings;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.LocalTime;
 
 public final class AlarmSettingsTestConstants {
 
     private AlarmSettingsTestConstants() {
     }
 
-    public static final OffsetDateTime START_TIME = OffsetDateTime
-            .of(2024, 1, 1, 8, 0, 0, 0, ZoneOffset.UTC);
-    public static final OffsetDateTime END_TIME = OffsetDateTime
-            .of(2024, 1, 1, 22, 0, 0, 0, ZoneOffset.UTC);
-
+    public static final LocalTime START_TIME = LocalTime.of(8, 0, 0);
+    public static final LocalTime END_TIME = LocalTime.of(22, 0, 0);
     public static final AlarmSettingsDTO ALARM_SETTINGS_DTO;
     public static final AlarmSettings ALARM_SETTINGS;
     public static final AlarmSettingsResponseDTO ALARM_SETTINGS_RESPONSE_DTO;
-
-    // Constante já existente para testes
     public static final AlarmSettings EXISTING_ALARM_SETTINGS_FOR_TEST;
 
     static {
@@ -58,8 +52,8 @@ public final class AlarmSettingsTestConstants {
         );
     }
 
-    public static final OffsetDateTime EXPECTED_START_TIME = START_TIME;
-    public static final OffsetDateTime EXPECTED_END_TIME = END_TIME;
+    public static final LocalTime EXPECTED_START_TIME = START_TIME;
+    public static final LocalTime EXPECTED_END_TIME = END_TIME;
     public static final AlarmSettings EXPECTED_ALARM_SETTINGS = new AlarmSettings(
             ALARM_SETTINGS_DTO.goal(),
             ALARM_SETTINGS_DTO.intervalMinutes(),

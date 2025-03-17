@@ -4,7 +4,7 @@ import br.com.drinkwater.usermanagement.model.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.LocalTime;
 import java.util.UUID;
 
 public final class UserRepositoryTestConstants {
@@ -32,8 +32,8 @@ public final class UserRepositoryTestConstants {
         AlarmSettings settings = new AlarmSettings(
                 2000, // goal
                 30,   // intervalMinutes
-                OffsetDateTime.now().withHour(8).withMinute(0).withSecond(0).withNano(0),
-                OffsetDateTime.now().withHour(22).withMinute(0).withSecond(0).withNano(0)
+                LocalTime.of(8, 0, 0),
+                LocalTime.of(22, 0, 0)
         );
 
         return new User(

@@ -18,6 +18,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Locale;
@@ -64,8 +65,8 @@ public class UserDTOTest {
     private static final AlarmSettingsDTO VALID_SETTINGS = new AlarmSettingsDTO(
             2000,
             30,
-            OffsetDateTime.now(ZoneOffset.UTC).withHour(9).withMinute(0).withSecond(0).withNano(0),
-            OffsetDateTime.now(ZoneOffset.UTC).withHour(17).withMinute(0).withSecond(0).withNano(0)
+            LocalTime.of(9, 0, 0),
+            LocalTime.of(17, 0, 0)
     );
 
     private static final String DUMMY_SUBJECT = UUID.randomUUID().toString();

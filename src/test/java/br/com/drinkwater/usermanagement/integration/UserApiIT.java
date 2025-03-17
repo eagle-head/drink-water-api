@@ -87,8 +87,8 @@ public final class UserApiIT {
                 .body("physical.heightUnit", equalTo("CM"))
                 .body("settings.goal", equalTo(2000))
                 .body("settings.intervalMinutes", equalTo(60))
-                .body("settings.dailyStartTime", equalTo("2024-01-01T08:00:00Z"))
-                .body("settings.dailyEndTime", equalTo("2024-01-01T22:00:00Z"));
+                .body("settings.dailyStartTime", equalTo("08:00:00"))
+                .body("settings.dailyEndTime", equalTo("22:00:00"));
     }
 
     @Test
@@ -118,8 +118,8 @@ public final class UserApiIT {
                 .body("physical.heightUnit", equalTo(USER_DTO.physical().heightUnit().toString()))
                 .body("settings.goal", equalTo(USER_DTO.settings().goal()))
                 .body("settings.intervalMinutes", equalTo(USER_DTO.settings().intervalMinutes()))
-                .body("settings.dailyStartTime", equalTo("2024-01-01T08:00:00Z"))
-                .body("settings.dailyEndTime", equalTo("2024-01-01T22:00:00Z"));
+                .body("settings.dailyStartTime", equalTo("08:00:00"))
+                .body("settings.dailyEndTime", equalTo("22:00:00"));
     }
 
     @Test
@@ -145,8 +145,8 @@ public final class UserApiIT {
                       "settings": {
                         "goal": 2000,
                         "intervalMinutes": 15,
-                        "dailyStartTime": "2024-01-01T08:00:00Z",
-                        "dailyEndTime": "2024-01-01T22:00:00Z"
+                        "dailyStartTime": "08:00:00",
+                        "dailyEndTime": "22:00:00"
                       }
                     }
                 """;

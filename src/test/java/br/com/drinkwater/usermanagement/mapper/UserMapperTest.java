@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.LocalTime;
 
 import static br.com.drinkwater.usermanagement.constants.AlarmSettingsTestConstants.ALARM_SETTINGS;
 import static br.com.drinkwater.usermanagement.constants.PersonalTestConstants.PERSONAL;
@@ -101,8 +101,8 @@ public class UserMapperTest {
         assertThat(user.getSettings().getIntervalMinutes()).isEqualTo(30);
 
         // Verificar apenas a hora e minuto, não a data completa
-        OffsetDateTime startTime = user.getSettings().getDailyStartTime();
-        OffsetDateTime endTime = user.getSettings().getDailyEndTime();
+        LocalTime startTime = user.getSettings().getDailyStartTime();
+        LocalTime endTime = user.getSettings().getDailyEndTime();
         assertThat(startTime.getHour()).isEqualTo(8);
         assertThat(startTime.getMinute()).isEqualTo(0);
         assertThat(endTime.getHour()).isEqualTo(22);
@@ -153,8 +153,8 @@ public class UserMapperTest {
                 .isNotEqualTo(initialInterval);
 
         // Verificar apenas a hora e minuto, não a data completa
-        OffsetDateTime startTime = user.getSettings().getDailyStartTime();
-        OffsetDateTime endTime = user.getSettings().getDailyEndTime();
+        LocalTime startTime = user.getSettings().getDailyStartTime();
+        LocalTime endTime = user.getSettings().getDailyEndTime();
         assertThat(startTime.getHour()).isEqualTo(8);
         assertThat(startTime.getMinute()).isEqualTo(0);
         assertThat(endTime.getHour()).isEqualTo(22);

@@ -12,23 +12,23 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 
 @Component
-public class AlarmSettingsTimeRangeValidator extends BaseTimeRangeValidator<AlarmSettingsDTO> {
+public class OldAlarmSettingsTimeRangeValidator extends BaseTimeRangeValidator<AlarmSettingsDTO> {
 
     public static final int BUSINESS_HOURS_START = 6;
     public static final int BUSINESS_HOURS_END = 22;
 
-    public AlarmSettingsTimeRangeValidator(MessageSource messageSource) {
+    public OldAlarmSettingsTimeRangeValidator(MessageSource messageSource) {
         super(messageSource);
     }
 
     @Override
     protected OffsetDateTime extractStartDate(AlarmSettingsDTO value) {
-        return value.dailyStartTime();
+        return null;
     }
 
     @Override
     protected OffsetDateTime extractEndDate(AlarmSettingsDTO value) {
-        return value.dailyEndTime();
+        return null;
     }
 
     @Override

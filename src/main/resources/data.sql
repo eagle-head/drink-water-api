@@ -8,9 +8,9 @@ VALUES
 -- Insert alarm settings for each user
 INSERT INTO alarm_settings (goal, interval_minutes, daily_start_time, daily_end_time, user_id)
 VALUES
-    (2000, 60, '2024-01-01T08:00:00+00:00', '2024-01-01T22:00:00+00:00', 1),
-    (1500, 45, '2024-01-01T07:00:00+00:00', '2024-01-01T21:00:00+00:00', 2),
-    (1750, 30, '2024-01-01T09:00:00+00:00', '2024-01-01T20:00:00+00:00', 3);
+    (2000, 60, '08:00:00', '22:00:00', 1),
+    (1500, 45, '07:00:00', '21:00:00', 2),
+    (1750, 30, '09:00:00', '20:00:00', 3);
 
 -- Insert water intakes for each user
 INSERT INTO water_intakes (date_time_utc, volume, volume_unit, user_id)

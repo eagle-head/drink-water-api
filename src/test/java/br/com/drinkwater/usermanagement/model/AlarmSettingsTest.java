@@ -5,6 +5,7 @@ import static br.com.drinkwater.usermanagement.constants.AlarmSettingsTestConsta
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -45,11 +46,11 @@ public final class AlarmSettingsTest {
                 Arguments.of((BiConsumer<AlarmSettings, Integer>) AlarmSettings::setIntervalMinutes,
                         (Function<AlarmSettings, Integer>) AlarmSettings::getIntervalMinutes,
                         ALARM_SETTINGS.getIntervalMinutes()),
-                Arguments.of((BiConsumer<AlarmSettings, OffsetDateTime>) AlarmSettings::setDailyStartTime,
-                        (Function<AlarmSettings, OffsetDateTime>) AlarmSettings::getDailyStartTime,
+                Arguments.of((BiConsumer<AlarmSettings, LocalTime>) AlarmSettings::setDailyStartTime,
+                        (Function<AlarmSettings, LocalTime>) AlarmSettings::getDailyStartTime,
                         START_TIME),
-                Arguments.of((BiConsumer<AlarmSettings, OffsetDateTime>) AlarmSettings::setDailyEndTime,
-                        (Function<AlarmSettings, OffsetDateTime>) AlarmSettings::getDailyEndTime,
+                Arguments.of((BiConsumer<AlarmSettings, LocalTime>) AlarmSettings::setDailyEndTime,
+                        (Function<AlarmSettings, LocalTime>) AlarmSettings::getDailyEndTime,
                         END_TIME),
                 Arguments.of((BiConsumer<AlarmSettings, User>) AlarmSettings::setUser,
                         (Function<AlarmSettings, User>) AlarmSettings::getUser,
@@ -122,7 +123,7 @@ public final class AlarmSettingsTest {
 
     @Test
     public void givenEndTimeBeforeStartTime_whenInstantiatedWithConstructor_thenShouldThrowException() {
-        OffsetDateTime invalidEnd = START_TIME.minusHours(1);
+        LocalTime invalidEnd = START_TIME.minusHours(1);
         assertThatThrownBy(() -> new AlarmSettings(ALARM_SETTINGS.getGoal(), ALARM_SETTINGS.getIntervalMinutes(),
                 START_TIME, invalidEnd))
                 .isInstanceOf(IllegalArgumentException.class)

@@ -3,7 +3,7 @@ package br.com.drinkwater.usermanagement.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.time.OffsetDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 
 @Entity
@@ -20,10 +20,11 @@ public class AlarmSettings {
     private int intervalMinutes;
 
     @Column(name = "daily_start_time", nullable = false)
-    private OffsetDateTime dailyStartTime;
+    private LocalTime dailyStartTime;
 
     @Column(name = "daily_end_time", nullable = false)
-    private OffsetDateTime dailyEndTime;
+    private LocalTime dailyEndTime;
+
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
@@ -46,7 +47,7 @@ public class AlarmSettings {
      * @param dailyEndTime    time to stop reminders during the day (required)
      * @throws IllegalArgumentException if any parameter fails validation
      */
-    public AlarmSettings(int goal, int intervalMinutes, OffsetDateTime dailyStartTime, OffsetDateTime dailyEndTime) {
+    public AlarmSettings(int goal, int intervalMinutes, LocalTime dailyStartTime, LocalTime dailyEndTime) {
         if (goal <= 0) {
             throw new IllegalArgumentException("Goal must be greater than zero");
         }
@@ -97,19 +98,19 @@ public class AlarmSettings {
         this.intervalMinutes = intervalMinutes;
     }
 
-    public OffsetDateTime getDailyStartTime() {
+    public LocalTime getDailyStartTime() {
         return dailyStartTime;
     }
 
-    public void setDailyStartTime(OffsetDateTime dailyStartTime) {
+    public void setDailyStartTime(LocalTime dailyStartTime) {
         this.dailyStartTime = dailyStartTime;
     }
 
-    public OffsetDateTime getDailyEndTime() {
+    public LocalTime getDailyEndTime() {
         return dailyEndTime;
     }
 
-    public void setDailyEndTime(OffsetDateTime dailyEndTime) {
+    public void setDailyEndTime(LocalTime dailyEndTime) {
         this.dailyEndTime = dailyEndTime;
     }
 
@@ -131,7 +132,7 @@ public class AlarmSettings {
         if (!Objects.equals(getDailyStartTime(), that.getDailyStartTime())) return false;
         if (!Objects.equals(getDailyEndTime(), that.getDailyEndTime())) return false;
 
-        // Comparação do usuário sem recursão - usando apenas o publicId
+        // User comparison without recursion - using only the publicId
         var thisUser = getUser();
         var thatUser = that.getUser();
 

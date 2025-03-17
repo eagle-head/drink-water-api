@@ -1,14 +1,11 @@
 package br.com.drinkwater.usermanagement.dto;
 
-import br.com.drinkwater.core.validation.TimeRangeConstraint;
+import br.com.drinkwater.usermanagement.validation.ValidAlarmTime;
 import jakarta.validation.constraints.*;
 
-import java.time.OffsetDateTime;
+import java.time.LocalTime;
 
-@TimeRangeConstraint(
-        startDateField = "dailyStartTime",
-        endDateField = "dailyEndTime"
-)
+@ValidAlarmTime
 public record AlarmSettingsDTO(
         @NotNull(message = "{alarmSettingsDTO.goal.notNull}")
         @Min(value = 50, message = "{alarmSettingsDTO.goal.min}")
@@ -21,9 +18,9 @@ public record AlarmSettingsDTO(
         int intervalMinutes,
 
         @NotNull(message = "{alarmSettingsDTO.dailyStartTime.notNull}")
-        OffsetDateTime dailyStartTime,
+        LocalTime dailyStartTime,
 
         @NotNull(message = "{alarmSettingsDTO.dailyEndTime.notNull}")
-        OffsetDateTime dailyEndTime
+        LocalTime dailyEndTime
 ) {
 }
