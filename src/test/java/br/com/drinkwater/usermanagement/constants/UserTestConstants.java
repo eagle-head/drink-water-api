@@ -30,11 +30,10 @@ public final class UserTestConstants {
             .withSecond(0)
             .withNano(0);
 
-
     public static final PersonalDTO UPDATE_PERSONAL_DTO = new PersonalDTO(
             "John",
             "Update",
-            UPDATE_NOW.minusYears(25),
+            UPDATE_NOW.toLocalDate().minusYears(25),
             BiologicalSex.MALE
     );
 

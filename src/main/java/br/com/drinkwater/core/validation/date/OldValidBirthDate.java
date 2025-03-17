@@ -6,10 +6,10 @@ import jakarta.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = BirthDateValidator.class)
+@Constraint(validatedBy = OldBirthDateValidator.class)
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ValidBirthDate {
+public @interface OldValidBirthDate {
 
     String message() default "{validation.birthdate.invalid}";
 

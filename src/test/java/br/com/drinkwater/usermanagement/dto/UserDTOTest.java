@@ -50,7 +50,7 @@ public class UserDTOTest {
     private static final PersonalDTO VALID_PERSONAL = new PersonalDTO(
             "John",
             "Doe",
-            OffsetDateTime.now(ZoneOffset.UTC).minusYears(30),
+            OffsetDateTime.now(ZoneOffset.UTC).toLocalDate().minusYears(30),
             BiologicalSex.MALE
     );
 
@@ -75,7 +75,7 @@ public class UserDTOTest {
         PersonalDTO personalWithMillis = new PersonalDTO(
                 "John",
                 "Doe",
-                OffsetDateTime.now(ZoneOffset.UTC).minusYears(30),
+                OffsetDateTime.now(ZoneOffset.UTC).toLocalDate().minusYears(30),
                 BiologicalSex.MALE
         );
 
@@ -83,11 +83,6 @@ public class UserDTOTest {
 
         String expectedEmailNotBlank = this.messageSource.getMessage(
                 "userDTO.email.notBlank",
-                null,
-                new Locale("en", "US")
-        );
-        String expectedBirthDateMessage = this.messageSource.getMessage(
-                "validation.datetime.no.milliseconds",
                 null,
                 new Locale("en", "US")
         );
@@ -112,10 +107,6 @@ public class UserDTOTest {
                 .andExpect(jsonPath(
                         "$.errors[?(@.field=='email')].message",
                         containsInAnyOrder(expectedEmailNotBlank))
-                )
-                .andExpect(jsonPath(
-                        "$.errors[?(@.field=='personal.birthDate')].message",
-                        containsInAnyOrder(expectedBirthDateMessage))
                 );
     }
 
@@ -130,11 +121,6 @@ public class UserDTOTest {
         );
         String expectedEmailEmail = this.messageSource.getMessage(
                 "userDTO.email.email",
-                null,
-                new Locale("en", "US")
-        );
-        String expectedBirthDateMessage = this.messageSource.getMessage(
-                "validation.datetime.no.milliseconds",
                 null,
                 new Locale("en", "US")
         );
@@ -160,10 +146,6 @@ public class UserDTOTest {
                 .andExpect(jsonPath(
                         "$.errors[?(@.field=='email')].message",
                         containsInAnyOrder(expectedEmailNotBlank, expectedEmailEmail, expectedEmailEmail))
-                )
-                .andExpect(jsonPath(
-                        "$.errors[?(@.field=='personal.birthDate')].message",
-                        containsInAnyOrder(expectedBirthDateMessage))
                 );
     }
 
@@ -173,11 +155,6 @@ public class UserDTOTest {
 
         String expectedEmailMessage = this.messageSource.getMessage(
                 "userDTO.email.email",
-                null,
-                new Locale("en", "US")
-        );
-        String expectedBirthDateMessage = this.messageSource.getMessage(
-                "validation.datetime.no.milliseconds",
                 null,
                 new Locale("en", "US")
         );
@@ -203,10 +180,6 @@ public class UserDTOTest {
                 .andExpect(jsonPath(
                         "$.errors[?(@.field=='email')].message",
                         containsInAnyOrder(expectedEmailMessage, expectedEmailMessage))
-                )
-                .andExpect(jsonPath(
-                        "$.errors[?(@.field=='personal.birthDate')].message",
-                        containsInAnyOrder(expectedBirthDateMessage))
                 );
     }
 
@@ -216,11 +189,6 @@ public class UserDTOTest {
 
         String expectedEmailMessage = this.messageSource.getMessage(
                 "userDTO.email.pattern",
-                null,
-                new Locale("en", "US")
-        );
-        String expectedBirthDateMessage = this.messageSource.getMessage(
-                "validation.datetime.no.milliseconds",
                 null,
                 new Locale("en", "US")
         );
@@ -246,10 +214,6 @@ public class UserDTOTest {
                 .andExpect(jsonPath(
                         "$.errors[?(@.field=='email')].message",
                         containsInAnyOrder(expectedEmailMessage))
-                )
-                .andExpect(jsonPath(
-                        "$.errors[?(@.field=='personal.birthDate')].message",
-                        containsInAnyOrder(expectedBirthDateMessage))
                 );
     }
 
@@ -261,7 +225,7 @@ public class UserDTOTest {
         PersonalDTO validPersonal = new PersonalDTO(
                 "John",
                 "Doe",
-                OffsetDateTime.now(ZoneOffset.UTC).minusYears(30).withNano(0),
+                OffsetDateTime.now(ZoneOffset.UTC).toLocalDate().minusYears(30),
                 BiologicalSex.MALE
         );
 
@@ -326,9 +290,10 @@ public class UserDTOTest {
         PersonalDTO validPersonal = new PersonalDTO(
                 "John",
                 "Doe",
-                OffsetDateTime.now(ZoneOffset.UTC).minusYears(30).withNano(0),
+                OffsetDateTime.now(ZoneOffset.UTC).toLocalDate().minusYears(30),
                 BiologicalSex.MALE
         );
+
         UserDTO invalidDTO = new UserDTO("valid@example.com", validPersonal, null, VALID_SETTINGS);
 
         String expectedPhysicalMessage = this.messageSource.getMessage(
@@ -369,7 +334,7 @@ public class UserDTOTest {
         var validPersonal = new PersonalDTO(
                 "John",
                 "Doe",
-                OffsetDateTime.now(ZoneOffset.UTC).minusYears(30).withNano(0),
+                OffsetDateTime.now(ZoneOffset.UTC).toLocalDate().minusYears(30),
                 BiologicalSex.MALE
         );
 

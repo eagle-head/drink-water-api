@@ -1,10 +1,10 @@
 package br.com.drinkwater.usermanagement.dto;
 
 import br.com.drinkwater.usermanagement.model.BiologicalSex;
-import br.com.drinkwater.core.validation.date.ValidBirthDate;
+import br.com.drinkwater.usermanagement.validation.ValidBirthDate;
 import jakarta.validation.constraints.*;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 
 public record PersonalDTO(
 
@@ -26,7 +26,7 @@ public record PersonalDTO(
 
         @NotNull(message = "{personalDTO.birthDate.notNull}")
         @ValidBirthDate
-        OffsetDateTime birthDate,
+        LocalDate birthDate,
 
         @NotNull(message = "{personalDTO.biologicalSex.notNull}")
         BiologicalSex biologicalSex

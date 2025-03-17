@@ -87,7 +87,7 @@ public class UserMapperTest {
         // Verify personal data
         assertThat(user.getPersonal().getFirstName()).isEqualTo("John");
         assertThat(user.getPersonal().getLastName()).isEqualTo("Update");
-        assertThat(user.getPersonal().getBirthDate()).isEqualTo(UPDATE_NOW.minusYears(25));
+        assertThat(user.getPersonal().getBirthDate()).isEqualTo(UPDATE_NOW.toLocalDate().minusYears(25));
         assertThat(user.getPersonal().getBiologicalSex()).isEqualTo(BiologicalSex.MALE);
 
         // Verify physical data

@@ -11,19 +11,19 @@ import java.time.OffsetDateTime;
 import java.time.Period;
 
 @Component
-public class BirthDateValidator implements ConstraintValidator<ValidBirthDate, OffsetDateTime> {
+public class OldBirthDateValidator implements ConstraintValidator<OldValidBirthDate, OffsetDateTime> {
 
     private int minimumAge;
     private final MessageSource messageSource;
     private final DateTimeValidator dateTimeValidator;
 
-    public BirthDateValidator(MessageSource messageSource) {
+    public OldBirthDateValidator(MessageSource messageSource) {
         this.messageSource = messageSource;
         this.dateTimeValidator = new DateTimeValidator(messageSource);
     }
 
     @Override
-    public void initialize(ValidBirthDate constraintAnnotation) {
+    public void initialize(OldValidBirthDate constraintAnnotation) {
         this.minimumAge = constraintAnnotation.minimumAge();
     }
 

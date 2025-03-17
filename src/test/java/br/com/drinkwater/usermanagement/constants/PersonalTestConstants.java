@@ -4,20 +4,16 @@ import br.com.drinkwater.usermanagement.dto.PersonalDTO;
 import br.com.drinkwater.usermanagement.model.BiologicalSex;
 import br.com.drinkwater.usermanagement.model.Personal;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.LocalDate;
 
 public final class PersonalTestConstants {
 
     private PersonalTestConstants() {
     }
 
-    public static final OffsetDateTime BIRTH_DATE = OffsetDateTime
-            .of(1990, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC);
+    public static final LocalDate BIRTH_DATE = LocalDate.of(1990, 1, 1);
     public static final PersonalDTO PERSONAL_DTO;
     public static final Personal PERSONAL;
-
-    // Invalid DTOs for testing
     public static final PersonalDTO PERSONAL_DTO_NULL_FIRST_NAME;
     public static final PersonalDTO PERSONAL_DTO_EMPTY_FIRST_NAME;
     public static final PersonalDTO PERSONAL_DTO_NULL_LAST_NAME;
@@ -35,7 +31,6 @@ public final class PersonalTestConstants {
 
         PERSONAL = createPersonalFromDTO();
 
-        // Initialize invalid DTOs for testing
         PERSONAL_DTO_NULL_FIRST_NAME = new PersonalDTO(
                 null,
                 "Doe",

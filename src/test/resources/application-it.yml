@@ -6,6 +6,10 @@ server:
 spring:
   application:
     name: drink-water-api
+  jackson:
+    time-zone: UTC
+    serialization:
+      write-dates-as-timestamps: false
   datasource:
     username: username
     password: password

@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -33,8 +34,8 @@ public final class PersonalTest {
                 Arguments.of((BiConsumer<Personal, String>) Personal::setLastName,
                         (Function<Personal, String>) Personal::getLastName,
                         PERSONAL_DTO.lastName()),
-                Arguments.of((BiConsumer<Personal, OffsetDateTime>) Personal::setBirthDate,
-                        (Function<Personal, OffsetDateTime>) Personal::getBirthDate,
+                Arguments.of((BiConsumer<Personal, LocalDate>) Personal::setBirthDate,
+                        (Function<Personal, LocalDate>) Personal::getBirthDate,
                         BIRTH_DATE),
                 Arguments.of((BiConsumer<Personal, BiologicalSex>) Personal::setBiologicalSex,
                         (Function<Personal, BiologicalSex>) Personal::getBiologicalSex,

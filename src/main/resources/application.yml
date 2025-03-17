@@ -6,6 +6,10 @@ server:
 spring:
   application:
     name: drink-water-api
+  jackson:
+    time-zone: UTC
+    serialization:
+      write-dates-as-timestamps: false
   datasource:
     url: ${DATABASE_URL}
     driver-class-name: org.postgresql.Driver

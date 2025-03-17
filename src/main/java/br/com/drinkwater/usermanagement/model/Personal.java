@@ -5,7 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Embeddable
@@ -18,29 +18,29 @@ public class Personal {
     private String lastName;
 
     @Column(name = "birth_date", nullable = false)
-    private OffsetDateTime birthDate;
+    private LocalDate birthDate;
 
     @Convert(converter = BiologicalSexConverter.class)
     @Column(name = "biological_sex", nullable = false)
     private BiologicalSex biologicalSex;
 
     /**
-     * Default constructor required by JPA/Hibernate
+     * Default constructor required by JPA/Hibernate.
      */
     protected Personal() {
-        // Empty constructor needed for JPA
+        // Empty constructor for JPA
     }
 
     /**
-     * Constructor with validations to create a valid Personal instance
+     * Constructor with validations to create a valid instance of Personal.
      *
-     * @param firstName     first name of the person (required)
-     * @param lastName      last name of the person (required)
-     * @param birthDate     birthdate of the person (required)
-     * @param biologicalSex biological sex of the person (required)
-     * @throws IllegalArgumentException if any parameter fails validation
+     * @param firstName     person's first name (required)
+     * @param lastName      person's last name (required)
+     * @param birthDate     date of birth (required)
+     * @param biologicalSex biological sex (required)
+     * @throws IllegalArgumentException if any parameter is invalid or null
      */
-    public Personal(String firstName, String lastName, OffsetDateTime birthDate, BiologicalSex biologicalSex) {
+    public Personal(String firstName, String lastName, LocalDate birthDate, BiologicalSex biologicalSex) {
         if (firstName == null || firstName.trim().isEmpty()) {
             throw new IllegalArgumentException("First name cannot be null or empty");
         }
@@ -79,11 +79,11 @@ public class Personal {
         this.lastName = lastName;
     }
 
-    public OffsetDateTime getBirthDate() {
+    public LocalDate getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(OffsetDateTime birthDate) {
+    public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
 
