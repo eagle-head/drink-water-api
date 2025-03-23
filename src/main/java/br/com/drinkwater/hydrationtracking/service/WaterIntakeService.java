@@ -10,9 +10,11 @@ import br.com.drinkwater.hydrationtracking.mapper.WaterIntakeMapper;
 import br.com.drinkwater.hydrationtracking.model.WaterIntake;
 import br.com.drinkwater.hydrationtracking.repository.WaterIntakeRepository;
 import br.com.drinkwater.hydrationtracking.specification.WaterIntakeSpecification;
+import br.com.drinkwater.hydrationtracking.validation.WaterIntakeFilterValidator;
 import br.com.drinkwater.usermanagement.model.User;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +23,13 @@ public class WaterIntakeService {
 
     private final WaterIntakeRepository waterIntakeRepository;
     private final WaterIntakeMapper waterIntakeMapper;
+    private final WaterIntakeFilterValidator filterValidator;
 
-    public WaterIntakeService(WaterIntakeRepository waterIntakeRepository, WaterIntakeMapper waterIntakeMapper) {
+    public WaterIntakeService(WaterIntakeRepository waterIntakeRepository, WaterIntakeMapper waterIntakeMapper,
+                              WaterIntakeFilterValidator filterValidator) {
         this.waterIntakeRepository = waterIntakeRepository;
         this.waterIntakeMapper = waterIntakeMapper;
+        this.filterValidator = filterValidator;
     }
 
     @Transactional
@@ -61,19 +66,22 @@ public class WaterIntakeService {
 
     @Transactional(readOnly = true)
     public PageResponse<ResponseWaterIntakeDTO> search(WaterIntakeFilterDTO filter, User user) {
+        // Validate the filter parameters
+        filterValidator.validate(filter);
 
-        var pageable = PageRequest.of(
+        // Create page request with sorting
+        PageRequest pageRequest = PageRequest.of(
                 filter.page(),
                 filter.size(),
-                Sort.Direction.valueOf(filter.sortDirection()),
-                filter.sortField()
+                Sort.by(Sort.Direction.valueOf(filter.sortDirection()), filter.sortField())
         );
 
-        var specification = WaterIntakeSpecification.withFilters(filter, user.getId());
-        var result = this.waterIntakeRepository.findAll(specification, pageable)
-                .map(waterIntakeMapper::toResponseDTO);
+        // Build specification and execute query
+        Specification<WaterIntake> spec = WaterIntakeSpecification.buildSpecification(filter, user);
+        var page = waterIntakeRepository.findAll(spec, pageRequest);
 
-        return PageResponse.of(result);
+        // Map to DTOs and return paginated response
+        return PageResponse.of(page.map(waterIntakeMapper::toResponseDTO));
     }
 
     private void validateDuplicateDateTime(WaterIntake waterIntake) {

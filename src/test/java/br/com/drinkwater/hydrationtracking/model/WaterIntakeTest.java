@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.time.temporal.ChronoUnit;
+
 public final class WaterIntakeTest {
 
     @Test
@@ -137,7 +139,7 @@ public final class WaterIntakeTest {
                 waterIntake2.setId(999L);
                 break;
             case "dateTimeUTC":
-                waterIntake2.setDateTimeUTC(DATE_TIME_UTC.plusDays(1));
+                waterIntake2.setDateTimeUTC(DATE_TIME_UTC.plus(1, ChronoUnit.DAYS));
                 break;
             case "volume":
                 waterIntake2.setVolume(VOLUME + 100);
@@ -146,7 +148,6 @@ public final class WaterIntakeTest {
                 waterIntake2.setVolumeUnit(null);
                 break;
             case "user":
-                // Cria um usuário diferente utilizando o construtor de 5 argumentos e define o ID posteriormente
                 User differentUser = new User(USER.getPublicId(), USER.getEmail(), USER.getPersonal(), USER.getPhysical(), USER.getSettings());
                 differentUser.setId(999L);
                 waterIntake2.setUser(differentUser);

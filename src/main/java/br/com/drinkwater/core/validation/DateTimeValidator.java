@@ -1,4 +1,4 @@
-package br.com.drinkwater.core.validation.date;
+package br.com.drinkwater.core.validation;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;

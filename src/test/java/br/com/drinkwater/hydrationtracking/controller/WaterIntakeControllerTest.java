@@ -16,8 +16,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static br.com.drinkwater.hydrationtracking.constants.WaterIntakeTestConstants.*;
@@ -143,15 +143,13 @@ public final class WaterIntakeControllerTest {
     public void givenValidJwtTokenAndValidFilter_whenSearchWaterIntakes_thenReturnWaterIntakesPage() throws Exception {
         when(this.userService.findByPublicId(USER_UUID)).thenReturn(USER);
 
-        // Criar datas sem milissegundos e com fuso UTC
-        OffsetDateTime startDate = OffsetDateTime.now()
-                .minusDays(7)
-                .withOffsetSameInstant(ZoneOffset.UTC)
-                .withNano(0);
+        // Criar instants sem milissegundos
+        Instant startDate = Instant.now()
+                .minus(7, ChronoUnit.DAYS)
+                .truncatedTo(ChronoUnit.SECONDS);
 
-        OffsetDateTime endDate = OffsetDateTime.now()
-                .withOffsetSameInstant(ZoneOffset.UTC)
-                .withNano(0);
+        Instant endDate = Instant.now()
+                .truncatedTo(ChronoUnit.SECONDS);
 
         var filterDTO = new WaterIntakeFilterDTO(
                 startDate,

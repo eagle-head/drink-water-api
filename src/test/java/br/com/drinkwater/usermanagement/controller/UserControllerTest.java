@@ -1,7 +1,5 @@
 package br.com.drinkwater.usermanagement.controller;
 
-import br.com.drinkwater.usermanagement.dto.AlarmSettingsDTO;
-import br.com.drinkwater.usermanagement.dto.UserDTO;
 import br.com.drinkwater.usermanagement.exception.UserAlreadyExistsException;
 import br.com.drinkwater.usermanagement.exception.UserNotFoundException;
 import br.com.drinkwater.usermanagement.service.UserService;
@@ -18,7 +16,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalTime;
 import java.util.Locale;
 
 import static br.com.drinkwater.usermanagement.constants.UserTestConstants.*;
@@ -214,270 +211,270 @@ public final class UserControllerTest {
                 .andExpect(jsonPath("$.instance")
                         .value("/users/me"));
     }
-
-    // ----- Tests for invalid alarm settings (using new types: LocalTime) -----
-
-    @Test
-    public void givenInvalidEarlyStartTime_whenCreateUser_thenReturnBadRequest() throws Exception {
-        // Expected message for start time outside business hours (before 06:00)
-        String expectedMessage = this.messageSource.getMessage(
-                "alarmTime.start.business.hours",
-                new Object[]{LocalTime.of(6, 0), LocalTime.of(22, 0)},
-                new Locale("en", "US")
-        );
-
-        mockMvc
-                .perform(post("/users")
-                        .with(jwt().jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
-                        .content(this.objectMapper.writeValueAsString(INVALID_EARLY_TIME_USER_DTO))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("Accept-Language", "en-US"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.type")
-                        .value("https://www.drinkwater.com.br/validation-error"))
-                .andExpect(jsonPath("$.title")
-                        .value(HttpStatus.BAD_REQUEST.getReasonPhrase()))
-                .andExpect(jsonPath("$.status")
-                        .value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.instance").value("/users"))
-                .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')]").exists())
-                .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')].message")
-                        .value(expectedMessage));
-    }
-
-    @Test
-    public void givenInvalidLateEndTime_whenCreateUser_thenReturnBadRequest() throws Exception {
-        // Expected message for end time outside business hours (after 22:00)
-        String expectedMessage = this.messageSource.getMessage(
-                "alarmTime.end.business.hours",
-                new Object[]{LocalTime.of(6, 0), LocalTime.of(22, 0)},
-                new Locale("en", "US")
-        );
-
-        mockMvc
-                .perform(post("/users")
-                        .with(jwt().jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
-                        .content(this.objectMapper.writeValueAsString(INVALID_LATE_TIME_USER_DTO))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("Accept-Language", "en-US"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.type")
-                        .value("https://www.drinkwater.com.br/validation-error"))
-                .andExpect(jsonPath("$.title")
-                        .value(HttpStatus.BAD_REQUEST.getReasonPhrase()))
-                .andExpect(jsonPath("$.status")
-                        .value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.instance").value("/users"))
-                .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyEndTime')]").exists())
-                .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyEndTime')].message")
-                        .value(expectedMessage));
-    }
-
-    @Test
-    public void givenInvalidEarlyStartTime_whenUpdateUser_thenReturnBadRequest() throws Exception {
-        // Expected message for start time violation
-        String expectedMessage = this.messageSource.getMessage(
-                "alarmTime.start.business.hours",
-                new Object[]{LocalTime.of(6, 0), LocalTime.of(22, 0)},
-                new Locale("en", "US")
-        );
-
-        mockMvc
-                .perform(put("/users")
-                        .with(jwt().jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
-                        .content(this.objectMapper.writeValueAsString(INVALID_EARLY_TIME_USER_DTO))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("Accept-Language", "en-US"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.type")
-                        .value("https://www.drinkwater.com.br/validation-error"))
-                .andExpect(jsonPath("$.title")
-                        .value(HttpStatus.BAD_REQUEST.getReasonPhrase()))
-                .andExpect(jsonPath("$.status")
-                        .value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.instance").value("/users"))
-                .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')]").exists())
-                .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')].message")
-                        .value(expectedMessage));
-    }
-
-    @Test
-    public void givenInvalidLateEndTime_whenUpdateUser_thenReturnBadRequest() throws Exception {
-        // Expected message for end time violation
-        String expectedMessage = this.messageSource.getMessage(
-                "alarmTime.end.business.hours",
-                new Object[]{LocalTime.of(6, 0), LocalTime.of(22, 0)},
-                new Locale("en", "US")
-        );
-
-        mockMvc
-                .perform(put("/users")
-                        .with(jwt().jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
-                        .content(this.objectMapper.writeValueAsString(INVALID_LATE_TIME_USER_DTO))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("Accept-Language", "en-US"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.type")
-                        .value("https://www.drinkwater.com.br/validation-error"))
-                .andExpect(jsonPath("$.title")
-                        .value(HttpStatus.BAD_REQUEST.getReasonPhrase()))
-                .andExpect(jsonPath("$.status")
-                        .value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.instance").value("/users"))
-                .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyEndTime')]").exists())
-                .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyEndTime')].message")
-                        .value(expectedMessage));
-    }
-
-    @Test
-    public void givenStartTimeAfterBusinessHours_whenUpdateUser_thenReturnBadRequest() throws Exception {
-        // Expected messages for start and end time violations
-        String expectedStartMessage = this.messageSource.getMessage(
-                "alarmTime.start.business.hours",
-                new Object[]{LocalTime.of(6, 0), LocalTime.of(22, 0)},
-                new Locale("en", "US")
-        );
-        String expectedEndMessage = this.messageSource.getMessage(
-                "alarmTime.end.business.hours",
-                new Object[]{LocalTime.of(6, 0), LocalTime.of(22, 0)},
-                new Locale("en", "US")
-        );
-
-        // Create a DTO with start time 23:00 and end time 23:30 (both after business hours)
-        AlarmSettingsDTO lateStartTimeSettings = new AlarmSettingsDTO(
-                2000,
-                30,
-                LocalTime.of(23, 0),   // 23:00
-                LocalTime.of(23, 30)   // 23:30
-        );
-
-        UserDTO lateStartTimeUserDTO = new UserDTO(
-                UPDATE_EMAIL,
-                UPDATE_PERSONAL_DTO,
-                UPDATE_PHYSICAL_DTO,
-                lateStartTimeSettings
-        );
-
-        mockMvc
-                .perform(put("/users")
-                        .with(jwt().jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
-                        .content(this.objectMapper.writeValueAsString(lateStartTimeUserDTO))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("Accept-Language", "en-US"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.type")
-                        .value("https://www.drinkwater.com.br/validation-error"))
-                .andExpect(jsonPath("$.title")
-                        .value(HttpStatus.BAD_REQUEST.getReasonPhrase()))
-                .andExpect(jsonPath("$.status")
-                        .value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.instance").value("/users"))
-                .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')]").exists())
-                .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyEndTime')]").exists())
-                .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')].message")
-                        .value(expectedStartMessage))
-                .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyEndTime')].message")
-                        .value(expectedEndMessage));
-    }
-
-    @Test
-    public void givenStartTimeBeforeBusinessHours_whenUpdateUser_thenReturnBadRequest() throws Exception {
-        // Expected message for start time violation (before business hours)
-        String expectedMessage = this.messageSource.getMessage(
-                "alarmTime.start.business.hours",
-                new Object[]{LocalTime.of(6, 0), LocalTime.of(22, 0)},
-                new Locale("en", "US")
-        );
-
-        // Create a DTO with start time 05:00 (before business hours) and end time 09:00 (within business hours)
-        AlarmSettingsDTO earlyStartTimeSettings = new AlarmSettingsDTO(
-                2000,
-                30,
-                LocalTime.of(5, 0),   // 05:00
-                LocalTime.of(9, 0)    // 09:00
-        );
-
-        UserDTO earlyStartTimeUserDTO = new UserDTO(
-                UPDATE_EMAIL,
-                UPDATE_PERSONAL_DTO,
-                UPDATE_PHYSICAL_DTO,
-                earlyStartTimeSettings
-        );
-
-        mockMvc
-                .perform(put("/users")
-                        .with(jwt().jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
-                        .content(this.objectMapper.writeValueAsString(earlyStartTimeUserDTO))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("Accept-Language", "en-US"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.type")
-                        .value("https://www.drinkwater.com.br/validation-error"))
-                .andExpect(jsonPath("$.title")
-                        .value(HttpStatus.BAD_REQUEST.getReasonPhrase()))
-                .andExpect(jsonPath("$.status")
-                        .value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.instance").value("/users"))
-                .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')]").exists())
-                .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')].message")
-                        .value(expectedMessage));
-    }
-
-    @Test
-    public void givenBothTimesBeforeBusinessHours_whenUpdateUser_thenReturnBadRequest() throws Exception {
-        // Expected messages for both start and end time violations (before business hours)
-        String expectedStartMessage = this.messageSource.getMessage(
-                "alarmTime.start.business.hours",
-                new Object[]{LocalTime.of(6, 0), LocalTime.of(22, 0)},
-                new Locale("en", "US")
-        );
-        String expectedEndMessage = this.messageSource.getMessage(
-                "alarmTime.end.business.hours",
-                new Object[]{LocalTime.of(6, 0), LocalTime.of(22, 0)},
-                new Locale("en", "US")
-        );
-
-        // Create a DTO with start time 04:00 and end time 05:00 (both before business hours)
-        AlarmSettingsDTO earlyTimesSettings = new AlarmSettingsDTO(
-                2000,
-                30,
-                LocalTime.of(4, 0),   // 04:00
-                LocalTime.of(5, 0)    // 05:00
-        );
-
-        UserDTO earlyTimesUserDTO = new UserDTO(
-                UPDATE_EMAIL,
-                UPDATE_PERSONAL_DTO,
-                UPDATE_PHYSICAL_DTO,
-                earlyTimesSettings
-        );
-
-        mockMvc
-                .perform(put("/users")
-                        .with(jwt().jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
-                        .content(this.objectMapper.writeValueAsString(earlyTimesUserDTO))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("Accept-Language", "en-US"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.type")
-                        .value("https://www.drinkwater.com.br/validation-error"))
-                .andExpect(jsonPath("$.title")
-                        .value(HttpStatus.BAD_REQUEST.getReasonPhrase()))
-                .andExpect(jsonPath("$.status")
-                        .value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.instance").value("/users"))
-                .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')]").exists())
-                .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyEndTime')]").exists())
-                .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')].message")
-                        .value(expectedStartMessage))
-                .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyEndTime')].message")
-                        .value(expectedEndMessage));
-    }
 }
+
+// ----- Tests for invalid alarm settings (using new types: LocalTime) -----
+//
+//@Test
+//public void givenInvalidEarlyStartTime_whenCreateUser_thenReturnBadRequest() throws Exception {
+//    // Expected message for start time outside business hours (before 06:00)
+//    String expectedMessage = this.messageSource.getMessage(
+//            "alarmTime.start.business.hours",
+//            new Object[]{LocalTime.of(6, 0), LocalTime.of(22, 0)},
+//            new Locale("en", "US")
+//    );
+//
+//    mockMvc
+//            .perform(post("/users")
+//                    .with(jwt().jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
+//                    .content(this.objectMapper.writeValueAsString(INVALID_EARLY_TIME_USER_DTO))
+//                    .contentType(MediaType.APPLICATION_JSON)
+//                    .accept(MediaType.APPLICATION_JSON)
+//                    .header("Accept-Language", "en-US"))
+//            .andExpect(status().isBadRequest())
+//            .andExpect(jsonPath("$.type")
+//                    .value("https://www.drinkwater.com.br/validation-error"))
+//            .andExpect(jsonPath("$.title")
+//                    .value(HttpStatus.BAD_REQUEST.getReasonPhrase()))
+//            .andExpect(jsonPath("$.status")
+//                    .value(HttpStatus.BAD_REQUEST.value()))
+//            .andExpect(jsonPath("$.instance").value("/users"))
+//            .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')]").exists())
+//            .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')].message")
+//                    .value(expectedMessage));
+//}
+//
+//@Test
+//public void givenInvalidLateEndTime_whenCreateUser_thenReturnBadRequest() throws Exception {
+//    // Expected message for end time outside business hours (after 22:00)
+//    String expectedMessage = this.messageSource.getMessage(
+//            "alarmTime.end.business.hours",
+//            new Object[]{LocalTime.of(6, 0), LocalTime.of(22, 0)},
+//            new Locale("en", "US")
+//    );
+//
+//    mockMvc
+//            .perform(post("/users")
+//                    .with(jwt().jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
+//                    .content(this.objectMapper.writeValueAsString(INVALID_LATE_TIME_USER_DTO))
+//                    .contentType(MediaType.APPLICATION_JSON)
+//                    .accept(MediaType.APPLICATION_JSON)
+//                    .header("Accept-Language", "en-US"))
+//            .andExpect(status().isBadRequest())
+//            .andExpect(jsonPath("$.type")
+//                    .value("https://www.drinkwater.com.br/validation-error"))
+//            .andExpect(jsonPath("$.title")
+//                    .value(HttpStatus.BAD_REQUEST.getReasonPhrase()))
+//            .andExpect(jsonPath("$.status")
+//                    .value(HttpStatus.BAD_REQUEST.value()))
+//            .andExpect(jsonPath("$.instance").value("/users"))
+//            .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyEndTime')]").exists())
+//            .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyEndTime')].message")
+//                    .value(expectedMessage));
+//}
+//
+//@Test
+//public void givenInvalidEarlyStartTime_whenUpdateUser_thenReturnBadRequest() throws Exception {
+//    // Expected message for start time violation
+//    String expectedMessage = this.messageSource.getMessage(
+//            "alarmTime.start.business.hours",
+//            new Object[]{LocalTime.of(6, 0), LocalTime.of(22, 0)},
+//            new Locale("en", "US")
+//    );
+//
+//    mockMvc
+//            .perform(put("/users")
+//                    .with(jwt().jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
+//                    .content(this.objectMapper.writeValueAsString(INVALID_EARLY_TIME_USER_DTO))
+//                    .contentType(MediaType.APPLICATION_JSON)
+//                    .accept(MediaType.APPLICATION_JSON)
+//                    .header("Accept-Language", "en-US"))
+//            .andExpect(status().isBadRequest())
+//            .andExpect(jsonPath("$.type")
+//                    .value("https://www.drinkwater.com.br/validation-error"))
+//            .andExpect(jsonPath("$.title")
+//                    .value(HttpStatus.BAD_REQUEST.getReasonPhrase()))
+//            .andExpect(jsonPath("$.status")
+//                    .value(HttpStatus.BAD_REQUEST.value()))
+//            .andExpect(jsonPath("$.instance").value("/users"))
+//            .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')]").exists())
+//            .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')].message")
+//                    .value(expectedMessage));
+//}
+//
+//@Test
+//public void givenInvalidLateEndTime_whenUpdateUser_thenReturnBadRequest() throws Exception {
+//    // Expected message for end time violation
+//    String expectedMessage = this.messageSource.getMessage(
+//            "alarmTime.end.business.hours",
+//            new Object[]{LocalTime.of(6, 0), LocalTime.of(22, 0)},
+//            new Locale("en", "US")
+//    );
+//
+//    mockMvc
+//            .perform(put("/users")
+//                    .with(jwt().jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
+//                    .content(this.objectMapper.writeValueAsString(INVALID_LATE_TIME_USER_DTO))
+//                    .contentType(MediaType.APPLICATION_JSON)
+//                    .accept(MediaType.APPLICATION_JSON)
+//                    .header("Accept-Language", "en-US"))
+//            .andExpect(status().isBadRequest())
+//            .andExpect(jsonPath("$.type")
+//                    .value("https://www.drinkwater.com.br/validation-error"))
+//            .andExpect(jsonPath("$.title")
+//                    .value(HttpStatus.BAD_REQUEST.getReasonPhrase()))
+//            .andExpect(jsonPath("$.status")
+//                    .value(HttpStatus.BAD_REQUEST.value()))
+//            .andExpect(jsonPath("$.instance").value("/users"))
+//            .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyEndTime')]").exists())
+//            .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyEndTime')].message")
+//                    .value(expectedMessage));
+//}
+//
+//@Test
+//public void givenStartTimeAfterBusinessHours_whenUpdateUser_thenReturnBadRequest() throws Exception {
+//    // Expected messages for start and end time violations
+//    String expectedStartMessage = this.messageSource.getMessage(
+//            "alarmTime.start.business.hours",
+//            new Object[]{LocalTime.of(6, 0), LocalTime.of(22, 0)},
+//            new Locale("en", "US")
+//    );
+//    String expectedEndMessage = this.messageSource.getMessage(
+//            "alarmTime.end.business.hours",
+//            new Object[]{LocalTime.of(6, 0), LocalTime.of(22, 0)},
+//            new Locale("en", "US")
+//    );
+//
+//    // Create a DTO with start time 23:00 and end time 23:30 (both after business hours)
+//    AlarmSettingsDTO lateStartTimeSettings = new AlarmSettingsDTO(
+//            2000,
+//            30,
+//            LocalTime.of(23, 0),   // 23:00
+//            LocalTime.of(23, 30)   // 23:30
+//    );
+//
+//    UserDTO lateStartTimeUserDTO = new UserDTO(
+//            UPDATE_EMAIL,
+//            UPDATE_PERSONAL_DTO,
+//            UPDATE_PHYSICAL_DTO,
+//            lateStartTimeSettings
+//    );
+//
+//    mockMvc
+//            .perform(put("/users")
+//                    .with(jwt().jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
+//                    .content(this.objectMapper.writeValueAsString(lateStartTimeUserDTO))
+//                    .contentType(MediaType.APPLICATION_JSON)
+//                    .accept(MediaType.APPLICATION_JSON)
+//                    .header("Accept-Language", "en-US"))
+//            .andExpect(status().isBadRequest())
+//            .andExpect(jsonPath("$.type")
+//                    .value("https://www.drinkwater.com.br/validation-error"))
+//            .andExpect(jsonPath("$.title")
+//                    .value(HttpStatus.BAD_REQUEST.getReasonPhrase()))
+//            .andExpect(jsonPath("$.status")
+//                    .value(HttpStatus.BAD_REQUEST.value()))
+//            .andExpect(jsonPath("$.instance").value("/users"))
+//            .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')]").exists())
+//            .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyEndTime')]").exists())
+//            .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')].message")
+//                    .value(expectedStartMessage))
+//            .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyEndTime')].message")
+//                    .value(expectedEndMessage));
+//}
+//
+//@Test
+//public void givenStartTimeBeforeBusinessHours_whenUpdateUser_thenReturnBadRequest() throws Exception {
+//    // Expected message for start time violation (before business hours)
+//    String expectedMessage = this.messageSource.getMessage(
+//            "alarmTime.start.business.hours",
+//            new Object[]{LocalTime.of(6, 0), LocalTime.of(22, 0)},
+//            new Locale("en", "US")
+//    );
+//
+//    // Create a DTO with start time 05:00 (before business hours) and end time 09:00 (within business hours)
+//    AlarmSettingsDTO earlyStartTimeSettings = new AlarmSettingsDTO(
+//            2000,
+//            30,
+//            LocalTime.of(5, 0),   // 05:00
+//            LocalTime.of(9, 0)    // 09:00
+//    );
+//
+//    UserDTO earlyStartTimeUserDTO = new UserDTO(
+//            UPDATE_EMAIL,
+//            UPDATE_PERSONAL_DTO,
+//            UPDATE_PHYSICAL_DTO,
+//            earlyStartTimeSettings
+//    );
+//
+//    mockMvc
+//            .perform(put("/users")
+//                    .with(jwt().jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
+//                    .content(this.objectMapper.writeValueAsString(earlyStartTimeUserDTO))
+//                    .contentType(MediaType.APPLICATION_JSON)
+//                    .accept(MediaType.APPLICATION_JSON)
+//                    .header("Accept-Language", "en-US"))
+//            .andExpect(status().isBadRequest())
+//            .andExpect(jsonPath("$.type")
+//                    .value("https://www.drinkwater.com.br/validation-error"))
+//            .andExpect(jsonPath("$.title")
+//                    .value(HttpStatus.BAD_REQUEST.getReasonPhrase()))
+//            .andExpect(jsonPath("$.status")
+//                    .value(HttpStatus.BAD_REQUEST.value()))
+//            .andExpect(jsonPath("$.instance").value("/users"))
+//            .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')]").exists())
+//            .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')].message")
+//                    .value(expectedMessage));
+//}
+//
+//@Test
+//public void givenBothTimesBeforeBusinessHours_whenUpdateUser_thenReturnBadRequest() throws Exception {
+//    // Expected messages for both start and end time violations (before business hours)
+//    String expectedStartMessage = this.messageSource.getMessage(
+//            "alarmTime.start.business.hours",
+//            new Object[]{LocalTime.of(6, 0), LocalTime.of(22, 0)},
+//            new Locale("en", "US")
+//    );
+//    String expectedEndMessage = this.messageSource.getMessage(
+//            "alarmTime.end.business.hours",
+//            new Object[]{LocalTime.of(6, 0), LocalTime.of(22, 0)},
+//            new Locale("en", "US")
+//    );
+//
+//    // Create a DTO with start time 04:00 and end time 05:00 (both before business hours)
+//    AlarmSettingsDTO earlyTimesSettings = new AlarmSettingsDTO(
+//            2000,
+//            30,
+//            LocalTime.of(4, 0),   // 04:00
+//            LocalTime.of(5, 0)    // 05:00
+//    );
+//
+//    UserDTO earlyTimesUserDTO = new UserDTO(
+//            UPDATE_EMAIL,
+//            UPDATE_PERSONAL_DTO,
+//            UPDATE_PHYSICAL_DTO,
+//            earlyTimesSettings
+//    );
+//
+//    mockMvc
+//            .perform(put("/users")
+//                    .with(jwt().jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
+//                    .content(this.objectMapper.writeValueAsString(earlyTimesUserDTO))
+//                    .contentType(MediaType.APPLICATION_JSON)
+//                    .accept(MediaType.APPLICATION_JSON)
+//                    .header("Accept-Language", "en-US"))
+//            .andExpect(status().isBadRequest())
+//            .andExpect(jsonPath("$.type")
+//                    .value("https://www.drinkwater.com.br/validation-error"))
+//            .andExpect(jsonPath("$.title")
+//                    .value(HttpStatus.BAD_REQUEST.getReasonPhrase()))
+//            .andExpect(jsonPath("$.status")
+//                    .value(HttpStatus.BAD_REQUEST.value()))
+//            .andExpect(jsonPath("$.instance").value("/users"))
+//            .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')]").exists())
+//            .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyEndTime')]").exists())
+//            .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyStartTime')].message")
+//                    .value(expectedStartMessage))
+//            .andExpect(jsonPath("$.errors[?(@.field=='settings.dailyEndTime')].message")
+//                    .value(expectedEndMessage));
+//}

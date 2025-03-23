@@ -6,13 +6,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 public record WaterIntakeDTO(
 
         @NotNull(message = "{waterintake.datetime.notnull}")
         @PastOrPresent(message = "{waterintake.datetime.pastorpresent}")
-        OffsetDateTime dateTimeUTC,
+        Instant dateTimeUTC,
 
         @Positive(message = "{waterintake.volume.positive}")
         @Max(value = 5000, message = "{waterintake.volume.max}")

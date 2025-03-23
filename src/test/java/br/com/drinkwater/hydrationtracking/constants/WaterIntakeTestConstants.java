@@ -6,8 +6,10 @@ import br.com.drinkwater.hydrationtracking.dto.WaterIntakeFilterDTO;
 import br.com.drinkwater.hydrationtracking.model.VolumeUnit;
 import br.com.drinkwater.hydrationtracking.model.WaterIntake;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 
 import static br.com.drinkwater.usermanagement.constants.UserTestConstants.USER;
 
@@ -18,10 +20,9 @@ public final class WaterIntakeTestConstants {
 
     public static final Long WATER_INTAKE_ID = 5L;
 
-    public static final OffsetDateTime DATE_TIME_UTC = OffsetDateTime.now()
-            .withOffsetSameInstant(ZoneOffset.UTC)
-            .withSecond(10)
-            .withNano(0);
+    public static final Instant DATE_TIME_UTC = Instant.now()
+            .truncatedTo(ChronoUnit.MINUTES)
+            .plusSeconds(10);
 
     public static final int VOLUME = 250;
 
@@ -41,8 +42,8 @@ public final class WaterIntakeTestConstants {
     );
 
     public static final WaterIntakeFilterDTO FILTER_DTO = new WaterIntakeFilterDTO(
-            OffsetDateTime.now().minusDays(7).withOffsetSameInstant(ZoneOffset.UTC),
-            OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC),
+            Instant.now().minus(7, ChronoUnit.DAYS),
+            Instant.now(),
             100,
             2000,
             0,

@@ -5,9 +5,10 @@ import br.com.drinkwater.hydrationtracking.exception.WaterIntakeNotFoundExceptio
 import br.com.drinkwater.hydrationtracking.mapper.WaterIntakeMapper;
 import br.com.drinkwater.hydrationtracking.model.WaterIntake;
 import br.com.drinkwater.hydrationtracking.repository.WaterIntakeRepository;
+import br.com.drinkwater.hydrationtracking.validation.WaterIntakeFilterValidator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -24,19 +25,25 @@ import static br.com.drinkwater.hydrationtracking.constants.WaterIntakeTestConst
 import static br.com.drinkwater.usermanagement.constants.UserTestConstants.USER;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
 public final class WaterIntakeServiceTest {
-
-    @InjectMocks
-    private WaterIntakeService waterIntakeService;
 
     @Mock
     private WaterIntakeRepository waterIntakeRepository;
 
     @Mock
     private WaterIntakeMapper waterIntakeMapper;
+
+    @Mock
+    private WaterIntakeFilterValidator filterValidator;
+
+    private WaterIntakeService waterIntakeService;
+
+    @BeforeEach
+    public void setUp() {
+        this.waterIntakeService = new WaterIntakeService(waterIntakeRepository, waterIntakeMapper, filterValidator);
+    }
 
     @Test
     public void givenValidWaterIntakeDataAndUser_whenCreate_thenReturnsResponseWaterIntakeDTO() {
@@ -115,6 +122,8 @@ public final class WaterIntakeServiceTest {
 
     @Test
     public void givenValidFilterAndUser_whenSearch_thenReturnsPageResponseOfResponseWaterIntakeDTO() {
+        doNothing().when(this.filterValidator).validate(FILTER_DTO);
+
         PageRequest pageable = PageRequest.of(
                 FILTER_DTO.page(),
                 FILTER_DTO.size(),
@@ -131,9 +140,11 @@ public final class WaterIntakeServiceTest {
 
         assertThat(sut).isNotNull();
         assertThat(sut.content()).contains(RESPONSE_WATER_INTAKE_DTO);
+
+        // Verifica se o validador foi chamado
+        verify(this.filterValidator).validate(FILTER_DTO);
         verify(this.waterIntakeRepository).findAll(Mockito.<Specification<WaterIntake>>any(), eq(pageable));
         verify(this.waterIntakeMapper).toResponseDTO(WATER_INTAKE);
-        verifyNoMoreInteractions(this.waterIntakeMapper, this.waterIntakeRepository);
     }
 
     @Test

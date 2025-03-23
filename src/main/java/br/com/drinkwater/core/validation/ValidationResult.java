@@ -1,4 +1,4 @@
-package br.com.drinkwater.core.validation.date;
+package br.com.drinkwater.core.validation;
 
 
 public final class ValidationResult<T> {

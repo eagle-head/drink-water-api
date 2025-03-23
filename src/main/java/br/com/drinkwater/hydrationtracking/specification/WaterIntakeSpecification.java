@@ -2,58 +2,58 @@ package br.com.drinkwater.hydrationtracking.specification;
 
 import br.com.drinkwater.hydrationtracking.dto.WaterIntakeFilterDTO;
 import br.com.drinkwater.hydrationtracking.model.WaterIntake;
+import br.com.drinkwater.usermanagement.model.User;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
+/**
+ * Utility class to create specifications for dynamic WaterIntake queries
+ */
 public final class WaterIntakeSpecification {
 
     private WaterIntakeSpecification() {
     }
 
-    public static Specification<WaterIntake> withFilters(WaterIntakeFilterDTO filter, Long userId) {
-        return Specification.where(byUserId(userId))
-                .and(byDateRange(filter.startDate(), filter.endDate()))
-                .and(byVolumeRange(filter.minVolume(), filter.maxVolume()));
+    /**
+     * Creates a specification for filtering water intake records
+     */
+    public static Specification<WaterIntake> buildSpecification(WaterIntakeFilterDTO filter, User user) {
+        return Specification
+                .where(belongsToUser(user))
+                .and(betweenDates(filter.startDate(), filter.endDate()))
+                .and(hasMinVolume(filter.minVolume()))
+                .and(hasMaxVolume(filter.maxVolume()));
     }
 
-    private static Specification<WaterIntake> byUserId(Long userId) {
-        return (root, query, cb) -> cb.equal(root.get("user").get("id"), userId);
+    private static Specification<WaterIntake> belongsToUser(User user) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("user").get("id"), user.getId());
     }
 
-    private static Specification<WaterIntake> byDateRange(OffsetDateTime startDate, OffsetDateTime endDate) {
-        return (root, query, cb) -> {
-            if (startDate == null && endDate == null) {
-                return null;
-            }
+    private static Specification<WaterIntake> betweenDates(Instant startDate, Instant endDate) {
+        return (root, query, criteriaBuilder) -> {
+            // Skip this filter if any date is null
+            if (startDate == null || endDate == null) return null;
 
-            if (startDate != null && endDate != null) {
-                return cb.between(root.get("dateTimeUTC"), startDate, endDate);
-            }
-
-            if (startDate != null) {
-                return cb.greaterThanOrEqualTo(root.get("dateTimeUTC"), startDate);
-            }
-
-            return cb.lessThanOrEqualTo(root.get("dateTimeUTC"), endDate);
+            return criteriaBuilder.between(root.get("dateTimeUTC"), startDate, endDate);
         };
     }
 
-    private static Specification<WaterIntake> byVolumeRange(Integer minVolume, Integer maxVolume) {
-        return (root, query, cb) -> {
-            if (minVolume == null && maxVolume == null) {
-                return null;
-            }
+    private static Specification<WaterIntake> hasMinVolume(Integer minVolume) {
+        return (root, query, criteriaBuilder) -> {
+            // Skip this filter if minVolume is null
+            if (minVolume == null) return null;
 
-            if (minVolume != null && maxVolume != null) {
-                return cb.between(root.get("volume"), minVolume, maxVolume);
-            }
+            return criteriaBuilder.greaterThanOrEqualTo(root.get("volume"), minVolume);
+        };
+    }
 
-            if (minVolume != null) {
-                return cb.greaterThanOrEqualTo(root.get("volume"), minVolume);
-            }
+    private static Specification<WaterIntake> hasMaxVolume(Integer maxVolume) {
+        return (root, query, criteriaBuilder) -> {
+            // Skip this filter if maxVolume is null
+            if (maxVolume == null) return null;
 
-            return cb.lessThanOrEqualTo(root.get("volume"), maxVolume);
+            return criteriaBuilder.lessThanOrEqualTo(root.get("volume"), maxVolume);
         };
     }
 }

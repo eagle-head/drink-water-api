@@ -1,4 +1,4 @@
-package br.com.drinkwater.core.validation.date;
+package br.com.drinkwater.core.validation;
 
 import java.time.Duration;
 import java.util.Set;

@@ -4,7 +4,7 @@ import br.com.drinkwater.usermanagement.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.Objects;
 
 @Entity
@@ -18,7 +18,7 @@ public class WaterIntake {
     private Long id;
 
     @Column(name = "date_time_utc", nullable = false)
-    private OffsetDateTime dateTimeUTC;
+    private Instant dateTimeUTC;
 
     @Column(nullable = false)
     private int volume;
@@ -48,7 +48,7 @@ public class WaterIntake {
      * @param user        user associated with this record (required)
      * @throws IllegalArgumentException if any parameter fails validation
      */
-    public WaterIntake(OffsetDateTime dateTimeUTC, int volume, VolumeUnit volumeUnit, User user) {
+    public WaterIntake(Instant dateTimeUTC, int volume, VolumeUnit volumeUnit, User user) {
 
         if (dateTimeUTC == null) {
             throw new IllegalArgumentException("Date and time cannot be null");
@@ -82,7 +82,7 @@ public class WaterIntake {
      * @param user        user associated with this record
      * @throws IllegalArgumentException if any parameter fails validation
      */
-    public WaterIntake(Long id, OffsetDateTime dateTimeUTC, int volume, VolumeUnit volumeUnit, User user) {
+    public WaterIntake(Long id, Instant dateTimeUTC, int volume, VolumeUnit volumeUnit, User user) {
 
         this(dateTimeUTC, volume, volumeUnit, user);
 
@@ -105,11 +105,11 @@ public class WaterIntake {
         this.id = id;
     }
 
-    public OffsetDateTime getDateTimeUTC() {
+    public Instant getDateTimeUTC() {
         return dateTimeUTC;
     }
 
-    public void setDateTimeUTC(OffsetDateTime dateTimeUTC) {
+    public void setDateTimeUTC(Instant dateTimeUTC) {
         this.dateTimeUTC = dateTimeUTC;
     }
 

@@ -1,5 +1,6 @@
 services:
-  db:
+  drinkwater_db:
+    container_name: drinkwater_db
     image: postgres:16-alpine
     environment:
       POSTGRES_DB: drink_water_db
@@ -9,7 +10,9 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-  postgres:
+
+  keycloak_db:
+    container_name: keycloak_db
     image: postgres:16-alpine
     volumes:
       - postgres_kc:/var/lib/postgresql/data
@@ -18,9 +21,10 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
 
-  keycloak:
+  auth_keycloak:
+    container_name: auth_keycloak
     image: quay.io/keycloak/keycloak:26.0.7
-    command: start
+    command: start --import-realm
     environment:
       KC_HOSTNAME: localhost
       KC_HOSTNAME_PORT: 8080
@@ -28,38 +32,40 @@ services:
       KC_HTTP_ENABLED: true
       KC_HOSTNAME_STRICT_HTTPS: false
       KC_HEALTH_ENABLED: true
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: password
+      #      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      #      KC_BOOTSTRAP_ADMIN_PASSWORD: password
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres/security
+      KC_DB_URL: jdbc:postgresql://keycloak_db/security
       KC_DB_USERNAME: admin
       KC_DB_PASSWORD: admin
     ports:
       - "8080:8080"
-    restart: always
+    volumes:
+      - ../src/main/resources/keycloak-realms.json:/opt/keycloak/data/import/keycloak-realms.json
     depends_on:
-      - postgres
+      - keycloak_db
 
-#  drinkwater:
-#    image: eduardokohn/drinkwaterapi
+#  drinkwater_api:
+#    container_name: drinkwater_api
+#    image: eduardokohn/drinkwaterapi:latest
 #    environment:
-#      DATABASE_PASSWORD: password
-#      DATABASE_URL: jdbc:postgresql://db:5432/drink_water_db?options\=-c%20TimeZone%3DUTC
 #      DATABASE_USERNAME: username
-#      JPA_HIBERNATE_DDL_AUTO: update
-#      LOGGING_LEVEL_ROOT: error
-#      KEYCLOAK_CLIENT_ID: admin-cli
-#      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/drinkwater
-#      KEYCLOAK_JWK_SET_URI: http://keycloak:8080/realms/drinkwater/protocol/openid-connect/certs
+#      DATABASE_PASSWORD: password
+#      DATABASE_URL: jdbc:postgresql://drinkwater_db:5432/drink_water_db?options\=-c%20TimeZone%3DUTC
+#      JPA_HIBERNATE_DDL_AUTO: create-drop
+#      LOGGING_LEVEL_ROOT: debug
+#      KEYCLOAK_CLIENT_ID: drinkwaterapp
+#      KEYCLOAK_ISSUER_URI: http://auth_keycloak:8080/realms/drinkwater
+#      KEYCLOAK_JWK_SET_URI: http://auth_keycloak:8080/realms/drinkwater/protocol/openid-connect/certs
 #      KEYCLOAK_PASSWORD: admin
 #      KEYCLOAK_REALM: drinkwater
-#      KEYCLOAK_URL: http://keycloak:8080
-#      KEYCLOAK_USERNAME: keycloak-manager
+#      KEYCLOAK_URL: http://auth_keycloak:8080
+#      KEYCLOAK_USERNAME: admin-drinkwater
+#      BASE_URL: http://localhost:3000
 #    ports:
 #      - "8081:8081"
-#    restart: always
 #    depends_on:
-#      - postgres
+#      - keycloak_db
 
 volumes:
   postgres_data:

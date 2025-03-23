@@ -6,6 +6,8 @@ import br.com.drinkwater.hydrationtracking.exception.WaterIntakeNotFoundExceptio
 import br.com.drinkwater.usermanagement.exception.UserAlreadyExistsException;
 import br.com.drinkwater.usermanagement.exception.UserNotFoundException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.*;
@@ -13,9 +15,11 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.net.URI;
@@ -232,5 +236,121 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         problemDetail.setProperty("errors", fieldErrors);
 
         return super.handleExceptionInternal(ex, problemDetail, headers, status, request);
+    }
+
+    /**
+     * Handles constraint violation errors for query parameters validation
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex, WebRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        String detail = this.messageSource.getMessage(
+                "validation.constraint.detail",
+                null,
+                "Validation failed for query parameters",
+                LocaleContextHolder.getLocale()
+        );
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
+        problemDetail.setType(URI.create(PROBLEM_DETAILS_BASE_URL + "/constraint-violation"));
+
+        // Process constraint violations
+        List<Map<String, String>> errors = ex.getConstraintViolations().stream()
+                .map(violation -> {
+                    Map<String, String> error = new HashMap<>();
+                    error.put("field", extractFieldName(violation));
+                    error.put("message", violation.getMessage());
+                    if (violation.getInvalidValue() != null) {
+                        error.put("invalidValue", violation.getInvalidValue().toString());
+                    }
+                    return error;
+                })
+                .collect(Collectors.toList());
+
+        problemDetail.setProperty("errors", errors);
+
+        return super.handleExceptionInternal(ex, problemDetail, new HttpHeaders(), status, request);
+    }
+
+    /**
+     * Extracts field name from property path in constraint violation
+     */
+    private String extractFieldName(ConstraintViolation<?> violation) {
+        String path = violation.getPropertyPath().toString();
+        int lastDotIndex = path.lastIndexOf('.');
+        return lastDotIndex > 0 ? path.substring(lastDotIndex + 1) : path;
+    }
+
+    /**
+     * Handles type mismatch errors for query parameters
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, WebRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        String detail = this.messageSource.getMessage(
+                "validation.type.mismatch.detail",
+                null,
+                "Parameter type mismatch",
+                LocaleContextHolder.getLocale()
+        );
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
+        problemDetail.setType(URI.create(PROBLEM_DETAILS_BASE_URL + "/type-mismatch"));
+
+        Map<String, String> error = new HashMap<>();
+        error.put("field", ex.getName());
+
+        String expectedType = ex.getRequiredType() != null
+                ? ex.getRequiredType().getSimpleName()
+                : "correct type";
+
+        error.put("message", this.messageSource.getMessage(
+                "validation.type.mismatch.field",
+                new Object[]{ex.getName(), expectedType},
+                "The value for " + ex.getName() + " should be of type " + expectedType,
+                LocaleContextHolder.getLocale()
+        ));
+
+        if (ex.getValue() != null) {
+            error.put("invalidValue", ex.getValue().toString());
+        }
+
+        problemDetail.setProperty("errors", List.of(error));
+
+        return super.handleExceptionInternal(ex, problemDetail, new HttpHeaders(), status, request);
+    }
+
+    /**
+     * Handles missing required parameters
+     */
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(
+            @NonNull MissingServletRequestParameterException ex,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode status,
+            @NonNull WebRequest request) {
+
+        String detail = this.messageSource.getMessage(
+                "validation.missing.parameter.detail",
+                null,
+                "Required parameter is missing",
+                LocaleContextHolder.getLocale()
+        );
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.valueOf(status.value()), detail);
+        problemDetail.setType(URI.create(PROBLEM_DETAILS_BASE_URL + "/missing-parameter"));
+
+        Map<String, String> error = new HashMap<>();
+        error.put("field", ex.getParameterName());
+        error.put("message", this.messageSource.getMessage(
+                "validation.missing.parameter.field",
+                new Object[]{ex.getParameterName()},
+                "Required parameter '" + ex.getParameterName() + "' is missing",
+                LocaleContextHolder.getLocale()
+        ));
+
+        problemDetail.setProperty("errors", List.of(error));
+
+        return super.handleExceptionInternal(ex, problemDetail, headers, HttpStatus.valueOf(status.value()), request);
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import static br.com.drinkwater.hydrationtracking.constants.WaterIntakeRepositoryTestConstants.*;
@@ -173,7 +174,7 @@ public class WaterIntakeRepositoryTest {
 
         // Second record with different time to avoid uniqueness constraint
         WaterIntake duplicateWaterIntake = new WaterIntake(
-                REPOSITORY_WATER_INTAKE_DATE_TIME_UTC.plusMinutes(1),
+                REPOSITORY_WATER_INTAKE_DATE_TIME_UTC.plus(1, ChronoUnit.MINUTES),
                 REPOSITORY_DUPLICATE_WATER_INTAKE_VOLUME,
                 REPOSITORY_WATER_INTAKE_VOLUME_UNIT,
                 testUser

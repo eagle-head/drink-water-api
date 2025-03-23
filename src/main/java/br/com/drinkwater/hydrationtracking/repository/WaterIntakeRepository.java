@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.Optional;
 
 @Repository
@@ -15,5 +15,5 @@ public interface WaterIntakeRepository extends JpaRepository<WaterIntake, Long>,
 
     void deleteByIdAndUser_Id(Long id, Long userId);
 
-    boolean existsByDateTimeUTCAndUser_IdAndIdIsNot(OffsetDateTime dateTimeUTC, Long userId, Long id);
+    boolean existsByDateTimeUTCAndUser_IdAndIdIsNot(Instant dateTimeUTC, Long userId, Long id);
 }

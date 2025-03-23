@@ -16,7 +16,7 @@ RUN mvn clean package -DskipTests
 # Create a custom Java runtime using jlink
 RUN $JAVA_HOME/bin/jlink \
     --module-path $JAVA_HOME/jmods \
-    --add-modules java.base,java.logging,java.sql \
+    --add-modules java.base,java.desktop,java.logging,java.sql,java.naming,java.management,java.security.jgss,java.instrument,jdk.unsupported \
     --output /custom-java-runtime \
     --strip-debug \
     --compress=2 \
