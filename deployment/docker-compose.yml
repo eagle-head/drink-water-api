@@ -1,72 +1,168 @@
+# Define networks for better isolation and security
+networks:
+  frontend:
+    name: frontend
+    driver: bridge
+  backend:
+    name: backend
+    driver: bridge
+  keycloak_network:
+    name: keycloak_network
+    driver: bridge
+
+# Application services
 services:
+  # Main application database (KEPT ACTIVE for IntelliJ IDEA API connection)
   drinkwater_db:
     container_name: drinkwater_db
     image: postgres:16-alpine
+    restart: unless-stopped
+    env_file:
+      - ../.env.dev
     environment:
-      POSTGRES_DB: drink_water_db
-      POSTGRES_USER: username
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${DB_NAME:-drink_water_db}
+      POSTGRES_USER: ${DB_USER:-username}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - drinkwater_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-username} -d ${DB_NAME:-drink_water_db}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    mem_limit: 512M
+    mem_reservation: 256M
 
+  # Keycloak database
   keycloak_db:
     container_name: keycloak_db
     image: postgres:16-alpine
+    restart: unless-stopped
+    env_file:
+      - ../.env.dev
     volumes:
-      - postgres_kc:/var/lib/postgresql/data
+      - keycloak_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: security
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: ${KEYCLOAK_DB_NAME:-security}
+      POSTGRES_USER: ${KEYCLOAK_DB_USER:-admin}
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-admin}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${KEYCLOAK_DB_USER:-admin} -d ${KEYCLOAK_DB_NAME:-security}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - keycloak_network
+    expose:
+      - "5432"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    mem_limit: 512M
+    mem_reservation: 256M
 
+  # Keycloak authentication service
   auth_keycloak:
     container_name: auth_keycloak
     image: quay.io/keycloak/keycloak:26.0.7
     command: start --import-realm
+    restart: unless-stopped
+    env_file:
+      - ../.env.dev
     environment:
-      KC_HOSTNAME: localhost
-      KC_HOSTNAME_PORT: 8080
-      KC_HOSTNAME_STRICT_BACKCHANNEL: false
-      KC_HTTP_ENABLED: true
-      KC_HOSTNAME_STRICT_HTTPS: false
-      KC_HEALTH_ENABLED: true
-      #      KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      #      KC_BOOTSTRAP_ADMIN_PASSWORD: password
+      KC_HOSTNAME: ${KC_HOSTNAME:-localhost}
+      KC_HOSTNAME_PORT: ${KC_PORT:-8080}
+      KC_HOSTNAME_STRICT_BACKCHANNEL: "false"
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KC_HEALTH_ENABLED: "true"
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://keycloak_db/security
-      KC_DB_USERNAME: admin
-      KC_DB_PASSWORD: admin
+      KC_DB_URL: jdbc:postgresql://keycloak_db/${KEYCLOAK_DB_NAME:-security}
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USER:-admin}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-admin}
     ports:
-      - "8080:8080"
+      - "${KC_PORT:-8080}:8080"
     volumes:
-      - ../src/main/resources/keycloak-realms.json:/opt/keycloak/data/import/keycloak-realms.json
+      - ../src/main/resources/keycloak-realms.json:/opt/keycloak/data/import/keycloak-realms.json:ro
     depends_on:
       - keycloak_db
+    networks:
+      - keycloak_network
+      - backend
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health/ready" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    mem_limit: 1G
+    mem_reservation: 512M
 
-#  drinkwater_api:
-#    container_name: drinkwater_api
-#    image: eduardokohn/drinkwaterapi:latest
-#    environment:
-#      DATABASE_USERNAME: username
-#      DATABASE_PASSWORD: password
-#      DATABASE_URL: jdbc:postgresql://drinkwater_db:5432/drink_water_db?options\=-c%20TimeZone%3DUTC
-#      JPA_HIBERNATE_DDL_AUTO: create-drop
-#      LOGGING_LEVEL_ROOT: debug
-#      KEYCLOAK_CLIENT_ID: drinkwaterapp
-#      KEYCLOAK_ISSUER_URI: http://auth_keycloak:8080/realms/drinkwater
-#      KEYCLOAK_JWK_SET_URI: http://auth_keycloak:8080/realms/drinkwater/protocol/openid-connect/certs
-#      KEYCLOAK_PASSWORD: admin
-#      KEYCLOAK_REALM: drinkwater
-#      KEYCLOAK_URL: http://auth_keycloak:8080
-#      KEYCLOAK_USERNAME: admin-drinkwater
-#      BASE_URL: http://localhost:3000
-#    ports:
-#      - "8081:8081"
-#    depends_on:
-#      - keycloak_db
+  # Main application API (COMMENTED OUT - run via IntelliJ IDEA instead)
+  # drinkwater_api:
+  #   container_name: drinkwater_api
+  #   image: eduardokohn/drinkwaterapi:latest
+  #   restart: unless-stopped
+  #   env_file:
+  #     - ../.env.dev
+  #   environment:
+  #     DATABASE_USERNAME: ${DB_USER:-username}
+  #     DATABASE_PASSWORD: ${DB_PASSWORD:-password}
+  #     DATABASE_URL: jdbc:postgresql://drinkwater_db:5432/${DB_NAME:-drink_water_db}?options\=-c%20TimeZone%3DUTC
+  #     JPA_HIBERNATE_DDL_AUTO: ${JPA_DDL_AUTO:-create-drop}
+  #     LOGGING_LEVEL_ROOT: ${LOG_LEVEL:-debug}
+  #     KEYCLOAK_CLIENT_ID: ${KC_CLIENT_ID:-drinkwaterapp}
+  #     KEYCLOAK_ISSUER_URI: http://auth_keycloak:8080/realms/${KC_REALM:-drinkwater}
+  #     KEYCLOAK_JWK_SET_URI: http://auth_keycloak:8080/realms/${KC_REALM:-drinkwater}/protocol/openid-connect/certs
+  #     KEYCLOAK_PASSWORD: ${KC_APP_PASSWORD:-admin}
+  #     KEYCLOAK_REALM: ${KC_REALM:-drinkwater}
+  #     KEYCLOAK_URL: http://auth_keycloak:8080
+  #     KEYCLOAK_USERNAME: ${KC_APP_USER:-admin-drinkwater}
+  #     BASE_URL: ${FRONTEND_URL:-http://localhost:3000}
+  #   ports:
+  #     - "${API_PORT:-8081}:8081"
+  #   depends_on:
+  #     - drinkwater_db
+  #     - auth_keycloak
+  #   networks:
+  #     - frontend
+  #     - backend
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 30s
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "3"
+  #   mem_limit: 768M
+  #   mem_reservation: 384M
+  #   cpus: 0.5
 
+# Volume definitions for data persistence - these will persist even when containers are removed
 volumes:
-  postgres_data:
-  postgres_kc:
+  drinkwater_data:
+    name: drinkwater_data
+  keycloak_data:
+    name: keycloak_data

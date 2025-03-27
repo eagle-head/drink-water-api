@@ -24,11 +24,11 @@ RUN $JAVA_HOME/bin/jlink \
     --no-man-pages
 
 # Stage 2: Runtime Stage
-FROM alpine:3.18.9
+FROM alpine:3.21
 WORKDIR /app
 
-# Install necessary packages (e.g., libc compatibility for Java if needed)
-RUN apk add --no-cache libc6-compat
+# Update apk and install necessary packages (e.g., libc compatibility for Java if needed)
+RUN apk update && apk upgrade && apk add --no-cache libc6-compat
 
 # Copy the custom Java runtime and application
 COPY --from=builder /custom-java-runtime /custom-java-runtime
