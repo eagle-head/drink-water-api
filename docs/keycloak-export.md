@@ -7,13 +7,13 @@ This document describes how to export the entire Keycloak configuration to a JSO
 The container needs to be running so we can execute commands inside it. To check:
 
 ```sh
-docker ps -a
+docker container ls -a
 ```
 
 If the container **is not** running, start it:
 
 ```sh
-docker start <CONTAINER_NAME>
+docker container start <CONTAINER_NAME>
 ```
 
 > Replace `<CONTAINER_NAME>` with the correct name of your Keycloak container.
@@ -25,7 +25,7 @@ docker start <CONTAINER_NAME>
 To export the entire configuration to a single JSON file inside the container, run:
 
 ```sh
-docker exec -it <CONTAINER_NAME> /opt/keycloak/bin/kc.sh export --file /tmp/keycloak-realms.json
+docker container exec -it <CONTAINER_NAME> /opt/keycloak/bin/kc.sh export --file /tmp/keycloak-realms.json
 ```
 
 This will create the file `/tmp/keycloak-realms.json` inside the container.
@@ -37,7 +37,7 @@ This will create the file `/tmp/keycloak-realms.json` inside the container.
 Now, copy the exported file to your local environment. For example, to save it in the `src/main/resources` folder of your project:
 
 ```sh
-docker cp <CONTAINER_NAME>:/tmp/keycloak-realms.json ./src/main/resources/keycloak-realms.json
+docker container cp <CONTAINER_NAME>:/tmp/keycloak-realms.json ./src/main/resources/keycloak-realms.json
 ```
 
 This ensures that the export file is available in the local filesystem, ready for use.
@@ -49,10 +49,9 @@ This ensures that the export file is available in the local filesystem, ready fo
 If you no longer need the file inside the container, you can delete it to free up space:
 
 ```sh
-docker exec -it <CONTAINER_NAME> rm -f /tmp/keycloak-realms.json
+docker container exec -it <CONTAINER_NAME> rm -f /tmp/keycloak-realms.json
 ```
 
 ---
 
 Now, the **`keycloak-realms.json`** file is saved in your project and ready to be reused or imported into another Keycloak environment!
-
