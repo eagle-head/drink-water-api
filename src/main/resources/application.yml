@@ -41,6 +41,16 @@ keycloak:
 cors:
   allowed-origin: ${BASE_URL}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
 logging:
   level:
     root: ${LOGGING_LEVEL_ROOT}

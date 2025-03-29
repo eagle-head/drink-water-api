@@ -20,7 +20,17 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         return http
-                .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+                .authorizeHttpRequests(authorize -> authorize
+                        // SECURITY CONCERN: These Actuator endpoints are publicly accessible for testing purposes only.
+                        // Before deploying to production, restrict access to sensitive endpoints like /prometheus and
+                        // /metrics by requiring authentication or limiting to internal network access.
+                        .requestMatchers(
+                                "/actuator/prometheus",
+                                "/actuator/health",
+                                "/actuator/info",
+                                "/actuator/metrics"
+                        ).permitAll()
+                        .anyRequest().authenticated())
                 .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
