@@ -151,7 +151,8 @@ public class WaterIntake {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, dateTimeUTC, volume, volumeUnit, user.getId());
+        return Objects.hash(id, dateTimeUTC, volume, volumeUnit,
+                user != null ? user.getId() : null);
     }
 
     @Override
