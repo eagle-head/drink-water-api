@@ -11,6 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 public final class WaterIntakeTest {
 
@@ -160,14 +161,16 @@ public final class WaterIntakeTest {
     }
 
     @Test
-    public void givenNullUserInWaterIntake_whenHashCode_thenThrowsNullPointerException() {
+    public void givenNullUserInWaterIntake_whenHashCode_thenReturnsHashWithoutUser() {
         // Given a water intake with null user
         WaterIntake waterIntake = new WaterIntake(WATER_INTAKE_ID, DATE_TIME_UTC, VOLUME, VOLUME_UNIT, USER);
         waterIntake.setUser(null);
 
-        // When/Then: hashCode should handle null user
-        assertThatThrownBy(waterIntake::hashCode)
-                .isInstanceOf(NullPointerException.class);
+        // When
+        int expectedHash = Objects.hash(WATER_INTAKE_ID, DATE_TIME_UTC, VOLUME, VOLUME_UNIT, (Long) null);
+
+        // Then
+        assertThat(waterIntake.hashCode()).isEqualTo(expectedHash);
     }
 
     @Test
