@@ -141,7 +141,7 @@ public final class WaterIntakeServiceTest {
         assertThat(sut).isNotNull();
         assertThat(sut.content()).contains(RESPONSE_WATER_INTAKE_DTO);
 
-        // Verifica se o validador foi chamado
+        // Verify that the validator was called
         verify(this.filterValidator).validate(FILTER_DTO);
         verify(this.waterIntakeRepository).findAll(Mockito.<Specification<WaterIntake>>any(), eq(pageable));
         verify(this.waterIntakeMapper).toResponseDTO(WATER_INTAKE);
