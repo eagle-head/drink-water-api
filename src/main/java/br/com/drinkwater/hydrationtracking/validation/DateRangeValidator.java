@@ -20,7 +20,7 @@ public class DateRangeValidator implements ConstraintValidator<ValidDateRange, W
 
             // Add custom message using message key
             context.buildConstraintViolationWithTemplate(
-                            "{validation.timerange.start.before.end}")
+                            context.getDefaultConstraintMessageTemplate())
                     .addPropertyNode("endDate")
                     .addConstraintViolation();
 

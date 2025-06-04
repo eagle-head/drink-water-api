@@ -16,7 +16,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 public @interface ValidDateRange {
 
-    String message() default "Invalid date range";
+    String message() default "{validation.timerange.start.before.end}";
 
     Class<?>[] groups() default { };
 

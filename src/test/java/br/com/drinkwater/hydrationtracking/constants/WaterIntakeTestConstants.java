@@ -21,8 +21,8 @@ public final class WaterIntakeTestConstants {
     public static final Long WATER_INTAKE_ID = 5L;
 
     public static final Instant DATE_TIME_UTC = Instant.now()
-            .truncatedTo(ChronoUnit.MINUTES)
-            .plusSeconds(10);
+            .truncatedTo(ChronoUnit.SECONDS)
+            .minusSeconds(1);
 
     public static final int VOLUME = 250;
 
