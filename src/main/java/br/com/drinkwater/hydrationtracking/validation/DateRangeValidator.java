@@ -18,9 +18,9 @@ public class DateRangeValidator implements ConstraintValidator<ValidDateRange, W
             // Disable default constraint violation
             context.disableDefaultConstraintViolation();
 
-            // Add custom message
+            // Add custom message using message key
             context.buildConstraintViolationWithTemplate(
-                            "End date must be equal to or after start date")
+                            "{validation.timerange.start.before.end}")
                     .addPropertyNode("endDate")
                     .addConstraintViolation();
 
