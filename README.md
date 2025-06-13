@@ -139,6 +139,171 @@ curl -X DELETE 'http://localhost:8081/users/waterintakes/1' \
 
 Success response: HTTP 204 (No Content)
 
+### User Profile Management
+
+#### Get Current User Profile
+
+Retrieve the current user's profile information:
+
+```bash
+curl -X GET 'http://localhost:8081/users/me' \
+-H 'Authorization: Bearer <YOUR_ACCESS_TOKEN>'
+```
+
+Success response (HTTP 200):
+
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "personal": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "birthDate": "1990-05-15",
+    "email": "john.doe@example.com"
+  },
+  "physical": {
+    "height": 175.5,
+    "heightUnit": "CM",
+    "weight": 70.0,
+    "weightUnit": "KG",
+    "biologicalSex": "MALE"
+  },
+  "alarmSettings": {
+    "startTime": "08:00:00",
+    "endTime": "22:00:00",
+    "intervalMinutes": 120,
+    "enabled": true
+  }
+}
+```
+
+#### Create User Profile
+
+Create a new user profile:
+
+```bash
+curl -X POST 'http://localhost:8081/users' \
+    -H 'Authorization: Bearer <YOUR_ACCESS_TOKEN>' \
+    -H 'Content-Type: application/json' \
+    -d '{
+          "personal": {
+            "firstName": "John",
+            "lastName": "Doe",
+            "birthDate": "1990-05-15",
+            "email": "john.doe@example.com"
+          },
+          "physical": {
+            "height": 175.5,
+            "heightUnit": "CM",
+            "weight": 70.0,
+            "weightUnit": "KG",
+            "biologicalSex": "MALE"
+          },
+          "alarmSettings": {
+            "startTime": "08:00:00",
+            "endTime": "22:00:00",
+            "intervalMinutes": 120,
+            "enabled": true
+          }
+        }'
+```
+
+Success response (HTTP 201):
+
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "personal": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "birthDate": "1990-05-15",
+    "email": "john.doe@example.com"
+  },
+  "physical": {
+    "height": 175.5,
+    "heightUnit": "CM",
+    "weight": 70.0,
+    "weightUnit": "KG",
+    "biologicalSex": "MALE"
+  },
+  "alarmSettings": {
+    "startTime": "08:00:00",
+    "endTime": "22:00:00",
+    "intervalMinutes": 120,
+    "enabled": true
+  }
+}
+```
+
+#### Update User Profile
+
+Update the current user's profile:
+
+```bash
+curl -X PUT 'http://localhost:8081/users' \
+    -H 'Authorization: Bearer <YOUR_ACCESS_TOKEN>' \
+    -H 'Content-Type: application/json' \
+    -d '{
+          "personal": {
+            "firstName": "John",
+            "lastName": "Smith",
+            "birthDate": "1990-05-15",
+            "email": "john.smith@example.com"
+          },
+          "physical": {
+            "height": 175.5,
+            "heightUnit": "CM",
+            "weight": 72.0,
+            "weightUnit": "KG",
+            "biologicalSex": "MALE"
+          },
+          "alarmSettings": {
+            "startTime": "07:00:00",
+            "endTime": "23:00:00",
+            "intervalMinutes": 90,
+            "enabled": true
+          }
+        }'
+```
+
+Success response (HTTP 200):
+
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "personal": {
+    "firstName": "John",
+    "lastName": "Smith",
+    "birthDate": "1990-05-15",
+    "email": "john.smith@example.com"
+  },
+  "physical": {
+    "height": 175.5,
+    "heightUnit": "CM",
+    "weight": 72.0,
+    "weightUnit": "KG",
+    "biologicalSex": "MALE"
+  },
+  "alarmSettings": {
+    "startTime": "07:00:00",
+    "endTime": "23:00:00",
+    "intervalMinutes": 90,
+    "enabled": true
+  }
+}
+```
+
+#### Delete User Profile
+
+Delete the current user's profile:
+
+```bash
+curl -X DELETE 'http://localhost:8081/users' \
+-H 'Authorization: Bearer <YOUR_ACCESS_TOKEN>'
+```
+
+Success response: HTTP 204 (No Content)
+
 ### Error Responses
 
 The API uses standard HTTP status codes and returns detailed error messages:
@@ -166,17 +331,17 @@ and docker-compose.yml:
 | Category                | Technology                    | Version       | Details                                                          |
 |-------------------------|-------------------------------|---------------|------------------------------------------------------------------|
 | Core                    | Java                          | 17            | Using Amazon Corretto JDK with custom runtime optimization       |
-| Framework               | Spring Boot                   | 3.4.1         | Base framework for the application                               |
-| Security                | Spring OAuth2 Resource Server | 3.4.1         | Handles OAuth2 resource protection                               |
-| Authentication          | Keycloak                      | 26.0.7        | Handles authentication and authorization with PostgreSQL backend |
+| Framework               | Spring Boot                   | 3.4.4         | Base framework for the application                               |
+| Security                | Spring OAuth2 Resource Server | 3.4.4         | Handles OAuth2 resource protection                               |
+| Authentication          | Keycloak                      | 26.0.3        | Handles authentication and authorization with PostgreSQL backend |
 | Database                | PostgreSQL                    | 16-alpine     | Main application database and Keycloak database                  |
 | Database (Test)         | H2 Database                   | Runtime       | In-memory database for testing                                   |
-| Persistence             | Spring Data JPA               | 3.4.1         | Database access and ORM                                          |
-| Validation              | Spring Boot Validation        | 3.4.1         | Request validation and error handling                            |
-| Monitoring              | Spring Boot Actuator          | 3.4.1         | Application monitoring and metrics                               |
-| Development             | Spring Boot DevTools          | 3.4.1         | Development productivity tools                                   |
+| Persistence             | Spring Data JPA               | 3.4.4         | Database access and ORM                                          |
+| Validation              | Spring Boot Validation        | 3.4.4         | Request validation and error handling                            |
+| Monitoring              | Spring Boot Actuator          | 3.4.4         | Application monitoring and metrics                               |
+| Development             | Spring Boot DevTools          | 3.4.4         | Development productivity tools                                   |
 | Build Tool              | Maven                         | 3.9.9         | Project build and dependency management                          |
-| Containerization        | Docker                        | alpine 3.18.9 | Multi-stage build with optimized runtime image                   |
+| Containerization        | Docker                        | alpine 3.21   | Multi-stage build with optimized runtime image                   |
 | Container Orchestration | Docker Compose                | 3.x           | Local development environment orchestration                      |
 
 The application uses a multi-stage Docker build process that includes:
@@ -250,6 +415,20 @@ The project implements the following features:
 - UTC time handling for global compatibility
 - JPA optimized queries and specifications
 - API pagination with sorting options
+
+### Testing and Quality Assurance
+- Comprehensive unit and integration testing using JUnit 5
+- Code coverage reporting with JaCoCo
+- Mutation testing with PIT (PITest) for test quality evaluation
+- Testcontainers for integration testing with real database instances
+- Test naming convention following `given_when_then` pattern
+- Separate test profiles for different testing scenarios
+
+### Monitoring and Metrics
+- Application monitoring with Spring Boot Actuator
+- Prometheus metrics integration with Micrometer
+- Health checks and application info endpoints
+- Custom metrics collection for business logic monitoring
 
 ## 🚀 Getting Started
 
@@ -385,26 +564,22 @@ Under construction
 
 ## 🛠️ Future Enhancements
 
-* Unit and Integration Testing using Jacoco and Pitest (in progress), including testcontainers for integration tests
-
 * Database Migration Management with Flyway for version control and automated schema updates
 
 * API Documentation and Testing with OpenAPI/Swagger UI
 
 * Event-Driven Architecture implementation using Apache Kafka for asynchronous communication
 
-* Cache Management using:
+* Advanced Cache Management using:
   - Memcached for distributed memory caching
   - Apache Ignite for in-memory computing and caching
   - Hazelcast for distributed caching
 
-* Metrics and Monitoring using:
-  - Prometheus for metrics collection
-  - Grafana for visualization
-  - Micrometer for application metrics
-  - OpenSearch + Logstash + Kibana for log aggregation
+* Enhanced Monitoring and Observability:
+  - Grafana for metrics visualization
+  - OpenSearch + Logstash + Kibana for log aggregation and analytics
   - Jaeger or Zipkin for distributed tracing
-  - Alert Manager for notifications
+  - Alert Manager for proactive notifications and alerting
 
 ## 🔨 Development Practices
 
