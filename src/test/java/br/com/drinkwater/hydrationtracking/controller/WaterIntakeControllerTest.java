@@ -56,7 +56,7 @@ public final class WaterIntakeControllerTest {
         when(this.waterIntakeService.create(WATER_INTAKE_DTO, USER)).thenReturn(RESPONSE_WATER_INTAKE_DTO);
 
         mockMvc
-                .perform(post("/users/waterintakes")
+                .perform(post("/users/water-intakes")
                         .with(jwt()
                                 .jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
                         .content(this.objectMapper.writeValueAsString(WATER_INTAKE_DTO))
@@ -80,7 +80,7 @@ public final class WaterIntakeControllerTest {
         when(this.waterIntakeService.findByIdAndUserId(WATER_INTAKE_ID, USER.getId())).thenReturn(RESPONSE_WATER_INTAKE_DTO);
 
         mockMvc
-                .perform(get("/users/waterintakes/{requestedId}", WATER_INTAKE_ID)
+                .perform(get("/users/water-intakes/{requestedId}", WATER_INTAKE_ID)
                         .with(jwt()
                                 .jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -103,7 +103,7 @@ public final class WaterIntakeControllerTest {
         when(this.waterIntakeService.update(WATER_INTAKE_ID, WATER_INTAKE_DTO, USER)).thenReturn(RESPONSE_WATER_INTAKE_DTO);
 
         mockMvc
-                .perform(put("/users/waterintakes/{requestedId}", WATER_INTAKE_ID)
+                .perform(put("/users/water-intakes/{requestedId}", WATER_INTAKE_ID)
                         .with(jwt()
                                 .jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
                         .content(this.objectMapper.writeValueAsString(WATER_INTAKE_DTO))
@@ -127,7 +127,7 @@ public final class WaterIntakeControllerTest {
         doNothing().when(this.waterIntakeService).deleteByIdAndUserId(WATER_INTAKE_ID, USER.getId());
 
         mockMvc
-                .perform(delete("/users/waterintakes/{requestedId}", WATER_INTAKE_ID)
+                .perform(delete("/users/water-intakes/{requestedId}", WATER_INTAKE_ID)
                         .with(jwt()
                                 .jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -176,7 +176,7 @@ public final class WaterIntakeControllerTest {
         when(this.waterIntakeService.search(filterDTO, USER)).thenReturn(pageResponse);
 
         mockMvc
-                .perform(get("/users/waterintakes")
+                .perform(get("/users/water-intakes")
                         .with(jwt()
                                 .jwt(builder -> builder.claim("sub", USER_UUID.toString()).build()))
                         .param("startDate", startDate.toString())

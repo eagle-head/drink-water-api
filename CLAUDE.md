@@ -185,10 +185,10 @@ src/main/java/br/com/drinkwater/
 ## API Endpoints
 
 ### Water Intake Management
-- `POST /users/waterintakes` - Record water intake
-- `GET /users/waterintakes` - Search with filters and pagination
-- `PUT /users/waterintakes/{id}` - Update existing record
-- `DELETE /users/waterintakes/{id}` - Delete record
+- `POST /users/water-intakes` - Record water intake
+- `GET /users/water-intakes` - Search with filters and pagination
+- `PUT /users/water-intakes/{id}` - Update existing record
+- `DELETE /users/water-intakes/{id}` - Delete record
 
 ### User Management
 - `POST /users` - Create user profile

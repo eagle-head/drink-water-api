@@ -1,0 +1,76 @@
+server:
+  port: 0  # Random port for tests
+
+spring:
+  application:
+    name: drink-water-api-test
+  jackson:
+    time-zone: UTC
+    serialization:
+      write-dates-as-timestamps: false
+  
+  # Use H2 in-memory database instead of PostgreSQL with Testcontainers
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+    
+  h2:
+    console:
+      enabled: true
+      
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+    defer-datasource-initialization: true
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        
+  sql:
+    init:
+      mode: never  # Disable automatic SQL initialization for tests
+      
+  # Mock OAuth2 configuration (will be handled by MockJwtDecoder)
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # These will be ignored since we're using MockJwtDecoder, but needed for config
+          issuer-uri: http://localhost:8080/realms/drinkwater
+          jwk-set-uri: http://localhost:8080/realms/drinkwater/protocol/openid-connect/certs
+  
+  messages:
+    cache-duration: 0s
+
+# Disable actuator endpoints for simpler test setup
+# Keycloak configuration (mocked values for no-containers profile)
+keycloak:
+  url: http://localhost:8080
+  realm: drinkwater
+  clientId: drinkwaterapp
+  username: admin-drinkwater
+  password: password
+
+# CORS configuration
+cors:
+  allowed-origin: http://localhost:3000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+logging:
+  level:
+    root: WARN
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    br.com.drinkwater: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

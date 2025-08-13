@@ -2,6 +2,7 @@ package br.com.drinkwater.support;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -11,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Collections;
 
 @Component
+@Profile("!it-no-containers")
 public class TestAuthProvider {
 
     private static final String GRANT_TYPE = "password";

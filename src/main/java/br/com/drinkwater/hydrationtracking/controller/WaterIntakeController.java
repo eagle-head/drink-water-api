@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/users/waterintakes")
+@RequestMapping("/users/water-intakes")
 public class WaterIntakeController {
 
     private final WaterIntakeService waterIntakeService;
@@ -34,32 +34,32 @@ public class WaterIntakeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
 
-    @GetMapping("/{requestedId}")
-    public ResponseEntity<ResponseWaterIntakeDTO> findById(@PathVariable Long requestedId,
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseWaterIntakeDTO> findById(@PathVariable Long id,
                                                            JwtAuthenticationToken token) {
         var publicId = UUID.fromString(token.getToken().getSubject());
         var user = this.userService.findByPublicId(publicId);
-        var responseDTO = this.waterIntakeService.findByIdAndUserId(requestedId, user.getId());
+        var responseDTO = this.waterIntakeService.findByIdAndUserId(id, user.getId());
 
         return ResponseEntity.ok(responseDTO);
     }
 
-    @PutMapping("/{requestedId}")
-    public ResponseEntity<ResponseWaterIntakeDTO> updateById(@PathVariable Long requestedId,
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseWaterIntakeDTO> updateById(@PathVariable Long id,
                                                              @Valid @RequestBody WaterIntakeDTO updateDTO,
                                                              JwtAuthenticationToken token) {
         var publicId = UUID.fromString(token.getToken().getSubject());
         var user = this.userService.findByPublicId(publicId);
-        var responseDTO = this.waterIntakeService.update(requestedId, updateDTO, user);
+        var responseDTO = this.waterIntakeService.update(id, updateDTO, user);
 
         return ResponseEntity.ok(responseDTO);
     }
 
-    @DeleteMapping("/{requestedId}")
-    public ResponseEntity<Void> deleteById(@PathVariable Long requestedId, JwtAuthenticationToken token) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id, JwtAuthenticationToken token) {
         var publicId = UUID.fromString(token.getToken().getSubject());
         var user = this.userService.findByPublicId(publicId);
-        this.waterIntakeService.deleteByIdAndUserId(requestedId, user.getId());
+        this.waterIntakeService.deleteByIdAndUserId(id, user.getId());
 
         return ResponseEntity.noContent().build();
     }

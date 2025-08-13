@@ -239,4 +239,79 @@
 		</plugins>
 	</build>
 
+	<profiles>
+		<!-- Profile for integration tests with Testcontainers (requires Docker) -->
+		<profile>
+			<id>integration-test-containers</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<configuration>
+							<includes>
+								<include>**/*IT.java</include>
+							</includes>
+							<excludes>
+								<exclude>**/*NoContainersIT.java</exclude>
+							</excludes>
+							<systemPropertyVariables>
+								<spring.profiles.active>it</spring.profiles.active>
+							</systemPropertyVariables>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- Profile for integration tests without containers (no Docker required) -->
+		<profile>
+			<id>integration-test-no-containers</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<configuration>
+							<includes>
+								<include>**/*NoContainersIT.java</include>
+							</includes>
+							<excludes>
+								<exclude>**/UserApiIT.java</exclude>
+							</excludes>
+							<systemPropertyVariables>
+								<spring.profiles.active>it-no-containers</spring.profiles.active>
+							</systemPropertyVariables>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- Profile for running all tests (including containers if Docker is available) -->
+		<profile>
+			<id>all-tests</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<configuration>
+							<includes>
+								<include>**/*IT.java</include>
+								<include>**/*NoContainersIT.java</include>
+							</includes>
+							<systemPropertyVariables>
+								<spring.profiles.active>it-no-containers</spring.profiles.active>
+							</systemPropertyVariables>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 </project>
