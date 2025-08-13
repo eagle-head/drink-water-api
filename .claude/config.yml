@@ -1,0 +1,143 @@
+# Claude Agent System Configuration
+version: 1.0.0
+project: drink-water-api
+
+# Global settings for all agents
+global:
+  timeout: 300s
+  max_retries: 3
+  log_level: info
+  parallel_execution: true
+  max_parallel_agents: 4
+
+# Agent registry
+agents:
+  enabled:
+    - security-scanner
+    - performance-analyzer
+    - database-migrator
+    - dependency-updater
+  
+  disabled: []
+  
+  experimental: []
+
+# Command registry
+commands:
+  enabled:
+    - full-review
+    - api-update
+    - test-suite
+  
+  aliases:
+    review: full-review
+    api: api-update
+    test: test-suite
+
+# Execution environment
+environment:
+  java_version: 17
+  maven_version: 3.8.1
+  spring_boot_version: 3.1.0
+  
+  paths:
+    source: src/main/java
+    resources: src/main/resources
+    tests: src/test/java
+    target: target/
+
+# Integration settings
+integrations:
+  git:
+    enabled: true
+    auto_commit: false
+    branch_prefix: "claude/"
+  
+  github:
+    enabled: true
+    create_prs: true
+    add_comments: true
+  
+  ide:
+    vscode: true
+    intellij: true
+
+# Reporting configuration
+reporting:
+  output_dir: .claude/reports
+  formats:
+    - markdown
+    - json
+    - html
+  
+  archive:
+    enabled: true
+    retention_days: 30
+    compress: true
+
+# Hooks and triggers
+hooks:
+  pre_commit:
+    enabled: true
+    agents:
+      - security-scanner
+  
+  pre_push:
+    enabled: false
+    agents: []
+  
+  pull_request:
+    enabled: true
+    commands:
+      - full-review
+
+# Performance settings
+performance:
+  cache:
+    enabled: true
+    ttl: 3600
+    max_size: 100MB
+  
+  resource_limits:
+    cpu: 2
+    memory: 4GB
+    disk: 10GB
+
+# Security settings
+security:
+  scan_on_commit: true
+  block_on_critical: true
+  vulnerability_db_update: daily
+  
+  allowed_operations:
+    file_read: true
+    file_write: true
+    network: false
+    system_commands: false
+
+# Notification settings
+notifications:
+  channels:
+    console:
+      enabled: true
+      level: info
+    
+    file:
+      enabled: true
+      path: .claude/logs/
+      rotation: daily
+    
+    slack:
+      enabled: false
+      webhook: ""
+    
+    email:
+      enabled: false
+      recipients: []
+
+# Debug settings
+debug:
+  enabled: false
+  verbose: false
+  save_intermediate: false
+  profile_performance: false

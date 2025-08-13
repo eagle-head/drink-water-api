@@ -1,0 +1,45 @@
+# API Update Workflow
+name: api-update
+description: Update API documentation and generate client code
+
+agents:
+  - name: endpoint-scanner
+    type: discovery
+    config:
+      scan_paths:
+        - src/main/java/com/example/controller
+      annotations:
+        - "@RestController"
+        - "@RequestMapping"
+  
+  - name: openapi-generator
+    type: documentation
+    config:
+      format: openapi-3.0
+      output: src/main/resources/openapi.yaml
+  
+  - name: postman-generator
+    type: documentation
+    config:
+      format: postman-2.1
+      output: postman/collection.json
+  
+  - name: client-generator
+    type: code-generation
+    config:
+      languages:
+        - typescript
+        - python
+      output_dir: generated-clients/
+
+execution:
+  mode: parallel
+  groups:
+    - [endpoint-scanner]
+    - [openapi-generator, postman-generator]
+    - [client-generator]
+
+validation:
+  - check: openapi_valid
+  - check: no_breaking_changes
+  - check: backwards_compatible

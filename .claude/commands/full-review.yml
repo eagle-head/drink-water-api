@@ -1,0 +1,33 @@
+# Full Code Review Pipeline
+name: full-review
+description: Complete code review with tests and documentation
+
+agents:
+  - name: code-analyzer
+    type: analysis
+    priority: high
+  - name: test-coverage-checker
+    type: testing
+    priority: medium
+  - name: documentation-validator
+    type: documentation
+    priority: low
+
+execution:
+  mode: sequential
+  timeout: 300s
+  continue_on_error: false
+
+triggers:
+  - event: pull_request
+  - event: pre_merge
+  - manual: true
+
+output:
+  format: markdown
+  destination: .claude/reports/
+  include_metrics: true
+
+notifications:
+  success: console
+  failure: console_and_file

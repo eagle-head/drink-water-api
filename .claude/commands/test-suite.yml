@@ -1,0 +1,58 @@
+# Comprehensive Test Suite Generation
+name: test-suite
+description: Generate and validate complete test coverage
+
+agents:
+  - name: unit-test-generator
+    type: testing
+    config:
+      framework: junit5
+      mock_framework: mockito
+      coverage_target: 80
+      focus:
+        - services
+        - utils
+        - validators
+  
+  - name: integration-test-generator
+    type: testing
+    config:
+      framework: spring-boot-test
+      database: h2
+      focus:
+        - controllers
+        - repositories
+  
+  - name: test-data-generator
+    type: testing
+    config:
+      format: sql
+      fixtures:
+        - users
+        - water_intake
+        - hydration_goals
+  
+  - name: coverage-reporter
+    type: analysis
+    config:
+      format: jacoco
+      threshold:
+        line: 80
+        branch: 70
+        method: 85
+
+execution:
+  mode: sequential
+  steps:
+    - agent: test-data-generator
+      output: src/test/resources/data.sql
+    - parallel:
+        - unit-test-generator
+        - integration-test-generator
+    - agent: coverage-reporter
+      input: target/jacoco.exec
+
+post_actions:
+  - run: mvn test
+  - generate_report: html
+  - check_thresholds: true
