@@ -22,7 +22,7 @@ public final class WaterIntakeTestConstants {
 
     public static final Instant DATE_TIME_UTC = Instant.now()
             .truncatedTo(ChronoUnit.MINUTES)
-            .plusSeconds(10);
+            .minusSeconds(10);
 
     public static final int VOLUME = 250;
 
