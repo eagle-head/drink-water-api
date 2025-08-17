@@ -2,30 +2,86 @@
 
 This document provides essential information for AI assistants working with the Drink Water API project.
 
+## Sub-Agent Integration
+
+This project includes specialized sub-agents located in `.claude/agents/` for complex, domain-specific tasks. Claude
+automatically delegates to appropriate sub-agents when:
+
+- The task matches the agent's expertise area
+- The complexity warrants specialized handling
+- Multiple steps require coordinated execution
+
+### Available Project Sub-Agents
+
+The following specialized agents are available:
+
+**Architecture & Design:**
+
+- `api-design-strategist` - REST API design and architecture planning
+- `security-strategy-architect` - Security architecture and strategy
+
+**Implementation Specialists:**
+
+- `test-implementation-specialist` - Comprehensive testing strategies and implementation
+- `api-documentation-generator` - OpenAPI/Swagger documentation generation
+- `monitoring-implementation-specialist` - Monitoring and observability implementation
+- `security-implementation-specialist` - Security implementations and OAuth2 integration
+
+**Infrastructure & DevOps:**
+
+- `devops-pipeline-executor` - CI/CD automation and deployment workflows
+- `devops-infrastructure-planner` - Infrastructure planning and architecture
+- `container-optimization-executor` - Docker optimization and containerization
+
+**Performance & Database:**
+
+- `performance-strategy-analyst` - Performance analysis and optimization planning
+- `jpa-performance-executor` - JPA/Hibernate query optimization implementation
+- `database-migration-architect` - Database schema evolution and migration planning
+- `database-migration-executor` - Database migration implementation
+
+### When Sub-Agents Are Most Valuable
+
+- **Complex Implementation Tasks**: Multi-step features requiring specialized knowledge
+- **Domain Expertise**: Security, performance, testing, or infrastructure tasks
+- **Coordinated Workflows**: Tasks requiring multiple related actions
+- **Best Practice Application**: Ensuring industry standards and patterns
+
+### Working with Sub-Agents
+
+Claude will naturally choose sub-agents when appropriate. You can also explicitly request specific expertise:
+
+- "Use the test-implementation-specialist to add comprehensive tests"
+- "Have the security-strategy-architect review this authentication flow"
+- "Get the performance-strategy-analyst to optimize this query"
+
 ## Project Overview
 
-**Drink Water API** is a Spring Boot 3.4.8 application that provides RESTful endpoints for hydration tracking and user management. The system uses Keycloak for OAuth2 authentication and PostgreSQL for data persistence.
+**Drink Water API** is a Spring Boot 3.4.8 application that provides RESTful endpoints for hydration tracking and user
+management. The system uses Keycloak for OAuth2 authentication and PostgreSQL for data persistence.
 
 ### Core Domains
+
 - **Hydration Tracking**: Water intake recording, filtering, and analytics
 - **User Management**: User profiles, physical characteristics, alarm settings
 
 ## Technology Stack
 
-| Component | Technology | Version | Notes |
-|-----------|------------|---------|-------|
-| Java | Amazon Corretto JDK | 17 | Production runtime |
-| Framework | Spring Boot | 3.4.8 | Core framework |
-| Security | Spring OAuth2 Resource Server | 3.4.8 | JWT token validation |
-| Authentication | Keycloak | 26.0.3 | Identity provider |
-| Database | PostgreSQL | 16-alpine | Primary database |
-| Test Database | H2 | Runtime | In-memory testing |
-| Build Tool | Maven | 3.9.9 | Dependency management |
-| Monitoring | Spring Boot Actuator + Prometheus | 3.4.8 | Metrics and health |
+| Component      | Technology                        | Version   | Notes                 |
+|----------------|-----------------------------------|-----------|-----------------------|
+| Java           | Amazon Corretto JDK               | 17        | Production runtime    |
+| Framework      | Spring Boot                       | 3.4.8     | Core framework        |
+| Security       | Spring OAuth2 Resource Server     | 3.4.8     | JWT token validation  |
+| Authentication | Keycloak                          | 26.0.3    | Identity provider     |
+| Database       | PostgreSQL                        | 16-alpine | Primary database      |
+| Test Database  | H2                                | Runtime   | In-memory testing     |
+| Build Tool     | Maven                             | 3.9.9     | Dependency management |
+| Monitoring     | Spring Boot Actuator + Prometheus | 3.4.8     | Metrics and health    |
 
 ## Key Development Commands
 
 ### Docker Environment Management (Recommended)
+
 The project includes a Makefile for intelligent Docker orchestration:
 
 ```bash
@@ -59,21 +115,24 @@ make help                  # Show all available commands
 ```
 
 **Monitoring Stack Access Points:**
+
 - **Grafana Dashboard**: http://localhost:3001 (admin/admin123)
 - **Prometheus**: http://localhost:9090
 - **AlertManager**: http://localhost:9093
 - **Zipkin Tracing**: http://localhost:9411
 
 ### Manual Docker Commands (Alternative)
+
 ```bash
 # Start dependencies manually
-docker-compose -f deployment/docker-compose.yml up -d
+docker-compose up -d
 
 # Start monitoring stack manually  
 docker-compose -f monitoring/docker-compose-monitoring.yml up -d
 ```
 
 ### Building and Running
+
 ```bash
 # Build the project
 ./mvnw clean install
@@ -83,6 +142,7 @@ docker-compose -f monitoring/docker-compose-monitoring.yml up -d
 ```
 
 ### Testing
+
 ```bash
 # Run all tests
 ./mvnw clean verify
@@ -101,6 +161,7 @@ docker-compose -f monitoring/docker-compose-monitoring.yml up -d
 ```
 
 ### Linting and Quality
+
 ```bash
 # No specific linter configured - uses standard Java compilation
 ./mvnw compile
@@ -139,6 +200,7 @@ src/main/java/br/com/drinkwater/
 ## Important Patterns and Conventions
 
 ### Naming Conventions
+
 - **Tests**: Use `given_when_then` pattern (e.g., `givenValidUser_whenCreateUser_thenReturnsUserDTO`)
 - **DTOs**: Suffix with `DTO` (e.g., `WaterIntakeDTO`, `UserResponseDTO`)
 - **Entities**: Plain names (e.g., `WaterIntake`, `User`)
@@ -146,18 +208,21 @@ src/main/java/br/com/drinkwater/
 - **Services**: Suffix with `Service` (e.g., `WaterIntakeService`)
 
 ### Architecture Patterns
+
 - **Clean Architecture**: Each domain module is self-contained
 - **Specification Pattern**: Used for dynamic query building
 - **DTO Pattern**: Separate DTOs for input/output operations
 - **Mapper Pattern**: Object conversion between layers
 
 ### Security Implementation
+
 - JWT tokens via Keycloak integration
 - Resource server configuration in `SecurityConfig.java`
 - User ID extraction from JWT claims (`sub` field)
 - Role-based access control ready (not actively used)
 
 ### Database Design
+
 - UTC timezone for all timestamps
 - Enum converters for type safety
 - Composite unique constraints for business rules
@@ -166,6 +231,7 @@ src/main/java/br/com/drinkwater/
 ## Common Tasks
 
 ### Adding New Endpoints
+
 1. Create DTO classes in appropriate domain
 2. Add controller method with proper validation
 3. Implement service layer business logic
@@ -173,11 +239,13 @@ src/main/java/br/com/drinkwater/
 5. Write comprehensive tests
 
 ### Adding Validation
+
 - Use Bean Validation annotations (`@Valid`, `@NotNull`, etc.)
 - Custom validators in `validation/` packages
 - Global exception handling via `GlobalExceptionHandler`
 
 ### Database Changes
+
 - Currently using `data.sql` for initial data
 - Migration tool (Flyway) planned for future releases
 - Test data reset via `reset.sql` in test resources
@@ -185,12 +253,14 @@ src/main/java/br/com/drinkwater/
 ## API Endpoints
 
 ### Water Intake Management
+
 - `POST /users/water-intakes` - Record water intake
 - `GET /users/water-intakes` - Search with filters and pagination
 - `PUT /users/water-intakes/{id}` - Update existing record
 - `DELETE /users/water-intakes/{id}` - Delete record
 
 ### User Management
+
 - `POST /users` - Create user profile
 - `GET /users/me` - Get current user profile
 - `PUT /users` - Update user profile
@@ -199,12 +269,14 @@ src/main/java/br/com/drinkwater/
 ## Testing Strategy
 
 ### Test Types
+
 - **Unit Tests**: Individual class testing with mocks
 - **Integration Tests**: Full Spring context with Testcontainers
 - **Code Coverage**: JaCoCo reports (exclude config classes)
 - **Mutation Testing**: PIT testing for test quality
 
 ### Test Configuration
+
 - Separate application profiles for testing
 - Testcontainers for PostgreSQL and Keycloak
 - H2 database for lightweight unit tests
@@ -212,7 +284,8 @@ src/main/java/br/com/drinkwater/
 
 ## Environment Configuration
 
-The application follows 12-Factor App principles with comprehensive environment variable support for configuration management.
+The application follows 12-Factor App principles with comprehensive environment variable support for configuration
+management.
 
 ### Spring Profiles
 
@@ -224,6 +297,7 @@ The application supports multiple Spring profiles for different environments:
 - **`default`**: Default profile with basic security settings
 
 Activate profiles using:
+
 ```bash
 # Single profile
 SPRING_PROFILES_ACTIVE=dev
@@ -242,6 +316,7 @@ cp .env.example .env
 ```
 
 #### Core Application Settings
+
 ```bash
 # Application identity
 APP_NAME=drink-water-api
@@ -254,6 +329,7 @@ SPRING_PROFILES_ACTIVE=dev
 ```
 
 #### Database Configuration
+
 ```bash
 # PostgreSQL connection
 DATABASE_URL=jdbc:postgresql://localhost:5432/drink_water_db
@@ -273,6 +349,7 @@ SQL_INIT_MODE=always
 ```
 
 #### Keycloak OAuth2 Configuration
+
 ```bash
 # Keycloak server
 KEYCLOAK_URL=http://localhost:8080
@@ -284,10 +361,10 @@ KEYCLOAK_PASSWORD=admin
 # JWT settings
 KEYCLOAK_ISSUER_URI=http://localhost:8080/realms/drinkwater
 KEYCLOAK_JWK_SET_URI=http://localhost:8080/realms/drinkwater/protocol/openid-connect/certs
-JWT_CACHE_DURATION=PT5M
 ```
 
 #### Security Configuration
+
 ```bash
 # CORS settings
 CORS_ALLOWED_ORIGIN=http://localhost:3000
@@ -302,6 +379,7 @@ SECURITY_RATE_LIMIT_BURST=10
 ```
 
 #### Actuator & Monitoring Configuration
+
 ```bash
 # Actuator endpoint exposure (security-sensitive!)
 ACTUATOR_ENDPOINTS=health,info,metrics,prometheus
@@ -322,6 +400,7 @@ ZIPKIN_ENDPOINT=http://localhost:9411/api/v2/spans
 ```
 
 #### Logging Configuration
+
 ```bash
 # Global log levels
 LOGGING_LEVEL_ROOT=INFO
@@ -336,6 +415,7 @@ LOGGING_LEVEL_SECURITY=DEBUG
 ```
 
 #### Docker Compose Variables
+
 ```bash
 # Database containers
 DATABASE_NAME=drink_water_db
@@ -358,21 +438,23 @@ ZIPKIN_PORT=9411
 
 #### Environment-Specific Security
 
-| Environment | Security Level | Actuator Endpoints | Auth Requirements |
-|-------------|---------------|-------------------|-------------------|
-| **Development** | Relaxed | All available | Optional for most |
-| **Staging** | Moderate | Limited set | OAuth2 required |
-| **Production** | Maximum | Minimal set | OAuth2 + IP restrictions |
+| Environment     | Security Level | Actuator Endpoints | Auth Requirements        |
+|-----------------|----------------|--------------------|--------------------------|
+| **Development** | Relaxed        | All available      | Optional for most        |
+| **Staging**     | Moderate       | Limited set        | OAuth2 required          |
+| **Production**  | Maximum        | Minimal set        | OAuth2 + IP restrictions |
 
 #### Critical Security Variables
 
 **NEVER commit these to version control:**
+
 - `DATABASE_PASSWORD`
 - `KEYCLOAK_PASSWORD`
 - `KEYCLOAK_ADMIN_PASSWORD`
 - `JWT_SIGNING_KEY` (if using custom keys)
 
 **Production-specific requirements:**
+
 - Use HTTPS URLs for all Keycloak endpoints
 - Restrict CORS origins to actual frontend domains
 - Limit actuator endpoints to `health,info,metrics,prometheus`
@@ -394,11 +476,13 @@ src/main/resources/
 ### Environment Variable Validation
 
 The application validates critical environment variables at startup:
+
 - Database connection parameters
 - Keycloak connectivity
 - Required security settings in production
 
 ### Application Ports
+
 - Application: 8081 (configurable via `SERVER_PORT`)
 - Keycloak: 8080 (configurable via `KEYCLOAK_PORT`)
 - PostgreSQL: 5432 (standard)
@@ -456,6 +540,7 @@ The application implements RFC 7807 Problem Details for consistent error respons
 ## Development Tips
 
 ### When Working with This Project:
+
 1. **Start with Makefile**: Use `make dev-start` instead of manual docker commands
 2. **Resource Management**: Use `make dev-start` for development (lighter) vs `make full-stack-start` for full debugging
 3. Use the proper test commands for different testing scenarios
@@ -466,6 +551,7 @@ The application implements RFC 7807 Problem Details for consistent error respons
 8. Implement proper error handling with meaningful messages
 
 ### Recommended Daily Workflow:
+
 ```bash
 # Morning: Start development
 make dev-start              # Quick start (30 seconds)
@@ -479,6 +565,7 @@ make dev-stop              # Clean shutdown
 ```
 
 ### Common Issues:
+
 - **Port conflicts**: Ensure 8080, 8081, 5432 are available
 - **Docker issues**: Restart Docker services if containers fail
 - **Test failures**: Check Testcontainers configuration
@@ -487,6 +574,7 @@ make dev-stop              # Clean shutdown
 ## Future Enhancements
 
 Planned improvements include:
+
 - Database migration management with Flyway
 - OpenAPI/Swagger documentation
 - Event-driven architecture with Kafka
@@ -495,4 +583,5 @@ Planned improvements include:
 
 ---
 
-This guide should help AI assistants understand the project structure, conventions, and important considerations when working with the Drink Water API codebase.
+This guide should help AI assistants understand the project structure, conventions, and important considerations when
+working with the Drink Water API codebase.

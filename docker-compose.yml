@@ -1,0 +1,275 @@
+# =============================================================================
+# DRINK WATER API - DOCKER COMPOSE CONFIGURATION
+# =============================================================================
+# Located at project root following Docker Compose best practices.
+# Automatically loads .env file from the same directory when running:
+#   docker compose up -d
+#
+# This configuration uses environment variable substitution with default values
+# to ensure it works with or without a .env file. All variables use the syntax:
+# ${VARIABLE_NAME:-default_value} to provide sensible defaults when variables are unset.
+#
+# Resource limits are configured with safe defaults:
+# - PostgreSQL: 512M memory, 0.3 CPU cores
+# - Keycloak DB: 512M memory, 0.3 CPU cores  
+# - Keycloak: 1G memory, 0.8 CPU cores
+#
+# The configuration will work in three scenarios:
+# 1. Without any .env file (uses all defaults)
+# 2. With partial .env file (uses provided values + defaults for missing)
+# 3. With complete .env file (uses all provided values)
+# =============================================================================
+
+# Define networks for better isolation and security
+networks:
+  frontend:
+    name: frontend
+    driver: bridge
+  backend:
+    name: backend
+    driver: bridge
+  keycloak_network:
+    name: keycloak_network
+    driver: bridge
+
+# Application services
+services:
+  # Main application database (KEPT ACTIVE for IntelliJ IDEA API connection)
+  drinkwater_db:
+    container_name: drinkwater_db
+    image: postgres:${POSTGRES_VERSION:-16-alpine}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    environment:
+      POSTGRES_DB: ${DB_NAME:-drink_water_db}
+      POSTGRES_USER: ${DB_USER:-username}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - drinkwater_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-username} -d ${DB_NAME:-drink_water_db}" ]
+      interval: ${HEALTH_CHECK_INTERVAL:-30s}
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: ${POSTGRES_MEMORY_LIMIT:-512M}
+          cpus: ${POSTGRES_CPU_LIMIT:-0.3}
+        reservations:
+          memory: ${POSTGRES_MEMORY_RESERVATION:-256M}
+          cpus: 0.1
+
+  # Keycloak database
+  keycloak_db:
+    container_name: keycloak_db
+    image: postgres:${KEYCLOAK_POSTGRES_VERSION:-16-alpine}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    volumes:
+      - keycloak_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${KEYCLOAK_DB_NAME:-security}
+      POSTGRES_USER: ${KEYCLOAK_DB_USER:-admin}
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-admin}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${KEYCLOAK_DB_USER:-admin} -d ${KEYCLOAK_DB_NAME:-security}" ]
+      interval: ${HEALTH_CHECK_INTERVAL:-30s}
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - keycloak_network
+    expose:
+      - "5432"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: ${KEYCLOAK_DB_MEMORY_LIMIT:-512M}
+          cpus: ${KEYCLOAK_DB_CPU_LIMIT:-0.3}
+        reservations:
+          memory: ${KEYCLOAK_DB_MEMORY_RESERVATION:-256M}
+          cpus: 0.1
+
+  # Keycloak authentication service
+  auth_keycloak:
+    container_name: auth_keycloak
+    image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION:-26.3.2}
+    command: start
+    restart: ${RESTART_POLICY:-unless-stopped}
+    environment:
+      # Admin credentials for clean startup
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      # Keycloak server configuration
+      KC_HOSTNAME: ${KC_HOSTNAME:-localhost}
+      KC_HOSTNAME_PORT: ${KC_PORT:-8080}
+      KC_HOSTNAME_STRICT_BACKCHANNEL: ${KC_HOSTNAME_STRICT_BACKCHANNEL:-false}
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT_HTTPS: ${KC_HOSTNAME_STRICT_HTTPS:-false}
+      KC_HEALTH_ENABLED: "true"
+      KC_DB: ${KC_DATABASE_TYPE:-postgres}
+      KC_DB_URL: jdbc:postgresql://keycloak_db/${KEYCLOAK_DB_NAME:-security}
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USER:-admin}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-admin}
+      KC_MANAGEMENT_PORT: ${KC_MANAGEMENT_PORT:-9000}
+    ports:
+      - "${KC_PORT:-8080}:8080"
+      - "${KC_MANAGEMENT_PORT:-9000}:${KC_MANAGEMENT_PORT:-9000}"
+    # NOTE: Configuration files preserved in src/main/resources/ but not loaded for clean startup
+    # volumes:
+    #   - ./src/main/resources/keycloak-realms.json:/opt/keycloak/data/import/keycloak-realms.json:ro
+    depends_on:
+      - keycloak_db
+    networks:
+      - keycloak_network
+      - backend
+    healthcheck:
+      test: [ "CMD-SHELL", "/opt/keycloak/bin/kc.sh show-config || exit 1" ]
+      interval: ${HEALTH_CHECK_INTERVAL:-30s}
+      timeout: 15s
+      retries: 5
+      start_period: 90s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: ${KEYCLOAK_MEMORY_LIMIT:-1G}
+          cpus: ${KEYCLOAK_CPU_LIMIT:-0.8}
+        reservations:
+          memory: ${KEYCLOAK_MEMORY_RESERVATION:-512M}
+          cpus: 0.2
+
+  # Main application API
+#  drinkwater_api:
+#    container_name: drinkwater_api
+#    image: eduardokohn/drinkwaterapi:latest
+#    restart: ${RESTART_POLICY}
+#    env_file:
+#      - .env
+#    environment:
+#      # Application configuration
+#      APP_NAME: ${APP_NAME}
+#      APP_VERSION: ${APP_VERSION}
+#      APP_ENVIRONMENT: ${APP_ENVIRONMENT}
+#      SERVER_PORT: ${SERVER_PORT}
+#      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+#      
+#      # Database configuration  
+#      DATABASE_URL: jdbc:postgresql://drinkwater_db:5432/${DB_NAME}?options\=-c%20TimeZone%3DUTC
+#      DATABASE_USERNAME: ${DB_USER}
+#      DATABASE_PASSWORD: ${DB_PASSWORD}
+#      DATABASE_DRIVER: ${DATABASE_DRIVER}
+#      DATABASE_POOL_SIZE: ${DATABASE_POOL_SIZE}
+#      DATABASE_MIN_IDLE: ${DATABASE_MIN_IDLE}
+#      DATABASE_CONNECTION_TIMEOUT: ${DATABASE_CONNECTION_TIMEOUT}
+#      
+#      # JPA configuration
+#      JPA_HIBERNATE_DDL_AUTO: ${JPA_HIBERNATE_DDL_AUTO}
+#      JPA_OPEN_IN_VIEW: ${JPA_OPEN_IN_VIEW}
+#      JPA_DEFER_DATASOURCE_INITIALIZATION: ${JPA_DEFER_DATASOURCE_INITIALIZATION}
+#      SQL_INIT_MODE: ${SQL_INIT_MODE}
+#      
+#      # Keycloak configuration
+#      KEYCLOAK_URL: http://auth_keycloak:8080
+#      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+#      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+#      KEYCLOAK_USERNAME: ${KEYCLOAK_USERNAME}
+#      KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
+#      KEYCLOAK_ISSUER_URI: http://auth_keycloak:8080/realms/${KEYCLOAK_REALM}
+#      KEYCLOAK_JWK_SET_URI: http://auth_keycloak:8080/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs
+#      
+#      # CORS configuration
+#      BASE_URL: ${BASE_URL}
+#      CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN}
+#      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+#      CORS_ALLOWED_METHODS: ${CORS_ALLOWED_METHODS}
+#      CORS_ALLOWED_HEADERS: ${CORS_ALLOWED_HEADERS}
+#      CORS_ALLOW_CREDENTIALS: ${CORS_ALLOW_CREDENTIALS}
+#      CORS_MAX_AGE: ${CORS_MAX_AGE}
+#      
+#      # Security configuration
+#      SECURITY_RATE_LIMITING_ENABLED: ${SECURITY_RATE_LIMITING_ENABLED}
+#      SECURITY_RATE_LIMIT_RPM: ${SECURITY_RATE_LIMIT_RPM}
+#      SECURITY_RATE_LIMIT_BURST: ${SECURITY_RATE_LIMIT_BURST}
+#      
+#      # Actuator configuration
+#      ACTUATOR_ENDPOINTS: ${ACTUATOR_ENDPOINTS}
+#      ACTUATOR_BASE_PATH: ${ACTUATOR_BASE_PATH}
+#      ACTUATOR_HEALTH_SHOW_DETAILS: ${ACTUATOR_HEALTH_SHOW_DETAILS}
+#      ACTUATOR_HEALTH_SHOW_COMPONENTS: ${ACTUATOR_HEALTH_SHOW_COMPONENTS}
+#      
+#      # Monitoring configuration
+#      PROMETHEUS_METRICS_ENABLED: ${PROMETHEUS_METRICS_ENABLED}
+#      PROMETHEUS_METRICS_EXPORT_ENABLED: ${PROMETHEUS_METRICS_EXPORT_ENABLED}
+#      PROMETHEUS_METRICS_STEP: ${PROMETHEUS_METRICS_STEP}
+#      TRACING_ENABLED: ${TRACING_ENABLED}
+#      TRACING_SAMPLING_RATE: ${TRACING_SAMPLING_RATE}
+#      ZIPKIN_ENDPOINT: ${ZIPKIN_ENDPOINT}
+#      
+#      # Logging configuration
+#      LOGGING_LEVEL_ROOT: ${LOGGING_LEVEL_ROOT}
+#      LOGGING_LEVEL_APP: ${LOGGING_LEVEL_APP}
+#      LOGGING_LEVEL_SECURITY: ${LOGGING_LEVEL_SECURITY}
+#      LOGGING_LEVEL_OAUTH2: ${LOGGING_LEVEL_OAUTH2}
+#      LOGGING_LEVEL_SQL: ${LOGGING_LEVEL_SQL}
+#      LOGGING_LEVEL_SQL_PARAMS: ${LOGGING_LEVEL_SQL_PARAMS}
+#      LOGGING_LEVEL_HIBERNATE: ${LOGGING_LEVEL_HIBERNATE}
+#      LOGGING_LEVEL_SPRINGFRAMEWORK: ${LOGGING_LEVEL_SPRINGFRAMEWORK}
+#      
+#      # Locale configuration
+#      DEFAULT_LOCALE: ${DEFAULT_LOCALE}
+#      SUPPORTED_LOCALES: ${SUPPORTED_LOCALES}
+#      MESSAGE_SOURCE_ENCODING: ${MESSAGE_SOURCE_ENCODING}
+#      
+#      # Jackson serialization
+#      JACKSON_TIMEZONE: ${JACKSON_TIMEZONE}
+#      JACKSON_WRITE_DATES_AS_TIMESTAMPS: ${JACKSON_WRITE_DATES_AS_TIMESTAMPS}
+#    ports:
+#      - "${API_PORT}:${SERVER_PORT}"
+#    depends_on:
+#      - drinkwater_db
+#      - auth_keycloak
+#    networks:
+#      - frontend
+#      - backend
+#    healthcheck:
+#      # Use Spring Boot Actuator readiness probe instead of process check
+#      test: [ "CMD-SHELL", "curl -f http://localhost:${SERVER_PORT}/actuator/health/readiness || exit 1" ]
+#      interval: ${HEALTH_CHECK_INTERVAL}
+#      timeout: 10s
+#      retries: 3
+#      start_period: 30s
+#    logging:
+#      driver: "json-file"
+#      options:
+#        max-size: "10m"
+#        max-file: "3"
+#    mem_limit: ${CONTAINER_MEMORY_LIMIT}
+#    mem_reservation: 384M
+#    cpus: ${CONTAINER_CPU_LIMIT}
+#    cpu_shares: 768
+
+# Volume definitions for data persistence - these will persist even when containers are removed
+volumes:
+  drinkwater_data:
+    name: drinkwater_data
+  keycloak_data:
+    name: keycloak_data

@@ -1,29 +1,44 @@
-server:
-  port: 8081
-  error:
-    include-stacktrace: never
+# =============================================================================
+# MAIN APPLICATION CONFIGURATION
+# =============================================================================
+# This configuration file uses environment variables extensively.
+# All variables are validated at startup time for fail-fast behavior.
+# Configuration is immutable after bootstrap - no runtime changes allowed.
 
 spring:
   application:
-    name: drink-water-api
+    name: ${APP_NAME}
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE}
+  config:
+    import: "optional:file:.env[.properties]"
   jackson:
-    time-zone: UTC
+    time-zone: ${JACKSON_TIMEZONE}
     serialization:
-      write-dates-as-timestamps: false
+      write-dates-as-timestamps: ${JACKSON_WRITE_DATES_AS_TIMESTAMPS}
   datasource:
     url: ${DATABASE_URL}
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: ${DATABASE_DRIVER}
     password: ${DATABASE_PASSWORD}
     username: ${DATABASE_USERNAME}
+    # Custom properties for DatabaseProperties validation
+    pool-size: ${DATABASE_POOL_SIZE}
+    min-idle: ${DATABASE_MIN_IDLE}
+    connection-timeout: ${DATABASE_CONNECTION_TIMEOUT}
+    # HikariCP configuration
+    hikari:
+      maximum-pool-size: ${DATABASE_POOL_SIZE}
+      minimum-idle: ${DATABASE_MIN_IDLE}
+      connection-timeout: ${DATABASE_CONNECTION_TIMEOUT}
   jpa:
     hibernate:
       ddl-auto: ${JPA_HIBERNATE_DDL_AUTO}
-    open-in-view: false
-    defer-datasource-initialization: true
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: ${JPA_OPEN_IN_VIEW}
+    defer-datasource-initialization: ${JPA_DEFER_DATASOURCE_INITIALIZATION}
+    database-platform: ${DATABASE_PLATFORM}
   sql:
     init:
-      mode: always
+      mode: ${SQL_INIT_MODE}
   security:
     oauth2:
       resourceserver:
@@ -31,31 +46,195 @@ spring:
           issuer-uri: ${KEYCLOAK_ISSUER_URI}
           jwk-set-uri: ${KEYCLOAK_JWK_SET_URI}
 
+# =============================================================================
+# SERVER CONFIGURATION
+# =============================================================================
+server:
+  port: ${SERVER_PORT}
+  error-stacktrace-policy: ${ERROR_STACKTRACE_POLICY}
+
+# =============================================================================
+# APPLICATION-SPECIFIC CONFIGURATION
+# =============================================================================
+# Application identity and metadata
+app:
+  name: ${APP_NAME}
+  version: ${APP_VERSION}
+  environment: ${APP_ENVIRONMENT}
+
+# Locale and internationalization configuration
+locale:
+  defaultLocale: ${DEFAULT_LOCALE}
+  supported: ${SUPPORTED_LOCALES}
+
+# Message source configuration
+message-source:
+  encoding: ${MESSAGE_SOURCE_ENCODING}
+
+# Keycloak integration settings
 keycloak:
   url: ${KEYCLOAK_URL}
   realm: ${KEYCLOAK_REALM}
   clientId: ${KEYCLOAK_CLIENT_ID}
   username: ${KEYCLOAK_USERNAME}
   password: ${KEYCLOAK_PASSWORD}
+  issuerUri: ${KEYCLOAK_ISSUER_URI}
+  jwkSetUri: ${KEYCLOAK_JWK_SET_URI}
 
+# CORS configuration
 cors:
-  allowed-origin: ${BASE_URL}
+  baseUrl: ${BASE_URL}
+  allowedOrigin: ${CORS_ALLOWED_ORIGIN}
+  allowedOrigins: ${CORS_ALLOWED_ORIGINS}
+  allowedMethods: ${CORS_ALLOWED_METHODS}
+  allowedHeaders: ${CORS_ALLOWED_HEADERS}
+  allowCredentials: ${CORS_ALLOW_CREDENTIALS}
+  maxAge: ${CORS_MAX_AGE}
 
+# Security settings
+security:
+  jwtSigningKey: ${JWT_SIGNING_KEY}
+  encryptionKey: ${ENCRYPTION_KEY}
+  apiSecretKey: ${API_SECRET_KEY}
+
+# Keycloak container security settings
+keycloak-security:
+  hostnameStrictBackchannel: ${KC_HOSTNAME_STRICT_BACKCHANNEL}
+  hostnameStrictHttps: ${KC_HOSTNAME_STRICT_HTTPS}
+  databaseType: ${KC_DATABASE_TYPE}
+  managementPort: ${KC_MANAGEMENT_PORT}
+
+# =============================================================================
+# MONITORING AND OBSERVABILITY
+# =============================================================================
+# Spring Boot Actuator configuration
 management:
   endpoints:
     web:
+      base-path: ${ACTUATOR_BASE_PATH}
       exposure:
-        include: health,info,metrics,prometheus
+        include: ${ACTUATOR_ENDPOINTS},refresh
+  endpoint:
+    health:
+      show-details: ${ACTUATOR_HEALTH_SHOW_DETAILS}
+      show-components: ${ACTUATOR_HEALTH_SHOW_COMPONENTS}
+      # Health check configuration following cloud-native best practices
+      probes:
+        enabled: true  # Enable liveness and readiness probes
+      group:
+        # Liveness probe - should only fail for unrecoverable errors
+        liveness:
+          include: "ping,diskSpace"
+          additional-path: "server:/livez"
+        # Readiness probe - includes external dependencies
+        readiness:
+          include: "ping,db,diskSpace"
+          additional-path: "server:/readyz"
+  health:
+    # Database health indicator configuration
+    db:
+      enabled: true
+    # Disk space health indicator
+    diskspace:
+      enabled: true
+      threshold: 10MB
   prometheus:
     metrics:
       export:
-        enabled: true
+        enabled: ${PROMETHEUS_METRICS_EXPORT_ENABLED}
+        step: ${PROMETHEUS_METRICS_STEP}
 
+# Custom actuator properties for validation
+actuator:
+  endpoints: ${ACTUATOR_ENDPOINTS}
+  basePath: ${ACTUATOR_BASE_PATH}
+  healthShowDetails: ${ACTUATOR_HEALTH_SHOW_DETAILS}
+  healthShowComponents: ${ACTUATOR_HEALTH_SHOW_COMPONENTS}
+  # Endpoint paths (customizable for security)
+  paths:
+    prometheus: ${ACTUATOR_PROMETHEUS_PATH}
+    health: ${ACTUATOR_HEALTH_PATH}
+    info: ${ACTUATOR_INFO_PATH}
+    metrics: ${ACTUATOR_METRICS_PATH}
+
+# Monitoring and metrics
+monitoring:
+  prometheusEnabled: ${PROMETHEUS_METRICS_ENABLED}
+  prometheusExportEnabled: ${PROMETHEUS_METRICS_EXPORT_ENABLED}
+  prometheusStep: ${PROMETHEUS_METRICS_STEP}
+  tracingEnabled: ${TRACING_ENABLED}
+  tracingSamplingRate: ${TRACING_SAMPLING_RATE}
+  zipkinEndpoint: ${ZIPKIN_ENDPOINT}
+
+# =============================================================================
+# CONTAINER AND RESOURCE CONFIGURATION
+# =============================================================================
+# Container image versions
+container:
+  images:
+    postgresVersion: ${POSTGRES_VERSION}
+    keycloakVersion: ${KEYCLOAK_VERSION}
+    keycloakPostgresVersion: ${KEYCLOAK_POSTGRES_VERSION}
+  
+  # Resource limits
+  resources:
+    postgres:
+      memoryLimit: ${POSTGRES_MEMORY_LIMIT}
+      memoryReservation: ${POSTGRES_MEMORY_RESERVATION}
+      cpuLimit: ${POSTGRES_CPU_LIMIT}
+    keycloak:
+      memoryLimit: ${KEYCLOAK_MEMORY_LIMIT}
+      memoryReservation: ${KEYCLOAK_MEMORY_RESERVATION}
+      cpuLimit: ${KEYCLOAK_CPU_LIMIT}
+    keycloakDb:
+      memoryLimit: ${KEYCLOAK_DB_MEMORY_LIMIT}
+
+# =============================================================================
+# LOGGING CONFIGURATION
+# =============================================================================
 logging:
   level:
     root: ${LOGGING_LEVEL_ROOT}
-    org.springframework.security: DEBUG
-    org.springframework.security.web.FilterChainProxy: TRACE
-    org.springframework.security.oauth2.server.resource: DEBUG
-    org.springframework.security.authentication: DEBUG
-    org.springframework.security.access: DEBUG
+    app: ${LOGGING_LEVEL_APP}
+    security: ${LOGGING_LEVEL_SECURITY}
+    oauth2: ${LOGGING_LEVEL_OAUTH2}
+    sql: ${LOGGING_LEVEL_SQL}
+    sqlParams: ${LOGGING_LEVEL_SQL_PARAMS}
+    hibernate: ${LOGGING_LEVEL_HIBERNATE}
+    springframework: ${LOGGING_LEVEL_SPRINGFRAMEWORK}
+    # Map to actual Spring packages
+    org.springframework.security: ${LOGGING_LEVEL_SECURITY}
+    org.springframework.security.web.FilterChainProxy: ${LOGGING_LEVEL_SECURITY}
+    org.springframework.security.oauth2.server.resource: ${LOGGING_LEVEL_OAUTH2}
+    org.springframework.security.authentication: ${LOGGING_LEVEL_OAUTH2}
+    org.springframework.security.access: ${LOGGING_LEVEL_OAUTH2}
+    org.hibernate.SQL: ${LOGGING_LEVEL_SQL}
+    org.hibernate.type.descriptor.sql.BasicBinder: ${LOGGING_LEVEL_SQL_PARAMS}
+    org.springframework: ${LOGGING_LEVEL_SPRINGFRAMEWORK}
+
+# =============================================================================
+# RUNTIME CONFIGURATION (REFRESHABLE AT RUNTIME)
+# =============================================================================
+# These properties can be updated without application restart using /actuator/refresh
+runtime:
+  logging:
+    level:
+      root: ${RUNTIME_LOGGING_LEVEL_ROOT:${LOGGING_LEVEL_ROOT}}
+      app: ${RUNTIME_LOGGING_LEVEL_APP:${LOGGING_LEVEL_APP}}
+      security: ${RUNTIME_LOGGING_LEVEL_SECURITY:${LOGGING_LEVEL_SECURITY}}
+      oauth2: ${RUNTIME_LOGGING_LEVEL_OAUTH2:${LOGGING_LEVEL_OAUTH2}}
+      sql: ${RUNTIME_LOGGING_LEVEL_SQL:${LOGGING_LEVEL_SQL}}
+      sqlParams: ${RUNTIME_LOGGING_LEVEL_SQL_PARAMS:${LOGGING_LEVEL_SQL_PARAMS}}
+      hibernate: ${RUNTIME_LOGGING_LEVEL_HIBERNATE:${LOGGING_LEVEL_HIBERNATE}}
+      springframework: ${RUNTIME_LOGGING_LEVEL_SPRINGFRAMEWORK:${LOGGING_LEVEL_SPRINGFRAMEWORK}}
+  
+  monitoring:
+    prometheusStep: ${RUNTIME_PROMETHEUS_METRICS_STEP:${PROMETHEUS_METRICS_STEP}}
+    tracingSamplingRate: ${RUNTIME_TRACING_SAMPLING_RATE:${TRACING_SAMPLING_RATE}}
+    zipkinEndpoint: ${RUNTIME_ZIPKIN_ENDPOINT:${ZIPKIN_ENDPOINT}}
+    tracingEnabled: ${RUNTIME_TRACING_ENABLED:${TRACING_ENABLED}}
+    prometheusMetricsEnabled: ${RUNTIME_PROMETHEUS_METRICS_ENABLED:${PROMETHEUS_METRICS_ENABLED}}
+  
+  actuator:
+    healthShowDetails: ${RUNTIME_ACTUATOR_HEALTH_SHOW_DETAILS:${ACTUATOR_HEALTH_SHOW_DETAILS}}
+    healthShowComponents: ${RUNTIME_ACTUATOR_HEALTH_SHOW_COMPONENTS:${ACTUATOR_HEALTH_SHOW_COMPONENTS}}

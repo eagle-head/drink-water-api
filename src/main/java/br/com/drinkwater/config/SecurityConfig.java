@@ -1,5 +1,6 @@
 package br.com.drinkwater.config;
 
+import br.com.drinkwater.config.properties.ActuatorProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -16,20 +17,26 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private final ActuatorProperties actuatorProperties;
+
+    public SecurityConfig(ActuatorProperties actuatorProperties) {
+        this.actuatorProperties = actuatorProperties;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
+        // Build actuator endpoint paths dynamically from configuration
+        String[] actuatorEndpoints = actuatorProperties.endpoints().stream()
+                .map(endpoint -> actuatorProperties.basePath() + "/" + endpoint)
+                .toArray(String[]::new);
+
         return http
                 .authorizeHttpRequests(authorize -> authorize
-                        // SECURITY CONCERN: These Actuator endpoints are publicly accessible for testing purposes only.
-                        // Before deploying to production, restrict access to sensitive endpoints like /prometheus and
-                        // /metrics by requiring authentication or limiting to internal network access.
-                        .requestMatchers(
-                                "/actuator/prometheus",
-                                "/actuator/health",
-                                "/actuator/info",
-                                "/actuator/metrics"
-                        ).permitAll()
+                        // SECURITY CONFIGURATION: Actuator endpoints are controlled by environment variables.
+                        // Production environments should limit endpoints to: health, info, metrics, prometheus
+                        // and set ACTUATOR_HEALTH_SHOW_DETAILS=never for security.
+                        .requestMatchers(actuatorEndpoints).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)

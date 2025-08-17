@@ -1,7 +1,6 @@
 server:
   port: 8081
-  error:
-    include-stacktrace: never
+  error-stacktrace-policy: never
 
 spring:
   application:
@@ -46,8 +45,13 @@ cors:
 management:
   endpoints:
     web:
+      base-path: /actuator
       exposure:
         include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
   prometheus:
     metrics:
       export:
