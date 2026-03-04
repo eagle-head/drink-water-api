@@ -1,0 +1,26 @@
+# =============================================================================
+# PROMETHEUS CONFIGURATION
+# =============================================================================
+# Scrapes metrics from the Drink Water API's Actuator Prometheus endpoint.
+#
+# The API target uses host.docker.internal to reach the application running
+# on the host machine (IDE / Maven). When the API runs as a Docker Compose
+# service, switch the target to "drinkwater_api:8081" instead.
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "drinkwater-api"
+    metrics_path: "/actuator/prometheus"
+    scrape_interval: 10s
+    static_configs:
+      - targets: ["host.docker.internal:8081"]
+        labels:
+          application: "drink-water-api"
+          environment: "local"
+
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]

@@ -1,0 +1,379 @@
+# =============================================================================
+# DRINK WATER API - DOCKER COMPOSE CONFIGURATION
+# =============================================================================
+# Located at project root following Docker Compose best practices.
+# Automatically loads .env file from the same directory when running:
+#   docker compose up -d
+#
+# This configuration uses environment variable substitution with default values
+# to ensure it works with or without a .env file. All variables use the syntax:
+# ${VARIABLE_NAME:-default_value} to provide sensible defaults when variables are unset.
+#
+# Resource limits are configured with safe defaults:
+# - PostgreSQL: 512M memory, 0.3 CPU cores
+# - Keycloak DB: 512M memory, 0.3 CPU cores  
+# - Keycloak: 1G memory, 0.8 CPU cores
+# - API: 768M memory, 0.5 CPU cores
+#
+# The configuration will work in three scenarios:
+# 1. Without any .env file (uses all defaults)
+# 2. With partial .env file (uses provided values + defaults for missing)
+# 3. With complete .env file (uses all provided values)
+# =============================================================================
+
+# Define networks for better isolation and security
+networks:
+  frontend:
+    name: frontend
+    driver: bridge
+  backend:
+    name: backend
+    driver: bridge
+  keycloak_network:
+    name: keycloak_network
+    driver: bridge
+  monitoring:
+    name: monitoring
+    driver: bridge
+
+# Application services
+services:
+  # Main application database (KEPT ACTIVE for IntelliJ IDEA API connection)
+  drinkwater_db:
+    container_name: drinkwater_db
+    image: postgres:${POSTGRES_VERSION:-16-alpine}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    environment:
+      POSTGRES_DB: ${DB_NAME:-drink_water_db}
+      POSTGRES_USER: ${DB_USER:-username}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+    ports:
+      - "${DB_HOST_PORT:-5432}:5432"
+    volumes:
+      - drinkwater_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-username} -d ${DB_NAME:-drink_water_db}" ]
+      interval: ${HEALTH_CHECK_INTERVAL:-30s}
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: ${POSTGRES_MEMORY_LIMIT:-512M}
+          cpus: ${POSTGRES_CPU_LIMIT:-0.3}
+        reservations:
+          memory: ${POSTGRES_MEMORY_RESERVATION:-256M}
+          cpus: 0.1
+
+  # Keycloak database
+  keycloak_db:
+    container_name: keycloak_db
+    image: postgres:${KEYCLOAK_POSTGRES_VERSION:-16-alpine}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    volumes:
+      - keycloak_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${KEYCLOAK_DB_NAME:-security}
+      POSTGRES_USER: ${KEYCLOAK_DB_USER:-admin}
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-admin}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${KEYCLOAK_DB_USER:-admin} -d ${KEYCLOAK_DB_NAME:-security}" ]
+      interval: ${HEALTH_CHECK_INTERVAL:-30s}
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - keycloak_network
+    expose:
+      - "5432"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: ${KEYCLOAK_DB_MEMORY_LIMIT:-512M}
+          cpus: ${KEYCLOAK_DB_CPU_LIMIT:-0.3}
+        reservations:
+          memory: ${KEYCLOAK_DB_MEMORY_RESERVATION:-256M}
+          cpus: 0.1
+
+  # Keycloak authentication service
+  auth_keycloak:
+    container_name: auth_keycloak
+    image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION:-26.5.4}
+    command: start --import-realm
+    restart: ${RESTART_POLICY:-unless-stopped}
+    environment:
+      # Admin credentials for clean startup
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      # Keycloak server configuration
+      KC_HOSTNAME: ${KC_HOSTNAME:-localhost}
+      KC_HOSTNAME_PORT: ${KC_PORT:-8080}
+      KC_HOSTNAME_STRICT_BACKCHANNEL: ${KC_HOSTNAME_STRICT_BACKCHANNEL:-false}
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT_HTTPS: ${KC_HOSTNAME_STRICT_HTTPS:-false}
+      KC_HEALTH_ENABLED: "true"
+      KC_DB: ${KC_DATABASE_TYPE:-postgres}
+      KC_DB_URL: jdbc:postgresql://keycloak_db/${KEYCLOAK_DB_NAME:-security}
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USER:-admin}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-admin}
+      KC_MANAGEMENT_PORT: ${KC_MANAGEMENT_PORT:-9000}
+      # Webhook Event Listener SPI configuration
+      KC_SPI_EVENTS_LISTENER__WEBHOOK_EVENT_LISTENER__WEBHOOK_URL: ${KEYCLOAK_WEBHOOK_URL:-http://drink_water_api:8081/internal/webhooks/keycloak}
+      KC_SPI_EVENTS_LISTENER__WEBHOOK_EVENT_LISTENER__WEBHOOK_SECRET: ${WEBHOOK_SECRET:-change_me_to_a_secure_random_string}
+    ports:
+      - "${KC_PORT:-8080}:8080"
+      - "${KC_MANAGEMENT_PORT:-9000}:${KC_MANAGEMENT_PORT:-9000}"
+    volumes:
+      - ./config/keycloak/drinkwater-realm.json:/opt/keycloak/data/import/drinkwater-realm.json:ro
+      - ./keycloak-webhook-spi/target/keycloak-webhook-spi.jar:/opt/keycloak/providers/keycloak-webhook-spi.jar:ro
+    depends_on:
+      keycloak_db:
+        condition: service_healthy
+    networks:
+      - keycloak_network
+      - backend
+    healthcheck:
+      test: [ "CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 && grep -q '200 OK' <&3" ]
+      interval: ${HEALTH_CHECK_INTERVAL:-30s}
+      timeout: 15s
+      retries: 5
+      start_period: 90s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: ${KEYCLOAK_MEMORY_LIMIT:-1G}
+          cpus: ${KEYCLOAK_CPU_LIMIT:-0.8}
+        reservations:
+          memory: ${KEYCLOAK_MEMORY_RESERVATION:-512M}
+          cpus: 0.2
+
+  # Main application API
+  # Uses env_file to load all application variables from .env; the environment
+  # block below only overrides values that differ inside the Docker network
+  # (database and Keycloak URLs use service names instead of localhost).
+  # drinkwater_api:
+  #   container_name: drinkwater_api
+  #   image: eduardokohn/drinkwaterapi:${API_IMAGE_TAG:-latest}
+  #   restart: ${RESTART_POLICY:-unless-stopped}
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     DATABASE_URL: jdbc:postgresql://drinkwater_db:5432/${DB_NAME:-drink_water_db}
+  #     DATABASE_USERNAME: ${DB_USER:-username}
+  #     DATABASE_PASSWORD: ${DB_PASSWORD:-password}
+  #     KEYCLOAK_URL: http://auth_keycloak:8080
+  #     KEYCLOAK_ISSUER_URI: http://auth_keycloak:8080/realms/${KEYCLOAK_REALM:-drinkwater}
+  #     KEYCLOAK_JWK_SET_URI: http://auth_keycloak:8080/realms/${KEYCLOAK_REALM:-drinkwater}/protocol/openid-connect/certs
+  #   ports:
+  #     - "${API_PORT:-8081}:${SERVER_PORT:-8081}"
+  #   depends_on:
+  #     drinkwater_db:
+  #       condition: service_healthy
+  #     auth_keycloak:
+  #       condition: service_healthy
+  #   networks:
+  #     - frontend
+  #     - backend
+  #   healthcheck:
+  #     test: [ "CMD-SHELL", "curl -sf http://localhost:${SERVER_PORT:-8081}${ACTUATOR_BASE_PATH:-/actuator}/health/readiness || exit 1" ]
+  #     interval: ${HEALTH_CHECK_INTERVAL:-30s}
+  #     timeout: 10s
+  #     retries: 5
+  #     start_period: 60s
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "3"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: ${API_MEMORY_LIMIT:-768M}
+  #         cpus: ${API_CPU_LIMIT:-0.5}
+  #       reservations:
+  #         memory: ${API_MEMORY_RESERVATION:-384M}
+  #         cpus: 0.2
+
+  # ===========================================================================
+  # OBSERVABILITY STACK
+  # ===========================================================================
+  # Prometheus, Loki, Promtail and Grafana provide metrics collection,
+  # log aggregation and unified dashboards for the local dev environment.
+
+  # Metrics collection and storage
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:${PROMETHEUS_VERSION:-v3.5.1}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=15d"
+    networks:
+      - monitoring
+      - backend
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://localhost:9090/-/healthy || exit 1" ]
+      interval: ${HEALTH_CHECK_INTERVAL:-30s}
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: ${PROMETHEUS_MEMORY_LIMIT:-512M}
+          cpus: ${PROMETHEUS_CPU_LIMIT:-0.3}
+        reservations:
+          memory: 128M
+          cpus: 0.1
+
+  # Log aggregation backend
+  loki:
+    container_name: loki
+    image: grafana/loki:${LOKI_VERSION:-3.5.11}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    volumes:
+      - ./config/loki/loki.yml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    ports:
+      - "${LOKI_PORT:-3100}:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - monitoring
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://localhost:3100/ready || exit 1" ]
+      interval: ${HEALTH_CHECK_INTERVAL:-30s}
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: ${LOKI_MEMORY_LIMIT:-512M}
+          cpus: ${LOKI_CPU_LIMIT:-0.3}
+        reservations:
+          memory: 128M
+          cpus: 0.1
+
+  # Log collector agent — reads Docker container logs
+  promtail:
+    container_name: promtail
+    image: grafana/promtail:${PROMTAIL_VERSION:-3.5.11}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    volumes:
+      - ./config/promtail/promtail.yml:/etc/promtail/config.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      loki:
+        condition: service_healthy
+    networks:
+      - monitoring
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "echo -e 'GET /ready HTTP/1.0\r\nHost: localhost\r\n\r\n' > /dev/tcp/localhost/9080" ]
+      interval: ${HEALTH_CHECK_INTERVAL:-30s}
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: ${PROMTAIL_MEMORY_LIMIT:-256M}
+          cpus: ${PROMTAIL_CPU_LIMIT:-0.2}
+        reservations:
+          memory: 64M
+          cpus: 0.05
+
+  # Unified dashboards for metrics and logs
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:${GRAFANA_VERSION:-12.3.4}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    volumes:
+      - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./config/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    depends_on:
+      prometheus:
+        condition: service_healthy
+      loki:
+        condition: service_healthy
+    networks:
+      - monitoring
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://localhost:3000/api/health || exit 1" ]
+      interval: ${HEALTH_CHECK_INTERVAL:-30s}
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: ${GRAFANA_MEMORY_LIMIT:-512M}
+          cpus: ${GRAFANA_CPU_LIMIT:-0.3}
+        reservations:
+          memory: 128M
+          cpus: 0.1
+
+# Volume definitions for data persistence - these will persist even when containers are removed
+volumes:
+  drinkwater_data:
+    name: drinkwater_data
+  keycloak_data:
+    name: keycloak_data
+  prometheus_data:
+    name: prometheus_data
+  loki_data:
+    name: loki_data
+  grafana_data:
+    name: grafana_data

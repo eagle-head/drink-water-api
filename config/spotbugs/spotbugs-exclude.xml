@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!-- Exclude configuration classes -->
+    <Match>
+        <Package name="~br\.com\.drinkwater\.config\..*"/>
+    </Match>
+
+    <!-- Exclude the main application class -->
+    <Match>
+        <Class name="br.com.drinkwater.DrinkWaterApiApplication"/>
+    </Match>
+
+    <!--
+        Suppress EI_EXPOSE_REP2 for Spring-managed bean injection via constructor.
+        Spring guarantees singleton lifecycle for these beans; storing the injected
+        reference is safe and cannot lead to representation exposure.
+    -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+        <Or>
+            <Class name="br.com.drinkwater.api.v1.controller.UserControllerV1"/>
+            <Class name="br.com.drinkwater.api.v1.controller.WaterIntakeControllerV1"/>
+            <Class name="br.com.drinkwater.api.internal.KeycloakWebhookController"/>
+            <Class name="br.com.drinkwater.hydrationtracking.repository.WaterIntakeSearchRepositoryImpl"/>
+            <Class name="br.com.drinkwater.hydrationtracking.service.WaterIntakeService"/>
+            <Class name="br.com.drinkwater.usermanagement.service.UserService"/>
+        </Or>
+    </Match>
+</FindBugsFilter>

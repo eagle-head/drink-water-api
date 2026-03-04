@@ -1,0 +1,181 @@
+api:
+  versioning:
+    current-version: v1
+    versions:
+      - version: v1
+        deprecated: false
+        sunset: ""
+        successor-version: ""
+
+server:
+  port: 8081
+
+server-config:
+  port: 8081
+  error-stacktrace-policy: never
+
+jackson-config:
+  timeZone: UTC
+  serialization:
+    writeDatesAsTimestamps: false
+
+spring:
+  application:
+    name: drink-water-api
+  web:
+    error:
+      include-stacktrace: never
+  jackson:
+    time-zone: UTC
+    serialization:
+      write-dates-as-timestamps: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/drink_water_db
+    driver-class-name: org.postgresql.Driver
+    username: username
+    password: password
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      connection-timeout: 30000
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    clean-disabled: false
+    baseline-on-migrate: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/drinkwater
+          jwk-set-uri: http://localhost:8080/realms/drinkwater/protocol/openid-connect/certs
+  testcontainers:
+    dynamic-property-registry-injection: allow
+  messages:
+    cache-duration: 0s
+
+database:
+  url: jdbc:postgresql://localhost:5432/drink_water_db
+  username: username
+  password: password
+  driver-class-name: org.postgresql.Driver
+  pool-size: 5
+  min-idle: 1
+  connection-timeout: 30000
+
+app:
+  name: drink-water-api
+  version: 1.0.0-test
+  environment: development
+
+cache:
+  user-id-by-public-id:
+    max-size: 1000
+    expire-after-write-minutes: 5
+
+webhook:
+  secret: test-webhook-secret
+
+keycloak:
+  url: http://localhost:8080
+  realm: drinkwater
+  clientId: drinkwaterapp
+  username: admin-drinkwater
+  password: password
+  issuerUri: http://localhost:8080/realms/drinkwater
+  jwkSetUri: http://localhost:8080/realms/drinkwater/protocol/openid-connect/certs
+
+cors:
+  baseUrl: http://localhost:3000
+  allowedOrigin: http://localhost:3000
+  allowedOrigins:
+    - http://localhost:3000
+  allowedMethods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - OPTIONS
+  allowedHeaders:
+    - "*"
+  allowCredentials: true
+  maxAge: 3600
+
+security:
+  jwtSigningKey: test-signing-key-for-integration-tests
+  encryptionKey: test-encryption-key-for-integration-tests
+  apiSecretKey: test-api-secret-key-for-integration-tests
+
+actuator:
+  endpoints:
+    - health
+    - info
+    - metrics
+    - prometheus
+  basePath: /actuator
+  healthShowDetails: always
+  healthShowComponents: always
+
+monitoring:
+  prometheusEnabled: true
+  prometheusExportEnabled: true
+  prometheusStep: 10s
+  tracingEnabled: false
+  tracingSamplingRate: 0.0
+  zipkinEndpoint: http://localhost:9411/api/v2/spans
+
+locale:
+  defaultLocale: en-US
+  supported:
+    - en-US
+    - pt-BR
+
+message-source:
+  encoding: UTF-8
+
+container:
+  images:
+    postgresVersion: "16-alpine"
+    keycloakVersion: "26.5.4"
+    keycloakPostgresVersion: "16-alpine"
+  resources:
+    postgres:
+      memoryLimit: 512m
+      memoryReservation: 256m
+      cpuLimit: 1.0
+    keycloak:
+      memoryLimit: 1g
+      memoryReservation: 512m
+      cpuLimit: 1.0
+    keycloakDb:
+      memoryLimit: 256m
+
+logging:
+  level:
+    root: DEBUG
+    app: DEBUG
+    security: DEBUG
+    oauth2: DEBUG
+    sql: DEBUG
+    sqlParams: TRACE
+    springframework: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.security.web.FilterChainProxy: TRACE
+    org.springframework.security.oauth2.server.resource: DEBUG
+    org.springframework.security.authentication: DEBUG
+    org.springframework.security.access: DEBUG
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true

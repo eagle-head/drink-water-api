@@ -1,0 +1,208 @@
+api:
+  versioning:
+    current-version: v1
+    versions:
+      - version: v1
+        deprecated: false
+        sunset: ""
+        successor-version: ""
+
+server:
+  port: 0
+  error:
+    include-stacktrace: never
+
+server-config:
+  port: 0
+  error-stacktrace-policy: never
+
+jackson-config:
+  timeZone: UTC
+  serialization:
+    writeDatesAsTimestamps: false
+
+spring:
+  application:
+    name: drink-water-api-test
+  jackson:
+    time-zone: UTC
+    serialization:
+      write-dates-as-timestamps: false
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_LOWER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password_h2
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      connection-timeout: 30000
+  h2:
+    console:
+      enabled: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    clean-disabled: false
+    baseline-on-migrate: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/drinkwater
+          jwk-set-uri: http://localhost:8080/realms/drinkwater/protocol/openid-connect/certs
+  messages:
+    cache-duration: 0s
+
+database:
+  url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_LOWER=TRUE
+  username: sa
+  password: password_h2
+  driver-class-name: org.h2.Driver
+  pool-size: 5
+  min-idle: 1
+  connection-timeout: 30000
+
+app:
+  name: drink-water-api-test
+  version: 0.0.1-TEST
+  environment: development
+
+locale:
+  defaultLocale: en_US
+  supported: en_US,pt_BR
+
+message-source:
+  encoding: UTF-8
+
+cache:
+  user-id-by-public-id:
+    max-size: 1000
+    expire-after-write-minutes: 5
+
+webhook:
+  secret: test-webhook-secret
+
+keycloak:
+  url: http://localhost:8080
+  realm: drinkwater
+  clientId: drinkwaterapp
+  username: admin-drinkwater
+  password: password
+  issuerUri: http://localhost:8080/realms/drinkwater
+  jwkSetUri: http://localhost:8080/realms/drinkwater/protocol/openid-connect/certs
+
+cors:
+  baseUrl: http://localhost:3000
+  allowedOrigin: http://localhost:3000
+  allowedOrigins: http://localhost:3000
+  allowedMethods: GET,POST,PUT,DELETE,OPTIONS
+  allowedHeaders: Authorization,Content-Type,Accept-Language
+  allowCredentials: true
+  maxAge: 3600
+
+security:
+  jwtSigningKey: test-jwt-signing-key-for-integration-tests-only
+  encryptionKey: test-encryption-key-for-integration-tests-only
+  apiSecretKey: test-api-secret-key-for-integration-tests-only
+
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+  prometheus:
+    metrics:
+      export:
+        enabled: false
+        step: 60s
+
+actuator:
+  endpoints: health
+  basePath: /actuator
+  healthShowDetails: always
+  healthShowComponents: always
+
+monitoring:
+  prometheusEnabled: false
+  prometheusExportEnabled: false
+  prometheusStep: 60s
+  tracingEnabled: false
+  tracingSamplingRate: 0.0
+  zipkinEndpoint: http://localhost:9411/api/v2/spans
+
+container:
+  images:
+    postgresVersion: "16"
+    keycloakVersion: "24.0"
+    keycloakPostgresVersion: "16"
+  resources:
+    postgres:
+      memoryLimit: 256m
+      memoryReservation: 128m
+      cpuLimit: "1.0"
+    keycloak:
+      memoryLimit: 512m
+      memoryReservation: 256m
+      cpuLimit: "1.0"
+    keycloakDb:
+      memoryLimit: 256m
+
+resilience4j:
+  ratelimiter:
+    configs:
+      default:
+        register-health-indicator: false
+        limit-for-period: 1000
+        limit-refresh-period: 1m
+        timeout-duration: 0s
+    instances:
+      user-api:
+        base-config: default
+        limit-for-period: 1000
+      waterintake-api:
+        base-config: default
+        limit-for-period: 1000
+      waterintake-search:
+        base-config: default
+        limit-for-period: 1000
+
+logging:
+  level:
+    root: WARN
+    app: DEBUG
+    security: DEBUG
+    oauth2: DEBUG
+    sql: DEBUG
+    sqlParams: DEBUG
+    springframework: WARN
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    br.com.drinkwater: DEBUG
+    org.springframework.jdbc: DEBUG
+
+runtime:
+  logging:
+    level:
+      root: WARN
+      app: DEBUG
+      security: DEBUG
+      oauth2: DEBUG
+      sql: DEBUG
+      sqlParams: DEBUG
+      springframework: WARN
+  monitoring:
+    prometheusStep: 60s
+    tracingSamplingRate: 0.0
+    zipkinEndpoint: http://localhost:9411/api/v2/spans
+    tracingEnabled: false
+    prometheusMetricsEnabled: false
+  actuator:
+    healthShowDetails: always
+    healthShowComponents: true

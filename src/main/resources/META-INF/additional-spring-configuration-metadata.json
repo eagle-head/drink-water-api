@@ -1,0 +1,492 @@
+{
+  "groups": [
+    {
+      "name": "actuator",
+      "type": "br.com.drinkwater.config.properties.ActuatorProperties",
+      "sourceType": "br.com.drinkwater.config.properties.ActuatorProperties"
+    },
+    {
+      "name": "app",
+      "type": "br.com.drinkwater.config.properties.ApplicationProperties",
+      "sourceType": "br.com.drinkwater.config.properties.ApplicationProperties"
+    },
+    {
+      "name": "container",
+      "type": "br.com.drinkwater.config.properties.ContainerProperties",
+      "sourceType": "br.com.drinkwater.config.properties.ContainerProperties"
+    },
+    {
+      "name": "container.images",
+      "type": "br.com.drinkwater.config.properties.ContainerProperties$Images",
+      "sourceType": "br.com.drinkwater.config.properties.ContainerProperties"
+    },
+    {
+      "name": "container.resources",
+      "type": "br.com.drinkwater.config.properties.ContainerProperties$Resources",
+      "sourceType": "br.com.drinkwater.config.properties.ContainerProperties"
+    },
+    {
+      "name": "container.resources.keycloak",
+      "type": "br.com.drinkwater.config.properties.ContainerProperties$KeycloakResources",
+      "sourceType": "br.com.drinkwater.config.properties.ContainerProperties$Resources"
+    },
+    {
+      "name": "container.resources.keycloak-db",
+      "type": "br.com.drinkwater.config.properties.ContainerProperties$KeycloakDbResources",
+      "sourceType": "br.com.drinkwater.config.properties.ContainerProperties$Resources"
+    },
+    {
+      "name": "container.resources.postgres",
+      "type": "br.com.drinkwater.config.properties.ContainerProperties$PostgresResources",
+      "sourceType": "br.com.drinkwater.config.properties.ContainerProperties$Resources"
+    },
+    {
+      "name": "cors",
+      "type": "br.com.drinkwater.config.properties.CorsProperties",
+      "sourceType": "br.com.drinkwater.config.properties.CorsProperties"
+    },
+    {
+      "name": "database",
+      "type": "br.com.drinkwater.config.properties.DatabaseProperties",
+      "sourceType": "br.com.drinkwater.config.properties.DatabaseProperties"
+    },
+    {
+      "name": "keycloak",
+      "type": "br.com.drinkwater.config.properties.KeycloakProperties",
+      "sourceType": "br.com.drinkwater.config.properties.KeycloakProperties"
+    },
+    {
+      "name": "locale",
+      "type": "br.com.drinkwater.config.properties.LocaleProperties",
+      "sourceType": "br.com.drinkwater.config.properties.LocaleProperties"
+    },
+    {
+      "name": "logging.level",
+      "type": "br.com.drinkwater.config.properties.LoggingProperties",
+      "sourceType": "br.com.drinkwater.config.properties.LoggingProperties"
+    },
+    {
+      "name": "message-source",
+      "type": "br.com.drinkwater.config.properties.MessageSourceProperties",
+      "sourceType": "br.com.drinkwater.config.properties.MessageSourceProperties"
+    },
+    {
+      "name": "monitoring",
+      "type": "br.com.drinkwater.config.properties.MonitoringProperties",
+      "sourceType": "br.com.drinkwater.config.properties.MonitoringProperties"
+    },
+    {
+      "name": "runtime.actuator",
+      "type": "br.com.drinkwater.config.runtime.RuntimeActuatorConfiguration",
+      "sourceType": "br.com.drinkwater.config.runtime.RuntimeActuatorConfiguration"
+    },
+    {
+      "name": "runtime.logging.level",
+      "type": "br.com.drinkwater.config.runtime.RuntimeLoggingConfiguration",
+      "sourceType": "br.com.drinkwater.config.runtime.RuntimeLoggingConfiguration"
+    },
+    {
+      "name": "runtime.monitoring",
+      "type": "br.com.drinkwater.config.runtime.RuntimeMonitoringConfiguration",
+      "sourceType": "br.com.drinkwater.config.runtime.RuntimeMonitoringConfiguration"
+    },
+    {
+      "name": "jackson-config",
+      "type": "br.com.drinkwater.config.properties.JacksonProperties",
+      "sourceType": "br.com.drinkwater.config.properties.JacksonProperties"
+    },
+    {
+      "name": "jackson-config.serialization",
+      "type": "br.com.drinkwater.config.properties.JacksonProperties$JacksonSerializationProperties",
+      "sourceType": "br.com.drinkwater.config.properties.JacksonProperties"
+    },
+    {
+      "name": "security",
+      "type": "br.com.drinkwater.config.properties.SecurityProperties",
+      "sourceType": "br.com.drinkwater.config.properties.SecurityProperties"
+    },
+    {
+      "name": "server-config",
+      "type": "br.com.drinkwater.config.properties.ServerProperties",
+      "sourceType": "br.com.drinkwater.config.properties.ServerProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "actuator.base-path",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.ActuatorProperties"
+    },
+    {
+      "name": "actuator.endpoints",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "br.com.drinkwater.config.properties.ActuatorProperties"
+    },
+    {
+      "name": "actuator.health-show-components",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.ActuatorProperties"
+    },
+    {
+      "name": "actuator.health-show-details",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.ActuatorProperties"
+    },
+    {
+      "name": "app.environment",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.ApplicationProperties"
+    },
+    {
+      "name": "app.name",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.ApplicationProperties"
+    },
+    {
+      "name": "app.version",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.ApplicationProperties"
+    },
+    {
+      "name": "container.images.keycloak-postgres-version",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.ContainerProperties$Images"
+    },
+    {
+      "name": "container.images.keycloak-version",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.ContainerProperties$Images"
+    },
+    {
+      "name": "container.images.postgres-version",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.ContainerProperties$Images"
+    },
+    {
+      "name": "container.resources.keycloak-db.memory-limit",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.ContainerProperties$KeycloakDbResources"
+    },
+    {
+      "name": "container.resources.keycloak.cpu-limit",
+      "type": "java.lang.Double",
+      "sourceType": "br.com.drinkwater.config.properties.ContainerProperties$KeycloakResources"
+    },
+    {
+      "name": "container.resources.keycloak.memory-limit",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.ContainerProperties$KeycloakResources"
+    },
+    {
+      "name": "container.resources.keycloak.memory-reservation",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.ContainerProperties$KeycloakResources"
+    },
+    {
+      "name": "container.resources.postgres.cpu-limit",
+      "type": "java.lang.Double",
+      "sourceType": "br.com.drinkwater.config.properties.ContainerProperties$PostgresResources"
+    },
+    {
+      "name": "container.resources.postgres.memory-limit",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.ContainerProperties$PostgresResources"
+    },
+    {
+      "name": "container.resources.postgres.memory-reservation",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.ContainerProperties$PostgresResources"
+    },
+    {
+      "name": "cors.allow-credentials",
+      "type": "java.lang.Boolean",
+      "sourceType": "br.com.drinkwater.config.properties.CorsProperties"
+    },
+    {
+      "name": "cors.allowed-headers",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "br.com.drinkwater.config.properties.CorsProperties"
+    },
+    {
+      "name": "cors.allowed-methods",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "br.com.drinkwater.config.properties.CorsProperties"
+    },
+    {
+      "name": "cors.allowed-origin",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.CorsProperties"
+    },
+    {
+      "name": "cors.allowed-origins",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "br.com.drinkwater.config.properties.CorsProperties"
+    },
+    {
+      "name": "cors.base-url",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.CorsProperties"
+    },
+    {
+      "name": "cors.max-age",
+      "type": "java.lang.Long",
+      "sourceType": "br.com.drinkwater.config.properties.CorsProperties"
+    },
+    {
+      "name": "database.connection-timeout",
+      "type": "java.lang.Long",
+      "sourceType": "br.com.drinkwater.config.properties.DatabaseProperties"
+    },
+    {
+      "name": "database.driver-class-name",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.DatabaseProperties"
+    },
+    {
+      "name": "database.min-idle",
+      "type": "java.lang.Integer",
+      "sourceType": "br.com.drinkwater.config.properties.DatabaseProperties"
+    },
+    {
+      "name": "database.password",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.DatabaseProperties"
+    },
+    {
+      "name": "database.pool-size",
+      "type": "java.lang.Integer",
+      "sourceType": "br.com.drinkwater.config.properties.DatabaseProperties"
+    },
+    {
+      "name": "database.url",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.DatabaseProperties"
+    },
+    {
+      "name": "database.username",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.DatabaseProperties"
+    },
+    {
+      "name": "jackson-config.time-zone",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.JacksonProperties"
+    },
+    {
+      "name": "jackson-config.serialization.write-dates-as-timestamps",
+      "type": "java.lang.Boolean",
+      "sourceType": "br.com.drinkwater.config.properties.JacksonProperties$JacksonSerializationProperties"
+    },
+    {
+      "name": "keycloak.client-id",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.KeycloakProperties"
+    },
+    {
+      "name": "keycloak.issuer-uri",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.KeycloakProperties"
+    },
+    {
+      "name": "keycloak.jwk-set-uri",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.KeycloakProperties"
+    },
+    {
+      "name": "keycloak.password",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.KeycloakProperties"
+    },
+    {
+      "name": "keycloak.realm",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.KeycloakProperties"
+    },
+    {
+      "name": "keycloak.url",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.KeycloakProperties"
+    },
+    {
+      "name": "keycloak.username",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.KeycloakProperties"
+    },
+    {
+      "name": "locale.default-locale",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.LocaleProperties"
+    },
+    {
+      "name": "locale.supported",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "br.com.drinkwater.config.properties.LocaleProperties"
+    },
+    {
+      "name": "logging.level.app",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.LoggingProperties"
+    },
+    {
+      "name": "logging.level.oauth2",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.LoggingProperties"
+    },
+    {
+      "name": "logging.level.root",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.LoggingProperties"
+    },
+    {
+      "name": "logging.level.security",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.LoggingProperties"
+    },
+    {
+      "name": "logging.level.springframework",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.LoggingProperties"
+    },
+    {
+      "name": "logging.level.sql",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.LoggingProperties"
+    },
+    {
+      "name": "logging.level.sql-params",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.LoggingProperties"
+    },
+    {
+      "name": "message-source.encoding",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.MessageSourceProperties"
+    },
+    {
+      "name": "monitoring.prometheus-enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "br.com.drinkwater.config.properties.MonitoringProperties"
+    },
+    {
+      "name": "monitoring.prometheus-export-enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "br.com.drinkwater.config.properties.MonitoringProperties"
+    },
+    {
+      "name": "monitoring.prometheus-step",
+      "type": "java.time.Duration",
+      "sourceType": "br.com.drinkwater.config.properties.MonitoringProperties"
+    },
+    {
+      "name": "monitoring.tracing-enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "br.com.drinkwater.config.properties.MonitoringProperties"
+    },
+    {
+      "name": "monitoring.tracing-sampling-rate",
+      "type": "java.lang.Double",
+      "sourceType": "br.com.drinkwater.config.properties.MonitoringProperties"
+    },
+    {
+      "name": "monitoring.zipkin-endpoint",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.MonitoringProperties"
+    },
+    {
+      "name": "runtime.actuator.health-show-components",
+      "type": "java.lang.Boolean",
+      "sourceType": "br.com.drinkwater.config.runtime.RuntimeActuatorConfiguration"
+    },
+    {
+      "name": "runtime.actuator.health-show-details",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.runtime.RuntimeActuatorConfiguration"
+    },
+    {
+      "name": "runtime.logging.level.app",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.runtime.RuntimeLoggingConfiguration"
+    },
+    {
+      "name": "runtime.logging.level.oauth2",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.runtime.RuntimeLoggingConfiguration"
+    },
+    {
+      "name": "runtime.logging.level.root",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.runtime.RuntimeLoggingConfiguration"
+    },
+    {
+      "name": "runtime.logging.level.security",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.runtime.RuntimeLoggingConfiguration"
+    },
+    {
+      "name": "runtime.logging.level.springframework",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.runtime.RuntimeLoggingConfiguration"
+    },
+    {
+      "name": "runtime.logging.level.sql",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.runtime.RuntimeLoggingConfiguration"
+    },
+    {
+      "name": "runtime.logging.level.sql-params",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.runtime.RuntimeLoggingConfiguration"
+    },
+    {
+      "name": "runtime.monitoring.prometheus-metrics-enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "br.com.drinkwater.config.runtime.RuntimeMonitoringConfiguration"
+    },
+    {
+      "name": "runtime.monitoring.prometheus-step",
+      "type": "java.time.Duration",
+      "sourceType": "br.com.drinkwater.config.runtime.RuntimeMonitoringConfiguration"
+    },
+    {
+      "name": "runtime.monitoring.tracing-enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "br.com.drinkwater.config.runtime.RuntimeMonitoringConfiguration"
+    },
+    {
+      "name": "runtime.monitoring.tracing-sampling-rate",
+      "type": "java.lang.Double",
+      "sourceType": "br.com.drinkwater.config.runtime.RuntimeMonitoringConfiguration"
+    },
+    {
+      "name": "runtime.monitoring.zipkin-endpoint",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.runtime.RuntimeMonitoringConfiguration"
+    },
+    {
+      "name": "security.api-secret-key",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.SecurityProperties"
+    },
+    {
+      "name": "security.encryption-key",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.SecurityProperties"
+    },
+    {
+      "name": "security.jwt-signing-key",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.SecurityProperties"
+    },
+    {
+      "name": "server-config.error-stacktrace-policy",
+      "type": "java.lang.String",
+      "sourceType": "br.com.drinkwater.config.properties.ServerProperties"
+    },
+    {
+      "name": "server-config.port",
+      "type": "java.lang.Integer",
+      "sourceType": "br.com.drinkwater.config.properties.ServerProperties"
+    }
+  ],
+  "hints": []
+}

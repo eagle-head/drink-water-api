@@ -1,0 +1,23 @@
+# Build
+target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Environment
+.env
+
+# Maven wrapper (optional, but downloaded jar)
+.mvn/wrapper/maven-wrapper.jar
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test output
+test-output.log

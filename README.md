@@ -1,0 +1,682 @@
+# Drink Water API
+
+The Drink Water API provides a robust set of RESTful endpoints that power the core of the hydration monitoring platform.
+This API enables client applications to track and record users' water intake, manage personalized hydration goals, and
+access detailed consumption analytics. Built with Spring Boot and integrated with Keycloak for secure authentication,
+the API delivers capabilities for user profile management, daily goal settings based on individual characteristics, and
+generation of customized hydration reports.
+
+The API offers a comprehensive suite of endpoints for:
+
+- User profile management with secure authentication through Keycloak
+- Daily water intake tracking with timestamp precision
+- Customizable hydration goals based on user attributes
+- Historical data retrieval with flexible date range filtering
+- Analytics generation for tracking hydration patterns
+- Notification preference management for client applications
+
+This backend service is designed with scalability in mind, implementing caching strategies, database optimization, and
+containerization support through Docker. The API follows REST best practices, providing clear documentation through
+Swagger/OpenAPI specifications and implementing HATEOAS principles for improved API navigation and discovery.
+
+## 🚀 Quick Start Example
+
+Here's a complete example of how to interact with our Water Intake Tracking API:
+
+### Authentication
+
+First, obtain an access token from Keycloak:
+
+```bash
+curl -X POST 'http://localhost:8080/auth/realms/drinkwater/protocol/openid-connect/token' \
+-H 'Content-Type: application/x-www-form-urlencoded' \
+-d 'grant_type=password' \
+-d 'client_id=drinkwaterapp' \
+-d 'username=your-username' \
+-d 'password=your-password'
+```
+
+You'll receive a response like this:
+
+```json
+{
+  "access_token": "eyJhbGciOiJSUzI1...",
+  "expires_in": 300,
+  "token_type": "Bearer"
+}
+```
+
+### Recording Water Intake
+
+Record a new water intake entry:
+
+```bash
+curl -X POST 'http://localhost:8081/api/v1/users/water-intakes' \
+    -H 'Authorization: Bearer <YOUR_ACCESS_TOKEN>' \
+    -H 'Content-Type: application/json' \
+    -d '{
+          "dateTimeUTC": "2024-01-26T14:30:00Z",
+          "volume": 250,
+          "volumeUnit": "ML"
+        }'
+```
+
+Success response (HTTP 201):
+
+```json
+{
+  "id": 1,
+  "dateTimeUTC": "2024-01-26T14:30:00Z",
+  "volume": 250,
+  "volumeUnit": "ML"
+}
+```
+
+### Searching Water Intake Records
+
+Search for water intake records with filters:
+
+```bash
+curl -X GET 'http://localhost:8081/api/v1/users/water-intakes?startDate=2024-01-26T00:00:00Z&endDate=2024-01-26T23:59:59Z&minVolume=200&maxVolume=1000&size=10&sortField=dateTimeUTC&sortDirection=DESC' \
+-H 'Authorization: Bearer <YOUR_ACCESS_TOKEN>'
+```
+
+Success response (HTTP 200):
+
+```json
+{
+  "content": [
+    {
+      "id": 1,
+      "dateTimeUTC": "2024-01-26T14:30:00Z",
+      "volume": 250,
+      "volumeUnit": "ML"
+    }
+  ],
+  "totalElements": 1,
+  "totalPages": 1,
+  "pageSize": 10,
+  "pageNumber": 0,
+  "first": true,
+  "last": true
+}
+```
+
+### Updating a Water Intake Record
+
+Update an existing water intake entry:
+
+```bash
+curl -X PUT 'http://localhost:8081/api/v1/users/water-intakes/1' \
+    -H 'Authorization: Bearer <YOUR_ACCESS_TOKEN>' \
+    -H 'Content-Type: application/json' \
+    -d '{
+          "dateTimeUTC": "2024-01-26T14:30:00Z",
+          "volume": 300,
+          "volumeUnit": "ML"
+        }'
+```
+
+Success response (HTTP 200):
+
+```json
+{
+  "id": 1,
+  "dateTimeUTC": "2024-01-26T14:30:00Z",
+  "volume": 300,
+  "volumeUnit": "ML"
+}
+```
+
+### Deleting a Water Intake Record
+
+Delete a water intake entry:
+
+```bash
+curl -X DELETE 'http://localhost:8081/api/v1/users/water-intakes/1' \
+-H 'Authorization: Bearer <YOUR_ACCESS_TOKEN>'
+```
+
+Success response: HTTP 204 (No Content)
+
+### User Profile Management
+
+#### Get Current User Profile
+
+Retrieve the current user's profile information:
+
+```bash
+curl -X GET 'http://localhost:8081/api/v1/users/me' \
+-H 'Authorization: Bearer <YOUR_ACCESS_TOKEN>'
+```
+
+Success response (HTTP 200):
+
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "personal": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "birthDate": "1990-05-15",
+    "email": "john.doe@example.com"
+  },
+  "physical": {
+    "height": 175.5,
+    "heightUnit": "CM",
+    "weight": 70.0,
+    "weightUnit": "KG",
+    "biologicalSex": "MALE"
+  },
+  "alarmSettings": {
+    "startTime": "08:00:00",
+    "endTime": "22:00:00",
+    "intervalMinutes": 120,
+    "enabled": true
+  }
+}
+```
+
+#### Create User Profile
+
+Create a new user profile:
+
+```bash
+curl -X POST 'http://localhost:8081/api/v1/users' \
+    -H 'Authorization: Bearer <YOUR_ACCESS_TOKEN>' \
+    -H 'Content-Type: application/json' \
+    -d '{
+          "personal": {
+            "firstName": "John",
+            "lastName": "Doe",
+            "birthDate": "1990-05-15",
+            "email": "john.doe@example.com"
+          },
+          "physical": {
+            "height": 175.5,
+            "heightUnit": "CM",
+            "weight": 70.0,
+            "weightUnit": "KG",
+            "biologicalSex": "MALE"
+          },
+          "alarmSettings": {
+            "startTime": "08:00:00",
+            "endTime": "22:00:00",
+            "intervalMinutes": 120,
+            "enabled": true
+          }
+        }'
+```
+
+Success response (HTTP 201):
+
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "personal": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "birthDate": "1990-05-15",
+    "email": "john.doe@example.com"
+  },
+  "physical": {
+    "height": 175.5,
+    "heightUnit": "CM",
+    "weight": 70.0,
+    "weightUnit": "KG",
+    "biologicalSex": "MALE"
+  },
+  "alarmSettings": {
+    "startTime": "08:00:00",
+    "endTime": "22:00:00",
+    "intervalMinutes": 120,
+    "enabled": true
+  }
+}
+```
+
+#### Update User Profile
+
+Update the current user's profile:
+
+```bash
+curl -X PUT 'http://localhost:8081/api/v1/users' \
+    -H 'Authorization: Bearer <YOUR_ACCESS_TOKEN>' \
+    -H 'Content-Type: application/json' \
+    -d '{
+          "personal": {
+            "firstName": "John",
+            "lastName": "Smith",
+            "birthDate": "1990-05-15",
+            "email": "john.smith@example.com"
+          },
+          "physical": {
+            "height": 175.5,
+            "heightUnit": "CM",
+            "weight": 72.0,
+            "weightUnit": "KG",
+            "biologicalSex": "MALE"
+          },
+          "alarmSettings": {
+            "startTime": "07:00:00",
+            "endTime": "23:00:00",
+            "intervalMinutes": 90,
+            "enabled": true
+          }
+        }'
+```
+
+Success response (HTTP 200):
+
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "personal": {
+    "firstName": "John",
+    "lastName": "Smith",
+    "birthDate": "1990-05-15",
+    "email": "john.smith@example.com"
+  },
+  "physical": {
+    "height": 175.5,
+    "heightUnit": "CM",
+    "weight": 72.0,
+    "weightUnit": "KG",
+    "biologicalSex": "MALE"
+  },
+  "alarmSettings": {
+    "startTime": "07:00:00",
+    "endTime": "23:00:00",
+    "intervalMinutes": 90,
+    "enabled": true
+  }
+}
+```
+
+#### Delete User Profile
+
+Delete the current user's profile:
+
+```bash
+curl -X DELETE 'http://localhost:8081/api/v1/users' \
+-H 'Authorization: Bearer <YOUR_ACCESS_TOKEN>'
+```
+
+Success response: HTTP 204 (No Content)
+
+### Error Responses
+
+The API uses standard HTTP status codes and returns detailed error messages:
+
+```json
+{
+  "type": "https://www.drinkwater.com.br/validation-error",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "Validation error occurred",
+  "errors": [
+    {
+      "field": "volume",
+      "message": "Volume must be greater than zero"
+    }
+  ]
+}
+```
+
+Let me enhance the Technology Stack section with the specific versions and configuration details from your Dockerfile
+and docker-compose.yml:
+
+## 🔄 API Versioning
+
+This API uses **URI Path Versioning** (`/api/v1/...`). All public endpoints are prefixed with `/api/{version}/`.
+
+### Current Versions
+
+| Version | Status | Sunset Date |
+|---------|--------|-------------|
+| v1      | Active | --          |
+
+### Version Lifecycle
+
+Each API version follows this lifecycle:
+
+1. **Active** -- The version is fully supported and recommended for use.
+2. **Deprecated** -- A newer version is available. The API still works, but clients should migrate. Response headers signal the deprecation.
+3. **Removed** -- The version is no longer available. Requests return `404 Not Found`.
+
+### Response Headers
+
+Every response from a versioned endpoint includes an `API-Version` header. When a version is deprecated, additional headers are included:
+
+| Header | Description | Example |
+|--------|-------------|---------|
+| `API-Version` | The version that served the request | `v1` |
+| `API-Deprecated` | Present when the version is deprecated | `true` |
+| `Sunset` | The date after which the version may be removed (RFC 7231) | `2026-12-31` |
+| `Link` | Points to the successor version | `</api/v2/users/me>; rel="successor-version"` |
+
+### Example: Deprecated Version Response Headers
+
+```
+HTTP/1.1 200 OK
+API-Version: v1
+API-Deprecated: true
+Sunset: 2026-12-31
+Link: </api/v2/users/me>; rel="successor-version"
+Content-Type: application/json
+```
+
+### Endpoints Not Subject to Versioning
+
+Operational and infrastructure endpoints are not versioned:
+- `/actuator/**` -- Spring Boot Actuator (health, metrics, etc.)
+- `/management/**` -- Runtime configuration management
+
+### Configuration
+
+API versioning is configured via environment variables and `application.yml`:
+
+```yaml
+api:
+  versioning:
+    current-version: v1
+    versions:
+      - version: v1
+        deprecated: false
+        sunset: ""
+        successor-version: ""
+```
+
+## 💻 Technology Stack
+
+| Category                | Technology                    | Version       | Details                                                          |
+|-------------------------|-------------------------------|---------------|------------------------------------------------------------------|
+| Core                    | Java                          | 17            | Using Amazon Corretto JDK with custom runtime optimization       |
+| Framework               | Spring Boot                   | 3.4.4         | Base framework for the application                               |
+| Security                | Spring OAuth2 Resource Server | 3.4.4         | Handles OAuth2 resource protection                               |
+| Authentication          | Keycloak                      | 26.0.3        | Handles authentication and authorization with PostgreSQL backend |
+| Database                | PostgreSQL                    | 16-alpine     | Main application database and Keycloak database                  |
+| Database (Test)         | H2 Database                   | Runtime       | In-memory database for testing                                   |
+| Persistence             | Spring Data JPA               | 3.4.4         | Database access and ORM                                          |
+| Validation              | Spring Boot Validation        | 3.4.4         | Request validation and error handling                            |
+| Monitoring              | Spring Boot Actuator          | 3.4.4         | Application monitoring and metrics                               |
+| Development             | Spring Boot DevTools          | 3.4.4         | Development productivity tools                                   |
+| Build Tool              | Maven                         | 3.9.9         | Project build and dependency management                          |
+| Containerization        | Docker                        | alpine 3.21   | Multi-stage build with optimized runtime image                   |
+| Container Orchestration | Docker Compose                | 3.x           | Local development environment orchestration                      |
+
+The application uses a multi-stage Docker build process that includes:
+
+- Build stage using Maven and Amazon Corretto
+- Custom JLink-optimized Java runtime
+- Production-ready Alpine-based final image
+- Containerized PostgreSQL databases for both application and Keycloak
+- Pre-configured Keycloak server with health checks and PostgreSQL integration
+
+## 🏗️ Architecture
+
+The project follows a clean and modular architecture:
+
+```
+src/main/java/br/com/drinkwater/
+├── api/                         # API layer (versioned)
+│   ├── versioning/              # Versioning infrastructure
+│   │   ├── ApiVersion.java      # @ApiVersion annotation
+│   │   ├── ApiVersionProperties # Versioning configuration
+│   │   ├── ApiVersionInterceptor# Response header injection
+│   │   └── ApiVersionWebConfig  # Interceptor registration
+│   └── v1/                      # Version 1 controllers
+│       └── controller/          # REST endpoints
+├── config/                      # Application configurations
+├── core/                        # Core components and utilities
+├── exception/                   # Global exception handling
+├── hydrationtracking/           # Water intake tracking module
+│   ├── dto/                     # Data transfer objects
+│   ├── mapper/                  # Object mapping
+│   ├── model/                   # Domain entities
+│   ├── repository/              # Data access
+│   ├── service/                 # Business logic
+│   └── validation/              # Custom validators
+├── usermanagement/              # User management module
+│   ├── dto/                     # User DTOs
+│   ├── mapper/                  # User object mapping
+│   ├── model/                   # User domain entities
+│   ├── repository/              # User data access
+│   ├── service/                 # User business logic
+│   └── validation/              # Custom validators
+└── validation/                  # Shared validation components
+```
+
+Each module is self-contained with its own controllers, services, repositories, and domain models, following DDD principles and Clean Architecture patterns.
+
+## ⚙️ Key Features
+
+The project implements the following features:
+
+### Security and Authentication
+- OAuth2/OpenID Connect authentication using Keycloak
+- Role-based access control
+- JWT token validation
+- Secure password management
+
+### Water Intake Tracking
+- Record and manage water intake entries
+- Flexible volume units support
+- Advanced filtering and sorting capabilities
+- Pagination with customizable page sizes
+- Duplicate entry prevention for same timestamp
+- Time-range validations (max 31 days range)
+
+### User Management
+- Complete user profile management
+- Physical characteristics tracking (height, weight, biological sex)
+- Customizable alarm settings for hydration reminders
+- Multiple unit system support (metric/imperial)
+
+### Technical Features
+- Comprehensive error handling with i18n support
+- RFC 7807 Problem Details error responses
+- Input validation with custom constraints
+- API versioning with URI path strategy and deprecation headers
+- Specification pattern for dynamic querying
+- UTC time handling for global compatibility
+- Spring Data JDBC optimized queries
+- Cursor-based pagination with sorting options
+
+### Testing and Quality Assurance
+- Comprehensive unit and integration testing using JUnit 5
+- Code coverage reporting with JaCoCo
+- Testcontainers for integration testing with real database instances
+- Test naming convention following `given_when_then` pattern
+- Separate test profiles for different testing scenarios
+
+### Monitoring and Metrics
+- Application monitoring with Spring Boot Actuator
+- Prometheus metrics integration with Micrometer
+- Health checks and application info endpoints
+- Custom metrics collection for business logic monitoring
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+#### Required Software
+- Java 17 (Amazon Corretto recommended)
+- Docker (latest version)
+- Docker Compose
+- Maven 3.9.x
+
+#### System Requirements
+- Minimum 4GB RAM
+- 2GB free disk space
+- Ports available:
+    - 8080 (Keycloak)
+    - 8081 (Application)
+    - 5432 (PostgreSQL)
+
+#### Development Environment
+- JDK 17 configured in PATH
+- Docker engine running
+- PostgreSQL client (optional, for direct DB access)
+- API testing tool (Postman, cURL, etc.)
+
+#### Database Setup
+Handled automatically by Docker Compose, but requires:
+- PostgreSQL 16 compatible system
+- Two databases:
+    - Main application: drink_water_db
+    - Keycloak: security
+
+### Installation Steps
+
+  1. Clone the repository:
+```bash
+git clone git@github.com:eagle-head/drink-water-api.git
+cd drink-water-api
+```
+
+  2. Start required services:
+```bash
+docker-compose up -d
+```
+
+  3. Build and run the application:
+```bash
+./mvnw clean install
+./mvnw spring-boot:run
+```
+
+Services will be available at:
+- Application: http://localhost:8081
+- Keycloak: http://localhost:8080
+    - Admin console: http://localhost:8080/admin
+    - Username: admin
+    - Password: password
+- PostgreSQL: localhost:5432
+
+## 🔐 Keycloak Configuration
+
+Essential steps for Keycloak setup:
+
+1. Access Keycloak admin console at `http://localhost:8080`
+2. Create a new realm
+3. Configure clients
+
+## 🧪 Testing
+
+This project includes comprehensive testing capabilities with unit tests, integration tests, and code coverage reports.
+
+### Test Naming Pattern
+We follow the `given_when_then` naming pattern for test methods, which helps create clear and descriptive test names:
+- `given`: Initial context/preconditions
+- `when`: Action or behavior being tested
+- `then`: Expected outcome
+
+Example: `givenValidUserData_whenCreateUser_thenReturnsUserResponseDTO()`
+
+### Running Tests
+
+#### Complete Test Suite
+Run all unit and integration tests:
+```bash
+./mvnw clean verify
+```
+
+#### Unit Tests
+Run only unit tests:
+```bash
+./mvnw clean test
+```
+
+#### Skip Integration Tests
+Execute tests while skipping integration tests:
+```bash
+./mvnw clean verify -DskipITs=true
+```
+
+#### Skip Unit Tests
+Execute tests while skipping unit tests:
+```bash
+./mvnw clean verify -Dsurefire.skip=true
+```
+
+### Code Coverage
+Generate a detailed code coverage report using JaCoCo:
+```bash
+./mvnw clean test jacoco:report
+```
+After execution, you can find the HTML report in `target/site/jacoco/index.html`
+
+### Test Reports
+Test reports are typically found under the `target` directory:
+- JaCoCo: `target/site/jacoco/`
+- Surefire: `target/surefire-reports/`
+
+## 📝 API Documentation
+
+Under construction
+
+## ⚠️ Known Issues
+
+* **SpotBugs + Java 25**: SpotBugs (4.9.8.2) does not yet fully support Java 25 class file version 69. The underlying
+  Apache Commons BCEL library needs to be updated to version 6.11+ to handle Java 25 bytecode. The plugin is currently
+  configured with `failOnError=false` so it does not break the build. Once a compatible version is released, update the
+  `spotbugs-maven-plugin.version` property in `pom.xml` and set `failOnError` back to `true`. Track progress at:
+  [SpotBugs GitHub Discussions](https://github.com/spotbugs/spotbugs/discussions/3380).
+
+* **Pitest (mutation testing) + Java 25**: Pitest 1.22.1 is not stable with JDK 25. Its official CI only tests JDK 11,
+  18, and 21, and there are open issues reporting minion crashes (`RUN_ERROR`, `EOFException`) when mutating classes
+  compiled with JDK 25 — especially records with Jakarta Validation annotations. The plugin has been temporarily removed
+  from the build. Re-evaluate when Pitest publishes a version with official JDK 25 support. Track progress at:
+  [Pitest #1435](https://github.com/hcoles/pitest/issues/1435).
+
+## 🛠️ Future Enhancements
+
+* Database Migration Management with Flyway for version control and automated schema updates
+
+* API Documentation and Testing with OpenAPI/Swagger UI
+
+* Event-Driven Architecture implementation using Apache Kafka for asynchronous communication
+
+* Advanced Cache Management using:
+  - Memcached for distributed memory caching
+  - Apache Ignite for in-memory computing and caching
+  - Hazelcast for distributed caching
+
+* Enhanced Monitoring and Observability:
+  - Grafana for metrics visualization
+  - OpenSearch + Logstash + Kibana for log aggregation and analytics
+  - Jaeger or Zipkin for distributed tracing
+  - Alert Manager for proactive notifications and alerting
+
+## 🔨 Development Practices
+
+This project adheres to industry best practices:
+
+- Clean Code principles
+- SOLID design principles
+- Comprehensive test coverage
+- Security best practices
+
+## 👨‍💻 Author
+
+- LinkedIn: [Eduardo Kohn](https://www.linkedin.com/in/eduardo-kohn-56817b195/)
+- GitHub: [Eduardo Kohn](https://github.com/eagle-head)
+- Email: eduardokohn15 [at] gmail [dot] com
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+This means you can:
+- Use it commercially
+- Modify it
+- Distribute it
+- Use it privately
+- Sublicense it
+
+#### Just remember to include the original license and copyright notice in any copy of the project.
+
+---
+
+⭐️ If you found this project helpful, please consider giving it a star!
